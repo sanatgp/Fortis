@@ -1,4 +1,4 @@
-# FORTIS — Fortran–ML co-compiler
+# FORTIS: Fortran–ML co-compiler
 
 Compiles a Fortran host and an ML model (PyTorch export, or TensorFlow SavedModel via ONNX) into one executable
 with no framework runtime. Passes: fortis-fuse (fusion, shape-chosen mappings, cuBLAS/cuDNN/FFT rules, residency).
