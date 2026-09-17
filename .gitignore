@@ -1,0 +1,7 @@
+build/
+install/
+fortisc_work/
+*.bin
+*.onnx
+*.nsys-rep
+*.sqlite

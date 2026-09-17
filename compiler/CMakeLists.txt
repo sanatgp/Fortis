@@ -1,0 +1,6 @@
+get_property(dialect_libs GLOBAL PROPERTY MLIR_DIALECT_LIBS)
+get_property(conversion_libs GLOBAL PROPERTY MLIR_CONVERSION_LIBS)
+add_llvm_executable(fortis-opt FortisFuse.cpp)
+llvm_update_compile_flags(fortis-opt)
+target_link_libraries(fortis-opt PRIVATE ${dialect_libs} ${conversion_libs} MLIROptLib MLIRRegisterAllDialects MLIRPass MLIRTransforms MLIRIR MLIRParser MLIRSupport)
+install(TARGETS fortis-opt DESTINATION bin)

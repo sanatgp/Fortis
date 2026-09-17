@@ -1,0 +1,36 @@
+#!/bin/bash
+# fortisc: Fortran host + ML model (PyTorch export script or linalg .mlir) -> one executable.
+# Usage: fortisc export.py|model_linalg.mlir host.f90 out
+set -e
+EXPORT=$1; HOST=$2; OUT=$3
+PREFIX=@CMAKE_INSTALL_PREFIX@
+B=@LLVM_TOOLS_BINARY_DIR@
+CUDA=@CUDAToolkit_ROOT@
+MATH=@MATH_LIBS_DIR@
+CUDNN=@CUDNN_DIR@
+MLIRLIB=@LLVM_LIBRARY_DIR@
+VENV=${FORTIS_VENV:-$HOME/venvs/tmlir}
+W=${FORTIS_WORK:-$PWD/fortisc_work}; mkdir -p $W
+
+if [[ "$EXPORT" == *.mlir ]]; then cp $EXPORT $W/model_linalg.mlir; else source $VENV/bin/activate && python $EXPORT > $W/model_linalg.mlir && deactivate; fi
+python3 $PREFIX/bin/fortis_outline.py $W/model_linalg.mlir $W
+
+$B/mlir-opt $W/model_args.mlir -linalg-generalize-named-ops -o $W/m1.mlir
+$PREFIX/bin/fortis-opt $W/m1.mlir -fortis-fold-transpose -o $W/m2a.mlir
+$B/mlir-opt $W/m2a.mlir -canonicalize -cse -o $W/m2.mlir
+$B/mlir-opt $W/m2.mlir -one-shot-bufferize="bufferize-function-boundaries function-boundary-type-conversion=identity-layout-map" -buffer-results-to-out-params -o $W/m3.mlir
+$PREFIX/bin/fortis-opt $W/m3.mlir -fortis-fuse -o $W/m4.mlir
+$B/mlir-opt $W/m4.mlir -gpu-lower-to-nvvm-pipeline="cubin-chip=sm_70 cubin-format=fatbin" -o $W/m5.mlir
+sed -i -e 's/[@]malloc/@fortis_alloc/g' -e 's/[@]free/@fortis_free/g' $W/m5.mlir
+$B/mlir-translate $W/m5.mlir --mlir-to-llvmir -o $W/model.ll
+$B/clang -O2 -c $W/model.ll -o $W/model.o
+
+$B/mlir-translate $W/weights.mlir --mlir-to-llvmir -o $W/weights.ll
+$B/clang -O2 -c $W/weights.ll -o $W/weights.o
+$B/clang -O2 -I$CUDA/include -c $W/shim.c -o $W/shim.o
+$B/clang -O2 -I$CUDA/include -c $W/shim.c -o $W/shim.o
+
+$B/flang -O3 $HOST $W/model.o $W/shim.o $W/weights.o \
+  -L$PREFIX/lib -lfortis_rt -L$MLIRLIB -lmlir_cuda_runtime -Wl,-rpath,$MLIRLIB -L$CUDA/lib64 -lcudart -Wl,-rpath,$CUDA/lib64 -L$MATH/lib64 -lcufft -lcublas -Wl,-rpath,$MATH/lib64 $CUDNN/lib/libcudnn.so.8 -Wl,-rpath,$CUDNN/lib -lstdc++ \
+  -o $OUT
+echo "fortisc: kernels=$(grep -c gpu.launch_func $W/m4.mlir)  -> $OUT"
