@@ -33,6 +33,7 @@ fi
 # --- call-centric loop distribution: one analysis decides batching, lifting, and blocking
 PYTHONPATH=$PREFIX/bin python3 $PREFIX/bin/fortis_loopdist.py $W/host.hlfir mlp_forward > $W/loop.json
 LV=$(python3 -c "import json;print(json.load(open('$W/loop.json'))['verdict'])")
+if [ -n "$FORTIS_NO_DIST" ]; then LV=disabled; fi
 echo "fortisc: loop verdict $LV ($(python3 -c "import json;print(json.load(open('$W/loop.json'))['reason'][:100])"))"
 if [ "$LV" = "batched" ]; then
   export FORTIS_LOOP_JSON=$W/loop.json
@@ -40,7 +41,8 @@ if [ "$LV" = "batched" ]; then
   export FORTIS_LOOP_BATCH=$FORTIS_BATCH
   export FORTIS_LIFT=$(python3 -c "import json;print(int(json.load(open('$W/loop.json'))['lift'] is not None))")
 else
-  unset FORTIS_LOOP_JSON; export FORTIS_LOOP_BATCH=0; export FORTIS_LIFT=0
+  unset FORTIS_LOOP_JSON FORTIS_HOST_GLOBALS FORTIS_LIFT_IN_SYM; export FORTIS_LOOP_BATCH=0; export FORTIS_LIFT=0
+  export FORTIS_BATCH=$(python3 -c "import json;print(json.load(open('$W/hostinfo.json'))['batch'])")
 fi
 echo "fortisc: host call site batch=$FORTIS_BATCH in_loop=$FORTIS_HOST_LOOP"
 if [[ "$EXPORT" == *.mlir ]]; then cp $EXPORT $W/model_linalg.mlir; else source $VENV/bin/activate && python $EXPORT > $W/model_linalg.mlir && deactivate; fi
@@ -68,9 +70,9 @@ echo "fortisc: library calls=$LIBCALLS -> graph capture=$GRAPH"
 $B/clang -O2 -DFORTIS_GRAPH_DEFAULT=$GRAPH -I$CUDA/include -c $W/shim.c -o $W/shim.o
 $B/clang -O2 -I$CUDA/include -c $W/shim.c -o $W/shim.o
 
-if [ "$FORTIS_LIFT" = "1" ]; then
+if [ -n "$FORTIS_LOOP_JSON" ]; then
   $B/flang -fc1 -emit-llvm -O3 $HOST -o $W/host.ll
-  for sym in $FORTIS_LIFT_IN_SYM $(python3 -c "import json;print(' '.join(g['sym'] for g in json.load(open('$W/lift.json'))['globals']))"); do
+  for sym in $(python3 -c "import json;d=json.load(open('$FORTIS_LOOP_JSON'));print(d['in'], d['out'], ' '.join(g['sym'] for g in (d['lift'] or {}).get('globals', [])))"); do
     sed -i "s/^@$sym = internal global/@$sym = global/" $W/host.ll; done
   $B/clang -O2 -c $W/host.ll -o $W/host.o; HOSTOBJ=$W/host.o
 else HOSTOBJ=$HOST; fi

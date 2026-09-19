@@ -62,7 +62,7 @@ for i, (n, key, ty) in enumerate(consts):
 for i, g in enumerate(hostg):
     c += f"  cudaMalloc((void**)&dg{i}, {g['n']}L*4); cudaMemcpy(dg{i}, {g['sym']}, {g['n']}L*4, cudaMemcpyHostToDevice);\n"
 c += f"  cudaMalloc((void**)&din, {n_in}L*4); cudaMalloc((void**)&dout, {n_out}L*4);\n}}\n"
-c += f"void mlp_upload(float* in) {{ if (!din) setup(); cudaMemcpy(din, in, {n_in}L*4, cudaMemcpyHostToDevice); }}\n"
+c += f"void mlp_upload(float* in) {{ if (!din) setup(); cudaMemcpy(din, in, {n_in if not os.environ.get('FORTIS_LOOP_JSON') else n_in // json.load(open(os.environ['FORTIS_LOOP_JSON']))['batch']}L*4, cudaMemcpyHostToDevice); }}\n"
 c += "static cudaGraphExec_t fortis_gexec = 0; static int fortis_ncalls = 0; extern int fortis_capturing;\n"
 callargs = ", ".join([call("din", intype)] + [call(f"dg{i}", t) for i, (_, t) in enumerate(inputs[1:])] + [call(f"d{i}", t) for i, (_, _, t) in enumerate(consts)] + [call("dout", outtype)])
 c += "void mlp_forward_dev(void) {\n  cudaStream_t s = (cudaStream_t)mgpuStreamCreate();\n"
@@ -78,24 +78,26 @@ c += "  }\n}\n"
 c += f"void mlp_download(float* out) {{ cudaMemcpy(out, dout, {n_out}L*4, cudaMemcpyDeviceToHost); }}\n"
 LJ = os.environ.get("FORTIS_LOOP_JSON", "")
 if LJ:
-    # Loop-distributed entry. The host loop over columns lo, lo+step, ... is executed as one batched
-    # step at its first iteration: the iterated columns are gathered with a 2-D copy into the batch
-    # buffer, the step runs, and the outputs are scattered back to their columns. If a pre-statement
-    # writes the output slice, outputs are instead downloaded per iteration after the call.
+    # Loop-distributed entry. The iteration is identified from the argument address relative to the
+    # host array's symbol. At column lo the iterated columns are gathered with a 2-D copy, the step
+    # runs, and outputs are scattered back (or downloaded per iteration when a pre-statement writes
+    # the output slice). A call that is not on the analyzed array runs as a single row.
     d = json.load(open(LJ)); B, lo, step, minc = d["batch"], d["lo"], d["step"], d["minc"]
     NIN, NOUT = n_in // B, n_out // B
-    srcin = f"{lift_in} + ({minc}-1)*{NIN}L" if lift_in else f"in - ({lo}-{minc})*{NIN}L"
-    c += "static int fortis_lb_k = 0;\n"
+    SIN, SOUT = d["in"], d["out"]
+    c += f"extern float {SIN}[], {SOUT}[];\n"
     c += "void mlp_forward(float* in, float* out) {\n"
-    c += "  if (fortis_lb_k == 0) {\n    if (!din) setup();\n"
-    c += f"    cudaMemcpy2D(din, {NIN}L*4, {srcin}, {abs(step)}L*{NIN}L*4, {NIN}L*4, {B}, cudaMemcpyHostToDevice);\n"
+    c += f"  long col = (out - {SOUT}) / {NOUT}L + 1;\n"
+    c += f"  if (out < {SOUT} || out >= {SOUT} + ({minc}-1)*{NOUT}L + {NOUT}L*{B}L*{abs(step)}L || getenv(\"FORTIS_DEBUG_COL\") && fprintf(stderr, \"col %ld\\n\", col) < 0) {{ mlp_upload(in); mlp_forward_dev(); cudaMemcpy(out, dout, {NOUT}L*4, cudaMemcpyDeviceToHost); return; }}\n"
+    c += f"  if (col == {lo}) {{\n    if (!din) setup();\n"
+    c += f"    cudaMemcpy2D(din, {NIN}L*4, {SIN} + ({minc}-1)*{NIN}L, {abs(step)}L*{NIN}L*4, {NIN}L*4, {B}, cudaMemcpyHostToDevice);\n"
     c += "    mlp_forward_dev();\n"
     if not d["post_download"]:
-        c += f"    cudaMemcpy2D(out - ({lo}-{minc})*{NOUT}L, {abs(step)}L*{NOUT}L*4, dout, {NOUT}L*4, {NOUT}L*4, {B}, cudaMemcpyDeviceToHost);\n"
+        c += f"    cudaMemcpy2D({SOUT} + ({minc}-1)*{NOUT}L, {abs(step)}L*{NOUT}L*4, dout, {NOUT}L*4, {NOUT}L*4, {B}, cudaMemcpyDeviceToHost);\n"
     c += "  }\n"
     if d["post_download"]:
-        c += f"  cudaMemcpy(out, dout + (({lo} + fortis_lb_k*({step})) - {minc})/{abs(step)}*{NOUT}L, {NOUT}L*4, cudaMemcpyDeviceToHost);\n"
-    c += f"  fortis_lb_k = (fortis_lb_k + 1) % {B};\n}}\n"
+        c += f"  cudaMemcpy(out, dout + ((col - {minc}) / {abs(step)}L) * {NOUT}L, {NOUT}L*4, cudaMemcpyDeviceToHost);\n"
+    c += "}\n"
 else:
     c += "void mlp_forward(float* in, float* out) { mlp_upload(in); mlp_forward_dev(); mlp_download(out); }\n"
 open(f"{outdir}/shim.c", "w").write(c)

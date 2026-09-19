@@ -41,6 +41,27 @@ def analyze(path, callee):
             if depth: depth -= 1
             else: end = i; break
     body = L[start + 1:end]
+    # perfect nest: the loop just found is the inner one; its parent is a loop whose body is only
+    # the index store, constants, and this loop
+    outer = None
+    pstart, depth = None, 0
+    for i in range(start - 1, -1, -1):
+        t = L[i].strip()
+        if t == '}': depth += 1
+        elif t.endswith('{'):
+            if depth: depth -= 1
+            else: pstart = i; break
+    if pstart is not None and 'fir.do_loop' in L[pstart]:
+        between = [L[i].strip() for i in range(pstart + 1, start)]
+        after = [L[i].strip() for i in range(end + 1, len(L))]
+        j = 0
+        # after the inner loop Flang stores the final index value back: converts, arith on it, one store
+        while j < len(after) and (after[j] == '' or re.match(r'%\w+ = (fir\.convert|arith\.\w+) ', after[j]) or re.match(r'fir\.store %\w+ to %[\w#]+ : !fir\.ref<i32>', after[j])): j += 1
+        pm = re.search(r'fir\.do_loop (%\S+) = %c(-?\d+)\S* to %c(-?\d+)\S* step %c(-?\d+)', L[pstart])
+        om = re.match(r'fir\.store (%\S+) to (%\S+)', between[0]) if between else None
+        if pm and om and om.group(1) == pm.group(1) and all(t == '' or t.startswith('%c') and 'arith.constant' in t for t in between[1:]) and j < len(after) and after[j] == '}':
+            olo, ohi, ostep = int(pm.group(2)), int(pm.group(3)), int(pm.group(4)); ocount = (ohi - olo) // ostep + 1
+            outer = (om.group(2), olo, ohi, ostep, ocount)
     ivar = re.match(r'\s*fir\.store (%\S+) to (%\S+)', body[0]) if body else None
     if not ivar or ivar.group(1) != m.group(1): return {'verdict': 'reject', 'reason': 'loop body does not start with the index store'}
     ialloca = ivar.group(2)
@@ -69,8 +90,10 @@ def analyze(path, callee):
         if d.startswith('fir.convert'):
             src = re.search(r'fir\.convert (%\S+)', d).group(1)
             if src in defs and defs[src].startswith('fir.load') and ialloca in defs[src]: return ('i', 0)
+            if src in defs and defs[src].startswith('fir.load') and outer and outer[0] in defs[src]: return ('j', 0)
             return index_of(src)
         if d.startswith('fir.load') and ialloca in d: return ('i', 0)
+        if d.startswith('fir.load') and outer and outer[0] in d: return ('j', 0)
         am = re.match(r'arith\.(addi|subi) (%\S+), (%\S+)', d)
         if am:
             a, b = index_of(am.group(2)), index_of(am.group(3))
@@ -89,6 +112,10 @@ def analyze(path, callee):
         if len(shape) == 2 and len(parts) == 2:
             col = index_of(parts[1].split(':')[0]) if ':' not in parts[1] else None
             return (name, shape, col, 'slice' if ':' in parts[0] else 'elem')
+        if len(shape) == 3 and len(parts) == 3 and outer:
+            ci, cj = index_of(parts[1]), index_of(parts[2])
+            if ci == ('i', 0) and cj == ('j', 0) and ':' in parts[0]: return (name, shape, ('i', 0), 'slice')
+            return (name, shape, None, 'other')
         return (name, shape, None, 'other')
     def reads_of(ssa, seen=None):   # arrays read in the def slice of a value
         seen = seen if seen is not None else set(); out = []
@@ -152,10 +179,17 @@ def analyze(path, callee):
             if not la['ok']: return {'verdict': 'block', 'reason': 'pre-statement assigns the call temporary but is not liftable (' + la['reason'] + ')'}
             lift = la; verdicts.append((ln, 'lift', 'elementwise expression on the input slice, compiled into the step')); continue
         if before and writes_in and tgt_acc[2] == ('i', 0):
-            return {'verdict': 'block', 'reason': f'line {ln}: writes the call input slice before the call and is not an elementwise expression'}
+            return {'verdict': 'reject', 'reason': f'line {ln}: writes the call input before the call and is not liftable; the implementation executes the batch at the first iteration without fissioning the host loop'}
         if before and writes_out:
             post_download = True; verdicts.append((ln, 'stay', 'writes the output slice before the call; output is downloaded per iteration after it')); continue
         verdicts.append((ln, 'stay', 'loop-independent, runs on the host'))
+    if outer:
+        oalloca, olo, ohi, ostep, ocount = outer
+        full_i = (lo == 1 and step == 1 and (in_acc or lift) and count == (in_acc[1][1] if in_acc else lift['in_shape'][1]))
+        full_j = (olo == 1 and ostep == 1 and in_acc and len(in_acc[1]) == 3 and ocount == in_acc[1][2])
+        if not (full_i and full_j): return {'verdict': 'reject', 'reason': 'nested loops must both be full-range unit-stride for flattening'}
+        if not in_acc or len(in_acc[1]) != 3 or len(out_acc[1]) != 3: return {'verdict': 'reject', 'reason': 'nested flattening needs rank-3 input and output arrays'}
+        count = count * ocount; minc = 1; lo = 1; step = 1
     return {'verdict': 'batched', 'batch': count, 'lo': lo, 'step': step, 'minc': minc,
             'in': in_acc[0] if in_acc else (lift['in_sym'] if lift else None), 'in_shape': in_acc[1] if in_acc else (lift['in_shape'] if lift else None),
             'out': yname, 'out_shape': out_acc[1], 'post_download': post_download,
