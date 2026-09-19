@@ -2,18 +2,23 @@
 #  - weight constants -> extra function args (device-resident, uploaded once)
 #  - result -> written into an out-param via linalg.copy
 #  - emits weights.mlir (host symbols w0..wN + blobs) and shim.c (residency + ABI)
-import re, os, sys
+import re, os, sys, json
 src = open(sys.argv[1]).read()
 outdir = sys.argv[2] if len(sys.argv) > 2 else "."
 
-head = re.search(r'func\.func @(\w+)\((%\w+): (tensor<[^>]+>)\) -> (tensor<[^>]+>) \{', src)
-fname, inarg, intype, outtype = head.groups()
+head = re.search(r'func\.func @(\w+)\(((?:%\w+: tensor<[^>]+>, )*%\w+: tensor<[^>]+>)\) -> (tensor<[^>]+>) \{', src)
+fname, inlist, outtype = head.groups()
+inputs = re.findall(r'(%\w+): (tensor<[^>]+>)', inlist)
+inarg, intype = inputs[0]
+hostg = json.loads(os.environ.get("FORTIS_HOST_GLOBALS", "[]"))    # program-level arrays read by a lifted prologue
+assert len(hostg) == len(inputs) - 1, f"{len(inputs)-1} extra inputs but {len(hostg)} host globals"
+lift_in = os.environ.get("FORTIS_LIFT_IN_SYM", "")
 # weights: dense_resource<key> (torch fx export) or inline dense<...> literals (ONNX import)
 consts = [(n, ("res", k), t) for n, k, t in re.findall(r'\n\s*(%\w+) = arith\.constant dense_resource<([\w.]+)> : (tensor<[\dx]+xf32>)', src)]
 consts += [(n, ("lit", v), t) for n, v, t in re.findall(r'\n\s*(%\w+) = arith\.constant dense<("0x[0-9A-Fa-f]+"|\[[^>]*|[-\d.eE+]+)> : (tensor<[\dx]+xf32>)', src)]
 for name, key, ty in consts:
     src = re.sub(r'\n\s*' + re.escape(name) + r' = arith\.constant dense(_resource)?<[^>]*> : tensor<[^>]+>', '', src)
-args = [f"{inarg}: {intype}"] + [f"{n}: {t}" for n, _, t in consts]
+args = [f"{a}: {t}" for a, t in inputs] + [f"{n}: {t}" for n, _, t in consts]
 src = src.replace(head.group(0), f"func.func @mlp_kernel({', '.join(args)}) -> {outtype} {{")
 blob = src[src.index('{-#'):] if '{-#' in src else ''
 body = src[:src.index('{-#')] if '{-#' in src else src
@@ -44,18 +49,22 @@ for d in shape(outtype): n_out *= d
 c = "#include <cuda_runtime.h>\n#include <stddef.h>\n#include <stdlib.h>\n#include <stdio.h>\nvoid* mgpuStreamCreate(void);\n"
 R = len(shape(outtype))
 c += f"typedef struct {{ float *a; float *al; long o; long s[{R}]; long st[{R}]; }} MR;\n"
-c += "MR mlp_kernel(" + ", ".join([desc(intype)] + [desc(t) for _, _, t in consts] + [desc(outtype)]) + ");\n"
+c += "MR mlp_kernel(" + ", ".join([desc(t) for _, t in inputs] + [desc(t) for _, _, t in consts] + [desc(outtype)]) + ");\n"
 c += "extern float " + ", ".join(f"w{i}[]" for i in range(len(consts))) + ";\n"
-c += "static float *din = 0, *dout" + "".join(f", *d{i}" for i in range(len(consts))) + ";\n"
+c += "static float *din = 0, *dout" + "".join(f", *d{i}" for i in range(len(consts))) + "".join(f", *dg{i}" for i in range(len(hostg))) + ";\n"
+for g in hostg: c += f"extern float {g['sym']}[];\n"
+if lift_in: c += f"extern float {lift_in}[];\n"
 c += "static void setup(void) {\n"
 for i, (n, key, ty) in enumerate(consts):
     sz = 1
     for d in shape(ty): sz *= d
     c += f"  cudaMalloc((void**)&d{i}, {sz}L*4); cudaMemcpy(d{i}, w{i}, {sz}L*4, cudaMemcpyHostToDevice);\n"
+for i, g in enumerate(hostg):
+    c += f"  cudaMalloc((void**)&dg{i}, {g['n']}L*4); cudaMemcpy(dg{i}, {g['sym']}, {g['n']}L*4, cudaMemcpyHostToDevice);\n"
 c += f"  cudaMalloc((void**)&din, {n_in}L*4); cudaMalloc((void**)&dout, {n_out}L*4);\n}}\n"
 c += f"void mlp_upload(float* in) {{ if (!din) setup(); cudaMemcpy(din, in, {n_in}L*4, cudaMemcpyHostToDevice); }}\n"
 c += "static cudaGraphExec_t fortis_gexec = 0; static int fortis_ncalls = 0; extern int fortis_capturing;\n"
-callargs = ", ".join([call("din", intype)] + [call(f"d{i}", t) for i, (_, _, t) in enumerate(consts)] + [call("dout", outtype)])
+callargs = ", ".join([call("din", intype)] + [call(f"dg{i}", t) for i, (_, t) in enumerate(inputs[1:])] + [call(f"d{i}", t) for i, (_, _, t) in enumerate(consts)] + [call("dout", outtype)])
 c += "void mlp_forward_dev(void) {\n  cudaStream_t s = (cudaStream_t)mgpuStreamCreate();\n"
 c += "  if (fortis_gexec) { cudaGraphLaunch(fortis_gexec, s); return; }\n"
 c += "#ifndef FORTIS_GRAPH_DEFAULT\n#define FORTIS_GRAPH_DEFAULT 0\n#endif\n"
@@ -72,7 +81,8 @@ if LB:
     # Loop-batched entry: the host's loop over LB column slices is executed as one batched step at
     # its first iteration. in/out at that call are the bases of the contiguous host arrays.
     c += f"static int fortis_lb_k = 0;\n"
-    c += f"void mlp_forward(float* in, float* out) {{\n  if (fortis_lb_k == 0) {{ mlp_upload(in); mlp_forward_dev(); mlp_download(out); }}\n  fortis_lb_k = (fortis_lb_k + 1) % {LB};\n}}\n"
+    src_in = lift_in if lift_in else "in"    # lifted prologue: the step reads the host's raw array by symbol
+    c += f"void mlp_forward(float* in, float* out) {{\n  if (fortis_lb_k == 0) {{ mlp_upload({src_in}); mlp_forward_dev(); mlp_download(out); }}\n  fortis_lb_k = (fortis_lb_k + 1) % {LB};\n}}\n"
 else:
     c += "void mlp_forward(float* in, float* out) { mlp_upload(in); mlp_forward_dev(); mlp_download(out); }\n"
 open(f"{outdir}/shim.c", "w").write(c)

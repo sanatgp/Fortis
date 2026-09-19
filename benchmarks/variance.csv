@@ -128,3 +128,8 @@ climsim_col,fortis_loopbatch,2,.34873855
 climsim_col,fortis_loopbatch,3,.34807655
 climsim_col,fortis_loopbatch,4,.348984
 climsim_col,fortis_loopbatch,5,.34995785
+climsim_col_norm,fortis_lifted,1,.3585442
+climsim_col_norm,fortis_lifted,2,.35999393
+climsim_col_norm,fortis_lifted,3,.3592572
+climsim_col_norm,fortis_lifted,4,.3597517
+climsim_col_norm,fortis_lifted,5,.35778454

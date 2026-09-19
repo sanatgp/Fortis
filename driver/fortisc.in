@@ -18,8 +18,24 @@ export FORTIS_BATCH=$(python3 -c "import json;print(json.load(open('$W/hostinfo.
 export FORTIS_HOST_LOOP=$(python3 -c "import json;print(int(json.load(open('$W/hostinfo.json'))['in_loop']))")
 export FORTIS_LOOP_BATCH=$(python3 -c "import json;d=json.load(open('$W/hostinfo.json'))['loop_batch'];print(d['trip'] if d else 0)")
 if [ "$FORTIS_LOOP_BATCH" != "0" ]; then export FORTIS_BATCH=$FORTIS_LOOP_BATCH; echo "fortisc: loop over $FORTIS_LOOP_BATCH column slices proven pure -> batching the loop"; fi
+# --- host arithmetic around the call: lift pure per-column expressions into the compiled step
+$B/flang -fc1 -emit-hlfir $HOST -o $W/host.hlfir
+python3 $PREFIX/bin/fortis_hostlift.py $W/host.hlfir mlp_forward > $W/lift.json
+export FORTIS_LIFT=$(python3 -c "import json;print(int(json.load(open('$W/lift.json'))['ok']))")
+if [ "$FORTIS_LIFT" = "1" ]; then
+  export FORTIS_LOOP_BATCH=$(python3 -c "import json;print(json.load(open('$W/lift.json'))['trip'])"); export FORTIS_BATCH=$FORTIS_LOOP_BATCH
+  export FORTIS_HOST_GLOBALS=$(python3 -c "import json;print(json.dumps(json.load(open('$W/lift.json'))['globals']))")
+  export FORTIS_LIFT_IN_SYM=$(python3 -c "import json;print(json.load(open('$W/lift.json'))['in_sym'])")
+  echo "fortisc: host expression around the call proven pure -> lifted into the batch-$FORTIS_BATCH step (reads $FORTIS_LIFT_IN_SYM, $FORTIS_HOST_GLOBALS)"
+else
+  echo "fortisc: no host expression lifted ($(python3 -c "import json;print(json.load(open('$W/lift.json'))['reason'])"))"
+fi
 echo "fortisc: host call site batch=$FORTIS_BATCH in_loop=$FORTIS_HOST_LOOP"
 if [[ "$EXPORT" == *.mlir ]]; then cp $EXPORT $W/model_linalg.mlir; else source $VENV/bin/activate && python $EXPORT > $W/model_linalg.mlir && deactivate; fi
+if [ "$FORTIS_LIFT" = "1" ]; then
+  python3 $PREFIX/bin/fortis_hostlift.py --prologue $W/lift.json $W/model_linalg.mlir > $W/model_lifted.mlir
+  $B/mlir-opt $W/model_lifted.mlir -inline -symbol-dce -o $W/model_linalg.mlir
+fi
 python3 $PREFIX/bin/fortis_outline.py $W/model_linalg.mlir $W
 
 $B/mlir-opt $W/model_args.mlir -linalg-generalize-named-ops -o $W/m1.mlir
@@ -40,7 +56,13 @@ echo "fortisc: library calls=$LIBCALLS -> graph capture=$GRAPH"
 $B/clang -O2 -DFORTIS_GRAPH_DEFAULT=$GRAPH -I$CUDA/include -c $W/shim.c -o $W/shim.o
 $B/clang -O2 -I$CUDA/include -c $W/shim.c -o $W/shim.o
 
-$B/flang -O3 $HOST $W/model.o $W/shim.o $W/weights.o \
+if [ "$FORTIS_LIFT" = "1" ]; then
+  $B/flang -fc1 -emit-llvm -O3 $HOST -o $W/host.ll
+  for sym in $FORTIS_LIFT_IN_SYM $(python3 -c "import json;print(' '.join(g['sym'] for g in json.load(open('$W/lift.json'))['globals']))"); do
+    sed -i "s/^@$sym = internal global/@$sym = global/" $W/host.ll; done
+  $B/clang -O2 -c $W/host.ll -o $W/host.o; HOSTOBJ=$W/host.o
+else HOSTOBJ=$HOST; fi
+$B/flang -O3 $HOSTOBJ $W/model.o $W/shim.o $W/weights.o \
   -L$PREFIX/lib -lfortis_rt -L$MLIRLIB -lmlir_cuda_runtime -Wl,-rpath,$MLIRLIB -L$CUDA/lib64 -lcudart -Wl,-rpath,$CUDA/lib64 -L$MATH/lib64 -lcufft -lcublas -Wl,-rpath,$MATH/lib64 $CUDNN/lib/libcudnn.so.8 -Wl,-rpath,$CUDNN/lib -lstdc++ \
   -o $OUT
 echo "fortisc: kernels=$(grep -c gpu.launch_func $W/m4.mlir)  -> $OUT"

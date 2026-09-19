@@ -22,4 +22,4 @@ add_subdirectory(compiler)
 add_subdirectory(runtime)
 
 configure_file(driver/fortisc.in ${CMAKE_BINARY_DIR}/fortisc @ONLY)
-install(PROGRAMS ${CMAKE_BINARY_DIR}/fortisc driver/fortis_outline.py driver/fortis_hostinfo.py frontend/tf2linalg.sh DESTINATION bin)
+install(PROGRAMS ${CMAKE_BINARY_DIR}/fortisc driver/fortis_outline.py driver/fortis_hostinfo.py driver/fortis_hostlift.py frontend/tf2linalg.sh DESTINATION bin)
