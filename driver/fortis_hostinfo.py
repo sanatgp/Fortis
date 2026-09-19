@@ -45,24 +45,35 @@ def loop_batch(line_no):
         elif l.endswith('{'):
             if depth: depth -= 1
             else: start = i; break
-    if start is None: return None
-    m = re.search(r'fir\.do_loop (%\S+) = %c(\d+)\S* to %c(\d+)\S* step %c(\d+)', fir[start])
-    if not m or m.group(4) != '1': return None
+    if start is None or fir[start].strip().startswith('func.func'): return ('reject', 'call is not inside a loop')
+    m = re.search(r'fir\.do_loop (%\S+) = %c(-?\d+)\S* to %c(-?\d+)\S* step %c(-?\d+)', fir[start])
+    if not m: return ('reject', 'enclosing loop is not a fir.do_loop with constant bounds')
+    if m.group(4) != '1': return ('reject', f'loop step is {m.group(4)}, not 1')
     lo, hi = int(m.group(2)), int(m.group(3)); trip = hi - lo + 1
     body = [fir[i].strip() for i in range(start + 1, line_no)]
-    allowed = ('fir.store', 'fir.load', 'fir.convert', 'fir.shape', 'fir.array_coor')
-    if any(not b.startswith('%') and not b.startswith('fir.store') for b in body): return None
+    ivar = re.match(r'fir\.store (%\S+) to (%\S+)', body[0]) if body else None
+    if not ivar or ivar.group(1) != m.group(1): return ('reject', 'loop body does not start with the index store')
+    ialloca = ivar.group(2)
     for b in body:
-        op = b.split('=', 1)[1].split()[0] if b.startswith('%') else b.split()[0]
-        if op not in allowed: return None
+        if 'fir.array_coor' in b and re.search(r'!fir\.array<(\d+x){2,}\d+xf32>', b): return ('reject', 'slice of an array with rank above 2')
+    allowed = ('fir.load', 'fir.convert', 'fir.shape', 'fir.array_coor')
+    for b in body[1:]:
+        if not b.startswith('%'): return ('reject', 'side effect in loop body: ' + b.split()[0])
+        op = b.split('=', 1)[1].split()[0]
+        if op not in allowed: return ('reject', 'non-slice operation in loop body: ' + op)
+        if op == 'fir.load' and ialloca not in b: return ('reject', 'load of a value other than the loop index')
     coors = [b for b in body if 'fir.array_coor' in b]
-    if len(coors) != 2: return None
+    if len(coors) != 2: return ('reject', f'{len(coors)} array slices in loop body, expected 2')
     shapes = []
     for c in coors:
         mm = re.search(r'!fir\.ref<!fir\.array<(\d+)x(\d+)xf32>>, !fir\.shape<2>', c)
-        if not mm or int(mm.group(2)) != trip: return None
-        if not re.search(r'%c1, %\w+ :', c): return None     # first index fixed at 1, second is the loop variable
+        if not mm:
+            if re.search(r'!fir\.array<(\d+x){2,}\d+xf32>', c): return ('reject', 'slice of an array with rank above 2')
+            return ('reject', 'argument is not a slice of a static 2-D array')
+        if int(mm.group(2)) != trip: return ('reject', f'trip count {trip} differs from trailing extent {mm.group(2)}')
+        if not re.search(r'%c1, %\w+ :', c): return ('reject', 'slice does not start at the first row')
         shapes.append([int(mm.group(1)), int(mm.group(2))])
+    if lo != 1: return ('reject', f'loop starts at {lo}, not at the first column')
     return {'trip': trip, 'in_full': shapes[0], 'out_full': shapes[1]}
 
 calls = []
@@ -79,6 +90,8 @@ summary = {'calls': calls,
            'in_loop': any(c['in_loop'] for c in calls),
            'trip': max((c['trip'] or 0) for c in calls) if calls else 0}
 summary['batch'] = batch(summary['in_shape'])
-lb = [c['loop_batch'] for c in calls if c['loop_batch']]
-summary['loop_batch'] = lb[0] if lb and all(x == lb[0] for x in lb) else None
+hits = [c['loop_batch'] for c in calls if isinstance(c['loop_batch'], dict)]
+rej = [c['loop_batch'][1] for c in sorted(calls, key=lambda c: not c['in_loop']) if isinstance(c['loop_batch'], (tuple, list))]
+summary['loop_batch'] = hits[0] if hits and all(x == hits[0] for x in hits) and not rej else None
+summary['loop_batch_reject'] = rej[0] if rej else None
 print(json.dumps(summary, indent=1))

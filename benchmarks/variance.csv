@@ -43,11 +43,6 @@ climsim_col,ftorch,2,70.0121460
 climsim_col,ftorch,3,70.3119965
 climsim_col,ftorch,4,70.0531998
 climsim_col,ftorch,5,70.1106873
-climsim_b384,fortis,1,.3925374
-climsim_b384,fortis,2,.3974926
-climsim_b384,fortis,3,.39496803
-climsim_b384,fortis,4,.39708453
-climsim_b384,fortis,5,.39568192
 climsim_b384,ftorch,1,1.00658953
 climsim_b384,ftorch,2,1.01967442
 climsim_b384,ftorch,3,1.00944364
@@ -128,3 +123,8 @@ climsim_col,fortis_loopbatch,2,.39631763
 climsim_col,fortis_loopbatch,3,.39159656
 climsim_col,fortis_loopbatch,4,.39397824
 climsim_col,fortis_loopbatch,5,.40435627
+climsim_b384,fortis,1,.34919757
+climsim_b384,fortis,2,.34882867
+climsim_b384,fortis,3,.3469542
+climsim_b384,fortis,4,.34837487
+climsim_b384,fortis,5,.34758672

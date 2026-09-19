@@ -51,6 +51,25 @@ void fortis_gemm(float* Aa, float* A, long Ao, long As0, long As1, long At0, lon
     cublasSetStream(fortis_blas, (cudaStream_t)mgpuStreamCreate());
   }
   const float one = 1.f, zero = 0.f;
+  /* Weights are constants: transpose each once at load so the recurring GEMM is N,N
+     (cuBLAS picks a different, and here faster, kernel for that layout than for T,N). */
+  static struct { const float* w; long n, k; float* wt; } tcache[64]; static int ntc = 0;
+  static int no_pretrans = -1; if (no_pretrans < 0) no_pretrans = getenv("FORTIS_NO_PRETRANS") != 0;
+  if (!no_pretrans) {
+    float* wt = 0;
+    for (int i = 0; i < ntc; i++) if (tcache[i].w == W + Wo && tcache[i].n == N && tcache[i].k == K) { wt = tcache[i].wt; break; }
+    if (!wt && ntc < 64) {
+      cudaMalloc((void**)&wt, (size_t)N * K * sizeof(float));
+      cublasSgeam(fortis_blas, CUBLAS_OP_T, CUBLAS_OP_N, (int)N, (int)K, &one, W + Wo, (int)K, &zero, wt, (int)N, wt, (int)N);
+      cudaStreamSynchronize((cudaStream_t)mgpuStreamCreate());
+      tcache[ntc].w = W + Wo; tcache[ntc].n = N; tcache[ntc].k = K; tcache[ntc].wt = wt; ntc++;
+    }
+    if (wt) {
+      cublasSgemm(fortis_blas, CUBLAS_OP_N, CUBLAS_OP_N, (int)N, (int)B, (int)K,
+                  &one, wt, (int)N, A + Ao, (int)K, &zero, C + Co, (int)N);
+      return;
+    }
+  }
   cublasSgemm(fortis_blas, CUBLAS_OP_T, CUBLAS_OP_N, (int)N, (int)B, (int)K,
               &one, W + Wo, (int)K, A + Ao, (int)K, &zero, C + Co, (int)N);
 }
