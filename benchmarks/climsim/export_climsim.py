@@ -35,6 +35,7 @@ ref.astype(np.float32).tofile("ref.bin")
 torch.jit.trace(m, cols[:1]).save("climsim_mlp.pt")
 if len(sys.argv) > 1 and sys.argv[1] == "linalg":
     from torch_mlir import fx
-    print(fx.export_and_import(m, cols[:1], output_type="linalg-on-tensors"))
+    import os; B = int(os.environ.get("FORTIS_BATCH", "1"))
+    print(fx.export_and_import(m, cols[:B], output_type="linalg-on-tensors"))
 else:
     print("ref checksum:", float(ref.sum()), "ref[0,:4]:", ref[0, :4])

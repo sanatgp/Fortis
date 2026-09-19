@@ -2,7 +2,7 @@
 #  - weight constants -> extra function args (device-resident, uploaded once)
 #  - result -> written into an out-param via linalg.copy
 #  - emits weights.mlir (host symbols w0..wN + blobs) and shim.c (residency + ABI)
-import re, sys
+import re, os, sys
 src = open(sys.argv[1]).read()
 outdir = sys.argv[2] if len(sys.argv) > 2 else "."
 
@@ -58,7 +58,8 @@ c += "static cudaGraphExec_t fortis_gexec = 0; static int fortis_ncalls = 0; ext
 callargs = ", ".join([call("din", intype)] + [call(f"d{i}", t) for i, (_, _, t) in enumerate(consts)] + [call("dout", outtype)])
 c += "void mlp_forward_dev(void) {\n  cudaStream_t s = (cudaStream_t)mgpuStreamCreate();\n"
 c += "  if (fortis_gexec) { cudaGraphLaunch(fortis_gexec, s); return; }\n"
-c += "  int cap = (++fortis_ncalls == 2) && getenv(\"FORTIS_GRAPH\") != 0;\n"
+c += "#ifndef FORTIS_GRAPH_DEFAULT\n#define FORTIS_GRAPH_DEFAULT 0\n#endif\n"
+c += "  int cap = (++fortis_ncalls == 2) && (FORTIS_GRAPH_DEFAULT || getenv(\"FORTIS_GRAPH\") != 0);\n"
 c += "  if (cap) { fortis_capturing = 1; cudaStreamBeginCapture(s, cudaStreamCaptureModeThreadLocal); }\n"
 c += f"  mlp_kernel({callargs});\n"
 c += "  if (cap) { cudaGraph_t g; fortis_capturing = 0;\n"
@@ -66,6 +67,13 @@ c += "    if (cudaStreamEndCapture(s, &g) == cudaSuccess && cudaGraphInstantiate
 c += f"    else {{ fprintf(stderr, \"fortis: graph capture failed, running eagerly\\n\"); fortis_gexec = 0; cudaGetLastError(); mlp_kernel({callargs}); }}\n"
 c += "  }\n}\n"
 c += f"void mlp_download(float* out) {{ cudaMemcpy(out, dout, {n_out}L*4, cudaMemcpyDeviceToHost); }}\n"
-c += "void mlp_forward(float* in, float* out) { mlp_upload(in); mlp_forward_dev(); mlp_download(out); }\n"
+LB = int(os.environ.get("FORTIS_LOOP_BATCH", "0"))
+if LB:
+    # Loop-batched entry: the host's loop over LB column slices is executed as one batched step at
+    # its first iteration. in/out at that call are the bases of the contiguous host arrays.
+    c += f"static int fortis_lb_k = 0;\n"
+    c += f"void mlp_forward(float* in, float* out) {{\n  if (fortis_lb_k == 0) {{ mlp_upload(in); mlp_forward_dev(); mlp_download(out); }}\n  fortis_lb_k = (fortis_lb_k + 1) % {LB};\n}}\n"
+else:
+    c += "void mlp_forward(float* in, float* out) { mlp_upload(in); mlp_forward_dev(); mlp_download(out); }\n"
 open(f"{outdir}/shim.c", "w").write(c)
 print(f"outlined {len(consts)} weights; func @mlp_kernel({intype}, {outtype}, ...)")

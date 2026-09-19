@@ -12,6 +12,13 @@ MLIRLIB=@LLVM_LIBRARY_DIR@
 VENV=${FORTIS_VENV:-$HOME/venvs/tmlir}
 W=${FORTIS_WORK:-$PWD/fortisc_work}; mkdir -p $W
 
+$B/flang -fc1 -emit-fir $HOST -o $W/host.fir
+python3 $PREFIX/bin/fortis_hostinfo.py $W/host.fir mlp_forward > $W/hostinfo.json
+export FORTIS_BATCH=$(python3 -c "import json;print(json.load(open('$W/hostinfo.json'))['batch'])")
+export FORTIS_HOST_LOOP=$(python3 -c "import json;print(int(json.load(open('$W/hostinfo.json'))['in_loop']))")
+export FORTIS_LOOP_BATCH=$(python3 -c "import json;d=json.load(open('$W/hostinfo.json'))['loop_batch'];print(d['trip'] if d else 0)")
+if [ "$FORTIS_LOOP_BATCH" != "0" ]; then export FORTIS_BATCH=$FORTIS_LOOP_BATCH; echo "fortisc: loop over $FORTIS_LOOP_BATCH column slices proven pure -> batching the loop"; fi
+echo "fortisc: host call site batch=$FORTIS_BATCH in_loop=$FORTIS_HOST_LOOP"
 if [[ "$EXPORT" == *.mlir ]]; then cp $EXPORT $W/model_linalg.mlir; else source $VENV/bin/activate && python $EXPORT > $W/model_linalg.mlir && deactivate; fi
 python3 $PREFIX/bin/fortis_outline.py $W/model_linalg.mlir $W
 
@@ -27,7 +34,10 @@ $B/clang -O2 -c $W/model.ll -o $W/model.o
 
 $B/mlir-translate $W/weights.mlir --mlir-to-llvmir -o $W/weights.ll
 $B/clang -O2 -c $W/weights.ll -o $W/weights.o
-$B/clang -O2 -I$CUDA/include -c $W/shim.c -o $W/shim.o
+LIBCALLS=$(grep -c "call @fortis_" $W/m4.mlir || true)
+GRAPH=$(( FORTIS_HOST_LOOP == 1 && LIBCALLS == 0 ))
+echo "fortisc: library calls=$LIBCALLS -> graph capture=$GRAPH"
+$B/clang -O2 -DFORTIS_GRAPH_DEFAULT=$GRAPH -I$CUDA/include -c $W/shim.c -o $W/shim.o
 $B/clang -O2 -I$CUDA/include -c $W/shim.c -o $W/shim.o
 
 $B/flang -O3 $HOST $W/model.o $W/shim.o $W/weights.o \
