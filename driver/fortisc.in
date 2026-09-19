@@ -30,6 +30,18 @@ if [ "$FORTIS_LIFT" = "1" ]; then
 else
   echo "fortisc: no host expression lifted ($(python3 -c "import json;print(json.load(open('$W/lift.json'))['reason'])"))"
 fi
+# --- call-centric loop distribution: one analysis decides batching, lifting, and blocking
+PYTHONPATH=$PREFIX/bin python3 $PREFIX/bin/fortis_loopdist.py $W/host.hlfir mlp_forward > $W/loop.json
+LV=$(python3 -c "import json;print(json.load(open('$W/loop.json'))['verdict'])")
+echo "fortisc: loop verdict $LV ($(python3 -c "import json;print(json.load(open('$W/loop.json'))['reason'][:100])"))"
+if [ "$LV" = "batched" ]; then
+  export FORTIS_LOOP_JSON=$W/loop.json
+  export FORTIS_BATCH=$(python3 -c "import json;print(json.load(open('$W/loop.json'))['batch'])")
+  export FORTIS_LOOP_BATCH=$FORTIS_BATCH
+  export FORTIS_LIFT=$(python3 -c "import json;print(int(json.load(open('$W/loop.json'))['lift'] is not None))")
+else
+  unset FORTIS_LOOP_JSON; export FORTIS_LOOP_BATCH=0; export FORTIS_LIFT=0
+fi
 echo "fortisc: host call site batch=$FORTIS_BATCH in_loop=$FORTIS_HOST_LOOP"
 if [[ "$EXPORT" == *.mlir ]]; then cp $EXPORT $W/model_linalg.mlir; else source $VENV/bin/activate && python $EXPORT > $W/model_linalg.mlir && deactivate; fi
 if [ "$FORTIS_LIFT" = "1" ]; then

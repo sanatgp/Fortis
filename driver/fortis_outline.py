@@ -76,13 +76,26 @@ c += "    if (cudaStreamEndCapture(s, &g) == cudaSuccess && cudaGraphInstantiate
 c += f"    else {{ fprintf(stderr, \"fortis: graph capture failed, running eagerly\\n\"); fortis_gexec = 0; cudaGetLastError(); mlp_kernel({callargs}); }}\n"
 c += "  }\n}\n"
 c += f"void mlp_download(float* out) {{ cudaMemcpy(out, dout, {n_out}L*4, cudaMemcpyDeviceToHost); }}\n"
-LB = int(os.environ.get("FORTIS_LOOP_BATCH", "0"))
-if LB:
-    # Loop-batched entry: the host's loop over LB column slices is executed as one batched step at
-    # its first iteration. in/out at that call are the bases of the contiguous host arrays.
-    c += f"static int fortis_lb_k = 0;\n"
-    src_in = lift_in if lift_in else "in"    # lifted prologue: the step reads the host's raw array by symbol
-    c += f"void mlp_forward(float* in, float* out) {{\n  if (fortis_lb_k == 0) {{ mlp_upload({src_in}); mlp_forward_dev(); mlp_download(out); }}\n  fortis_lb_k = (fortis_lb_k + 1) % {LB};\n}}\n"
+LJ = os.environ.get("FORTIS_LOOP_JSON", "")
+if LJ:
+    # Loop-distributed entry. The host loop over columns lo, lo+step, ... is executed as one batched
+    # step at its first iteration: the iterated columns are gathered with a 2-D copy into the batch
+    # buffer, the step runs, and the outputs are scattered back to their columns. If a pre-statement
+    # writes the output slice, outputs are instead downloaded per iteration after the call.
+    d = json.load(open(LJ)); B, lo, step, minc = d["batch"], d["lo"], d["step"], d["minc"]
+    NIN, NOUT = n_in // B, n_out // B
+    srcin = f"{lift_in} + ({minc}-1)*{NIN}L" if lift_in else f"in - ({lo}-{minc})*{NIN}L"
+    c += "static int fortis_lb_k = 0;\n"
+    c += "void mlp_forward(float* in, float* out) {\n"
+    c += "  if (fortis_lb_k == 0) {\n    if (!din) setup();\n"
+    c += f"    cudaMemcpy2D(din, {NIN}L*4, {srcin}, {abs(step)}L*{NIN}L*4, {NIN}L*4, {B}, cudaMemcpyHostToDevice);\n"
+    c += "    mlp_forward_dev();\n"
+    if not d["post_download"]:
+        c += f"    cudaMemcpy2D(out - ({lo}-{minc})*{NOUT}L, {abs(step)}L*{NOUT}L*4, dout, {NOUT}L*4, {NOUT}L*4, {B}, cudaMemcpyDeviceToHost);\n"
+    c += "  }\n"
+    if d["post_download"]:
+        c += f"  cudaMemcpy(out, dout + (({lo} + fortis_lb_k*({step})) - {minc})/{abs(step)}*{NOUT}L, {NOUT}L*4, cudaMemcpyDeviceToHost);\n"
+    c += f"  fortis_lb_k = (fortis_lb_k + 1) % {B};\n}}\n"
 else:
     c += "void mlp_forward(float* in, float* out) { mlp_upload(in); mlp_forward_dev(); mlp_download(out); }\n"
 open(f"{outdir}/shim.c", "w").write(c)
