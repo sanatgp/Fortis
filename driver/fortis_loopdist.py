@@ -183,6 +183,8 @@ def analyze(path, callee):
         if before and writes_out:
             post_download = True; verdicts.append((ln, 'stay', 'writes the output slice before the call; output is downloaded per iteration after it')); continue
         verdicts.append((ln, 'stay', 'loop-independent, runs on the host'))
+    if outer and not (in_acc and len(in_acc[1]) == 3):
+        outer = None    # an enclosing loop the arrays do not index (a timestep loop) is not part of the iteration set
     if outer:
         oalloca, olo, ohi, ostep, ocount = outer
         full_i = (lo == 1 and step == 1 and (in_acc or lift) and count == (in_acc[1][1] if in_acc else lift['in_shape'][1]))

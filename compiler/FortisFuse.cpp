@@ -829,6 +829,31 @@ struct FortisFoldTransposePass
   }
 };
 
+// -fortis-host-decide: consume the host-facts contract. Reads fortis.host on the entry function,
+// counts the library calls the fuser emitted, and records the whole-step decision as fortis.graph:
+// a repeated call whose step is generated kernels only is captured and replayed as a CUDA graph;
+// a step containing cuBLAS, cuDNN, or FFT calls is left eager.
+struct FortisHostDecidePass
+    : public PassWrapper<FortisHostDecidePass, OperationPass<ModuleOp>> {
+  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(FortisHostDecidePass)
+  StringRef getArgument() const final { return "fortis-host-decide"; }
+  StringRef getDescription() const final { return "Derive whole-step decisions from the fortis.host attribute"; }
+  void runOnOperation() override {
+    ModuleOp mod = getOperation();
+    mod.walk([&](func::FuncOp f) {
+      auto host = f->getAttrOfType<DictionaryAttr>("fortis.host");
+      if (!host) return;
+      int64_t repeat = 0;
+      if (auto r = host.getAs<IntegerAttr>("repeat")) repeat = r.getInt();
+      unsigned libcalls = 0;
+      f.walk([&](func::CallOp c) { if (c.getCallee().starts_with("fortis_")) libcalls++; });
+      OpBuilder b(f.getContext());
+      f->setAttr("fortis.graph", b.getBoolAttr(repeat > 0 && libcalls == 0));
+      f->setAttr("fortis.libcalls", b.getI64IntegerAttr(libcalls));
+    });
+  }
+};
+
 } // namespace
 
 int main(int argc, char **argv) {
@@ -836,5 +861,6 @@ int main(int argc, char **argv) {
   registerAllDialects(registry);
   PassRegistration<FortisFusePass>();
   PassRegistration<FortisFoldTransposePass>();
+  PassRegistration<FortisHostDecidePass>();
   return asMainReturnCode(MlirOptMain(argc, argv, "fortis-opt", registry));
 }
