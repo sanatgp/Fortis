@@ -52,14 +52,13 @@ $B/clang -O2 -c $W/weights.ll -o $W/weights.o
 # --- shim and host object from the attributes on the fused module
 python3 $PREFIX/bin/fortis_shim.py $W/m4.mlir $W/outline.json $W
 $B/clang -O2 -I$CUDA/include -c $W/shim.c -o $W/shim.o
-$B/clang -O2 -I$CUDA/include -I$MATH/include -I$CUDNN/include -c $PREFIX/src/fortis_rt.c -o $W/fortis_rt.o && $CUDA/bin/nvcc -O2 -arch=sm_70 -Xcompiler -fPIC -I$CUDA/include -I$MATH/include -c $PREFIX/src/fortis_fft.cu -o $W/fortis_fft.o
 if [ "$LV" = "batched" ]; then
   $B/flang -fc1 -emit-llvm -O3 $HOST -o $W/host.ll
   for sym in $(J $W/loop.json "' '.join([d['in'], d['out']] + [g['sym'] for g in (d['lift'] or {}).get('globals', [])])"); do
     sed -i "s/^@$sym = internal global/@$sym = global/" $W/host.ll; done
   $B/clang -O2 -c $W/host.ll -o $W/host.o; HOSTOBJ=$W/host.o
 else HOSTOBJ=$HOST; fi
-$B/flang -O3 $HOSTOBJ $W/model.o $W/shim.o $W/weights.o $W/fortis_rt.o \
-  -L$MLIRLIB -lmlir_cuda_runtime -L$CUDA/lib64 -lcudart -L$MATH/lib64 -lcublas -Wl,-rpath,$MATH/lib64 $CUDNN/lib/libcudnn.so.8 -Wl,-rpath,$CUDNN/lib -lcufft $W/fortis_fft.o \
+$B/flang -O3 $HOSTOBJ $W/model.o $W/shim.o $W/weights.o \
+  -L$PREFIX/lib -lfortis_rt -L$MLIRLIB -lmlir_cuda_runtime -L$CUDA/lib64 -lcudart -L$MATH/lib64 -lcublas -Wl,-rpath,$MATH/lib64 $CUDNN/lib/libcudnn.so.8 -Wl,-rpath,$CUDNN/lib -lcufft \
   -Wl,-rpath,$MLIRLIB -Wl,-rpath,$CUDA/lib64 -o $OUT
 echo "fortisc: kernels=$(grep -c gpu.launch_func $W/m4.mlir) library calls=$(grep -c 'call @fortis_' $W/m4.mlir || true) -> $OUT"
