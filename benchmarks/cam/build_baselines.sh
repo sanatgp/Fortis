@@ -5,7 +5,7 @@ cd $F/cam_run
 CUDA=/shared/EL9/explorer/nvidia-hpc-sdk/24.7/Linux_x86_64/24.7/cuda/12.5
 TP=$HOME/.conda/envs/rtr/lib/python3.11/site-packages
 TL=$TP/torch/lib; NV=$TP/nvidia
-TORCH_LD=/usr/lib64:$TL:$NV/nccl/lib:$NV/cudnn/lib:$NV/cublas/lib:$NV/cuda_runtime/lib
+TORCH_LD=/usr/lib64:/shared/EL9/explorer/nvidia-hpc-sdk/24.7/Linux_x86_64/24.7/comm_libs/12.5/hpcx/hpcx-2.19/ompi/lib:/home/taghipouranvari.s/.conda/envs/rtr/lib/python3.11/site-packages/torch/lib:/home/taghipouranvari.s/.conda/envs/rtr/lib/python3.11/site-packages/nvidia/nccl/lib:/home/taghipouranvari.s/.conda/envs/rtr/lib/python3.11/site-packages/nvidia/cudnn/lib:/home/taghipouranvari.s/.conda/envs/rtr/lib/python3.11/site-packages/nvidia/cublas/lib:/home/taghipouranvari.s/.conda/envs/rtr/lib/python3.11/site-packages/nvidia/cuda_runtime/lib
 TRT=$F/venv-trt/lib/python3.12/site-packages/tensorrt_libs; TRTI=$F/trt_run/trt-oss/include
 FT=$F/ftorch-install; TF=$F/torchfort-install
 B=$F/torch-mlir/build/bin
