@@ -80,26 +80,20 @@ c += f"    else {{ fprintf(stderr, \"fortis: graph capture failed, running eager
 c += "  }\n}\n"
 c += f"void mlp_download(float* out) {{ cudaMemcpy(out, dout, {n_out}L*4, cudaMemcpyDeviceToHost); }}\n"
 if H.get('verdict') == 'batched':
-    # Loop-distributed entry (Section 4.2). The iteration is identified from the output address relative
-    # to the host array's symbol; at column lo the iterated columns are gathered, the step runs, and the
-    # outputs are scattered back (or downloaded per iteration when a pre-statement writes the output slice).
-    # A call whose output is not on the analyzed array executes as a single row.
-    Lp = H['loop']; B, lo, step, minc = Lp['count'], Lp['lo'], Lp['step'], Lp['minc']
-    NIN, NOUT = n_in // B, n_out // B; SIN, SOUT = Lp['in'], Lp['out']
-    c += f"void mlp_upload(float* in) {{ if (!din) setup(); cudaMemcpy(din, in, {NIN}L*4, cudaMemcpyHostToDevice); }}\n"
-    c += f"extern float {SIN}[], {SOUT}[];\n"
-    c += "void mlp_forward(float* in, float* out) {\n"
-    c += f"  long col = (out - {SOUT}) / {NOUT}L + 1;\n"
-    c += f"  if (out < {SOUT} || out >= {SOUT} + ({minc}-1)*{NOUT}L + {NOUT}L*{B}L*{abs(step)}L) {{ mlp_upload(in); mlp_forward_dev(); cudaMemcpy(out, dout, {NOUT}L*4, cudaMemcpyDeviceToHost); return; }}\n"
-    c += f"  if (col == {lo}) {{\n    if (!din) setup();\n"
-    c += f"    cudaMemcpy2D(din, {NIN}L*4, {SIN} + ({minc}-1)*{NIN}L, {abs(step)}L*{NIN}L*4, {NIN}L*4, {B}, cudaMemcpyHostToDevice);\n"
-    c += "    mlp_forward_dev();\n"
-    if not Lp['post_download']:
-        c += f"    cudaMemcpy2D({SOUT} + ({minc}-1)*{NOUT}L, {abs(step)}L*{NOUT}L*4, dout, {NOUT}L*4, {NOUT}L*4, {B}, cudaMemcpyDeviceToHost);\n"
-    c += "  }\n"
-    if Lp['post_download']:
-        c += f"  cudaMemcpy(out, dout + ((col - {minc}) / {abs(step)}L) * {NOUT}L, {NOUT}L*4, cudaMemcpyDeviceToHost);\n"
-    c += "}\n"
+    # Fissioned host: the loop was split at FIR and the call replaced by one mlp_forward_batched on the
+    # whole arrays (Section 4.2). No per-iteration identification is needed. mlp_forward stays as a
+    # single-row entry for any remaining call outside the fissioned loop.
+    Lp = H['loop']; B = Lp['count']; NIN, NOUT = n_in // B, n_out // B
+    c += f"void mlp_upload(float* in) {{ if (!din) setup(); cudaMemcpy(din, in, {n_in}L*4, cudaMemcpyHostToDevice); }}\n"
+    lo, step, minc = Lp['lo'], Lp['step'], Lp['minc']
+    if step == 1 and minc == 1:
+        c += "void mlp_forward_batched(float* in, float* out) { mlp_upload(in); mlp_forward_dev(); mlp_download(out); }\n"
+    else:
+        # strided or offset iteration set: gather the iterated columns with a 2-D copy and scatter them back
+        c += f"void mlp_forward_batched(float* in, float* out) {{\n  if (!din) setup();\n"
+        c += f"  cudaMemcpy2D(din, {NIN}L*4, in + ({minc}-1)*{NIN}L, {abs(step)}L*{NIN}L*4, {NIN}L*4, {B}, cudaMemcpyHostToDevice);\n  mlp_forward_dev();\n"
+        c += f"  cudaMemcpy2D(out + ({minc}-1)*{NOUT}L, {abs(step)}L*{NOUT}L*4, dout, {NOUT}L*4, {NOUT}L*4, {B}, cudaMemcpyDeviceToHost);\n}}\n"
+    c += f"void mlp_forward(float* in, float* out) {{ if (!din) setup(); cudaMemcpy(din, in, {NIN}L*4, cudaMemcpyHostToDevice); mlp_forward_dev(); cudaMemcpy(out, dout, {NOUT}L*4, cudaMemcpyDeviceToHost); }}\n"
 else:
     c += f"void mlp_upload(float* in) {{ if (!din) setup(); cudaMemcpy(din, in, {n_in}L*4, cudaMemcpyHostToDevice); }}\n"
     c += "void mlp_forward(float* in, float* out) { mlp_upload(in); mlp_forward_dev(); mlp_download(out); }\n"
