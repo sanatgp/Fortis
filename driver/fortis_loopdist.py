@@ -179,7 +179,7 @@ def analyze(path, callee):
             if not la['ok']: return {'verdict': 'block', 'reason': 'pre-statement assigns the call temporary but is not liftable (' + la['reason'] + ')'}
             lift = la; verdicts.append((ln, 'lift', 'elementwise expression on the input slice, compiled into the step')); continue
         if before and writes_in and tgt_acc[2] == ('i', 0):
-            return {'verdict': 'reject', 'reason': f'line {ln}: writes the call input before the call and is not liftable; the implementation executes the batch at the first iteration without fissioning the host loop'}
+            verdicts.append((ln, 'stay', 'writes the call input before the call; runs in the pre-loop under fission')); continue
         if before and writes_out:
             post_download = True; verdicts.append((ln, 'stay', 'writes the output slice before the call; output is downloaded per iteration after it')); continue
         verdicts.append((ln, 'stay', 'loop-independent, runs on the host'))

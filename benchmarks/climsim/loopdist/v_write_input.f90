@@ -9,6 +9,7 @@ program v
   integer, parameter :: nin = 124, nout = 128, ncol = 384
   real :: x(nin, ncol), y(nout, ncol), yref(nout, ncol), mean(nin), scale(nin), xn(nin), s
   logical :: hit(ncol)
+  real :: xsave(ncol)
   integer :: i, u, step
   integer(8) :: t0, t1, rate
   real :: err, untouched
@@ -19,12 +20,13 @@ program v
   hit = .false.; s = 0.0
   open(newunit=u, file="norm.bin", access="stream", form="unformatted"); read(u) mean; read(u) scale; close(u)
   do i = 1, ncol; x(:,i) = (x(:,i) - mean) / scale; end do
+  xsave = x(1,:)
 
   call system_clock(t0, rate)
   do step = 1, 100
     y = -999.0
     do i = 1, ncol
-      x(1,i) = x(1,i) + real(i)
+      x(1,i) = xsave(i) * 1.0
       call mlp_forward(x(:,i), y(:,i)); hit(i) = .true.
     end do
   end do
