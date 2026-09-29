@@ -96,7 +96,13 @@ if H.get('verdict') == 'batched':
         c += f"  cudaMemcpy2D(out + ({minc}-1)*{NOUT}L, {abs(step)}L*{NOUT}L*{OS}, dout, {NOUT}L*{OS}, {NOUT}L*{OS}, {B}, cudaMemcpyDeviceToHost);\n}}\n"
     c += f"void mlp_forward({IT}* in, {OT}* out) {{ if (!din) setup(); cudaMemcpy(din, in, {NIN}L*{IS}, cudaMemcpyHostToDevice); mlp_forward_dev(); cudaMemcpy(out, dout, {NOUT}L*{OS}, cudaMemcpyDeviceToHost); }}\n"
 else:
-    # whole-array call; under the boundary verdict in/out are the host's own arrays (their element type, their memory order)
-    c += f"void mlp_forward({IT}* in, {OT}* out) {{ mlp_upload(in); mlp_forward_dev(); mlp_download(out); }}\n"
+    # Whole-array call. Under the boundary verdict in/out are the host's own arrays (their element type, their
+    # memory order); the analysis proved them program-scope, so they are registered as pinned memory once and
+    # every step DMAs straight from them instead of staging through a driver buffer.
+    c += "static void *reg_in = 0, *reg_out = 0;\n"
+    c += "static void pin(void** reg, void* p, size_t n) {\n  if (*reg == p || getenv(\"FORTIS_NO_PIN\")) return;\n"
+    c += "  if (*reg) cudaHostUnregister(*reg);\n  *reg = cudaHostRegister(p, n, cudaHostRegisterDefault) == cudaSuccess ? p : 0;\n  if (!*reg) cudaGetLastError();\n}\n"
+    c += f"void mlp_forward({IT}* in, {OT}* out) {{\n  if (!din) setup();\n  pin(&reg_in, in, {n_in}L*{IS}); pin(&reg_out, out, {n_out}L*{OS});\n"
+    c += "  mlp_upload(in); mlp_forward_dev(); mlp_download(out);\n}\n"
 open(f"{outdir}/shim.c", "w").write(c)
 print(f"shim: verdict={H.get('verdict')} batch={H.get('batch')} repeat={H.get('repeat')} graph={GRAPH} in={intype} out={outtype}")
