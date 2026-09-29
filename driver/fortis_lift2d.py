@@ -138,6 +138,8 @@ def body_expr(nest):
         if lf[0] == 'A' and lf[1] != tname: return None, 'reads another 2-D array ' + lf[1]
         if lf[0] in ('T', 'U', 'cast'): return None, 'unsupported leaf ' + lf[0]
     if bounds != (1, tshape[0], 1, tshape[1]): return None, 'lift nest does not cover the array'
+    for lf in leaves(tree):
+        if lf[0] == 'V' and lf[2] != tshape[1]: return None, 'vector %s has length %d but the feature extent is %d' % (lf[1], lf[2], tshape[1])
     return {'kind': 'lift', 'target': tname, 'shape': tshape, 'elt': telt, 'expr': tree}, None
 def sym_elt(name):
     for k, v in decl.items():
@@ -162,7 +164,8 @@ res = {'ok': False, 'callee': callee, 'call_line': n, 'call_args': call_args, 'n
 found = []
 for nest in nests():
     r, why = body_expr(nest)
-    if not r: continue
+    if not r:
+        res.setdefault('skipped', []).append({'line': nest['start'], 'why': why}); continue
     r['line'] = nest['start']; r['end'] = nest['oend']; r['side'] = 'pre' if nest['start'] < n else 'post'
     found.append(r); res['nests'].append(r)
 def reject(msg):
@@ -208,32 +211,34 @@ for o in call_ops:
         op = m.group(1)
 def uses(r, a, b):
     return [j for j in range(a, b + 1) if re.search(re.escape(r) + r'\b', L[j]) and not re.match(r'\s*' + re.escape(r) + r'(:\d+)? = ', L[j])]
-dead = []
+def dead_fills(name):
+    # whole-array constant fills of a call temporary, direct or through a section designate, are dead once the transposes go
+    ssa = decl_ssa(name); out = []
+    if not ssa: return out
+    for i, l in enumerate(L):
+        if re.match(r'\s*hlfir\.assign %cst\w* to ' + re.escape(ssa) + r'#0 : f\d+, !fir\.ref<!fir\.array<[\dx]+xf\d+>>', l): out.append(i)
+        md = re.match(r'\s*(%\w+) = hlfir\.designate ' + re.escape(ssa) + r'#0 \(', l)
+        if md:
+            u = uses(md.group(1), 0, len(L) - 1)
+            if len(u) == 1 and re.match(r'\s*hlfir\.assign %cst\w* to ' + re.escape(md.group(1)) + r' :', L[u[0]]): out += [i, u[0]]
+    return out
+deadset = set(dead_fills(lin['to']) + dead_fills(lout['from']))
 for i in range(lo, hi + 1):
-    if any(a <= i <= b for a, b in drop + dead) or i == n: continue
+    if any(a <= i <= b for a, b in drop) or i == n or i in deadset: continue
     l = L[i]
     m = re.match(r'\s*(%[\w#]+)(?::\d+)? = ', l)
     if m and m.group(1).split('#')[0] in exempt: continue
     for ssa, name in ssas.items():
-        if not re.search(re.escape(ssa) + r'#', l): continue
-        if name in (lin['to'], lout['from']):
-            # a whole-array constant fill of a call temporary (direct, or through a section designate) is dead once the transposes go
-            if re.match(r'\s*hlfir\.assign %cst\w* to ' + re.escape(ssa) + r'#0 : f\d+, !fir\.ref<!fir\.array<[\dx]+xf\d+>>', l):
-                dead.append([i, i]); break
-            md = re.match(r'\s*(%\w+) = hlfir\.designate ' + re.escape(ssa) + r'#0 \(', l)
-            if md:
-                u = uses(md.group(1), lo, hi)
-                if len(u) == 1 and re.match(r'\s*hlfir\.assign %cst\w* to ' + re.escape(md.group(1)) + r' :', L[u[0]]):
-                    dead += [[i, i], [u[0], u[0]]]; break
-        reject('statement between the lifted nests touches ' + name + ' (line %d)' % i)
+        if re.search(re.escape(ssa) + r'#', l):
+            reject('statement between the lifted nests touches ' + name + ' (line %d)' % i)
 # the call temporaries must be dead outside the region (Theorem 2, last hypothesis)
 for name in (lin['to'], lout['from']):
     ssa = decl_ssa(name)
     if not ssa: continue
     for i, l in enumerate(L):
-        if lo <= i <= hi or 'hlfir.declare' in l or 'fir.address_of' in l: continue
+        if lo <= i <= hi or i in deadset or 'hlfir.declare' in l or 'fir.address_of' in l: continue
         if re.search(re.escape(ssa) + r'#', l): reject('call temporary ' + name + ' is referenced outside the region (line %d)' % i)
-res['drop'] = sorted(drop + dead)
+res['drop'] = sorted(drop + [[i, i] for i in deadset])
 res['new_args'] = [lin['from'], lout['to']]
 res['ok'] = True
 print(json.dumps(res, indent=1))
