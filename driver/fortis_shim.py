@@ -109,8 +109,10 @@ else:
     # memory order); the analysis proved them program-scope, so they are registered as pinned memory once and
     # every step DMAs straight from them instead of staging through a driver buffer.
     c += "static void *reg_in = 0, *reg_out = 0;\n"
-    c += "static void pin(void** reg, void* p, size_t n) {\n  if (*reg == p || getenv(\"FORTIS_NO_PIN\")) return;\n"
-    c += "  if (*reg) cudaHostUnregister(*reg);\n  *reg = cudaHostRegister(p, n, cudaHostRegisterDefault) == cudaSuccess ? p : 0;\n  if (!*reg) cudaGetLastError();\n}\n"
+    c += "static int nopin = 0;\n"
+    c += "static void pin(void** reg, void* p, size_t n) {\n  if (nopin || *reg == p || getenv(\"FORTIS_NO_PIN\")) return;\n"
+    c += "  if (*reg) { cudaHostUnregister(*reg); *reg = 0; nopin = 1; return; }\n"   # a moving operand is a temporary: pin once or never
+    c += "  *reg = cudaHostRegister(p, n, cudaHostRegisterDefault) == cudaSuccess ? p : 0;\n  if (!*reg) cudaGetLastError();\n}\n"
     c += f"void mlp_forward({IT}* in, {OT}* out) {{\n  if (!din) setup();\n  pin(&reg_in, in, {n_in}L*{IS}); pin(&reg_out, out, {n_out}L*{OS});\n"
     c += "  mlp_upload(in); mlp_forward_dev(); mlp_download(out);\n}\n"
 open(f"{outdir}/shim.c", "w").write(c)
