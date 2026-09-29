@@ -57,7 +57,7 @@ hostg = (BND['pre'] + BND['post']) if BND else H.get('lift', {}).get('globals', 
 assert len(hostg) == len(inputs) - 1, f"{len(inputs)-1} extra inputs but {len(hostg)} host globals in fortis.host"
 n_in, n_out = numel(intype), numel(outtype)
 R = len(shape(outtype))
-c = "#include <cuda_runtime.h>\n#include <stddef.h>\n#include <stdlib.h>\n#include <stdio.h>\nvoid* mgpuStreamCreate(void);\n"
+c = "#include <cuda_runtime.h>\n#include <stddef.h>\n#include <stdlib.h>\n#include <stdio.h>\n#include <string.h>\nvoid* mgpuStreamCreate(void);\n"
 c += f"typedef struct {{ void *a, *al; long o; long s[{R}]; long st[{R}]; }} MR;\n"
 c += "MR mlp_kernel(" + ", ".join([desc(t) for t in inputs] + [desc(t) for t in consts] + [desc(outtype)]) + ");\n"
 c += "extern float " + ", ".join(f"w{i}[]" for i in range(len(consts))) + ";\n"
@@ -88,7 +88,16 @@ if H.get('verdict') == 'batched':
     # whole arrays (Section 4.2). mlp_forward stays as a single-row entry for any call outside the loop.
     Lp = H['loop']; B = Lp['count']; NIN, NOUT = n_in // B, n_out // B
     lo, step, minc = Lp['lo'], Lp['step'], Lp['minc']
-    if step == 1 and minc == 1:
+    if 'expand' in H:
+        # the call's temporaries are expanded across the batch: the pre-loop packs row col of X, one batched
+        # call runs X through the model into Y, the post-loop unpacks row col of Y
+        E = H['expand']
+        c += f"static {IT} *X = 0; static {OT} *Y = 0;\n"
+        c += f"static void setup_xy(void) {{ cudaHostAlloc((void**)&X, {n_in}L*{IS}, cudaHostAllocDefault); cudaHostAlloc((void**)&Y, {n_out}L*{OS}, cudaHostAllocDefault); }}\n"
+        c += f"void fortis_pack({IT}* f, int col) {{ if (!X) setup_xy(); memcpy(X + (size_t)col*{NIN}L, f, {NIN}L*{IS}); }}\n"
+        c += f"void fortis_unpack({OT}* o, int col) {{ memcpy(o, Y + (size_t)col*{NOUT}L, {NOUT}L*{OS}); }}\n"
+        c += f"void mlp_forward_batched(void) {{ if (!din) setup(); if (!X) setup_xy(); cudaMemcpy(din, X, {n_in}L*{IS}, cudaMemcpyHostToDevice); mlp_forward_dev(); cudaMemcpy(Y, dout, {n_out}L*{OS}, cudaMemcpyDeviceToHost); }}\n"
+    elif step == 1 and minc == 1:
         c += f"void mlp_forward_batched({IT}* in, {OT}* out) {{ mlp_upload(in); mlp_forward_dev(); mlp_download(out); }}\n"
     else:
         c += f"void mlp_forward_batched({IT}* in, {OT}* out) {{\n  if (!din) setup();\n"

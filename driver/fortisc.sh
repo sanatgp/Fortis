@@ -14,10 +14,15 @@ J() { python3 -c "import json;d=json.load(open('$1'));print($2)"; }
 $B/flang -fc1 -emit-fir $HOST -o $W/host.fir
 $B/flang -fc1 -emit-hlfir $HOST -o $W/host.hlfir
 python3 $ROOT/fortis_hostinfo.py $W/host.fir mlp_forward > $W/hostinfo.json
-PYTHONPATH=$ROOT python3 $ROOT/fortis_loopdist.py $W/host.hlfir mlp_forward > $W/loop.json
-LV=$(J $W/loop.json "d['verdict']"); DIS=-
+PYTHONPATH=$ROOT python3 $ROOT/fortis_loopdist.py $W/host.hlfir mlp_forward > $W/loop.json 2>/dev/null || echo '{"verdict": "reject", "reason": "slice analysis failed", "lift": null}' > $W/loop.json
+LV=$(J $W/loop.json "d['verdict']"); DIS=-; EXPAND=no
+if [ "$LV" != "batched" ] && [ -z "$FORTIS_NO_DIST" ]; then
+  # general body model: units, expanded call temporaries, fission at HLFIR
+  python3 $ROOT/fortis_units.py $W/host.hlfir mlp_forward > $W/units.json
+  if [ "$(J $W/units.json "d['verdict']")" = "batched" ]; then cp $W/units.json $W/loop.json; LV=batched; EXPAND=yes; fi
+fi
 if [ -n "$FORTIS_NO_DIST" ]; then LV=disabled; DIS=disabled; fi
-echo "fortisc: loop verdict $LV ($(J $W/loop.json "d['reason'][:100]"))"
+echo "fortisc: loop verdict $LV ($(J $W/loop.json "d['reason'][:110]"))"
 if [ "$LV" = "batched" ]; then export FORTIS_BATCH=$(J $W/loop.json "d['batch']"); else export FORTIS_BATCH=$(J $W/hostinfo.json "d['batch']"); fi
 echo "fortisc: call site batch=$FORTIS_BATCH in_loop=$(J $W/hostinfo.json "d['in_loop']")"
 
@@ -61,7 +66,12 @@ $B/clang -O2 -c $W/weights.ll -o $W/weights.o
 python3 $ROOT/fortis_shim.py $W/m4.mlir $W/outline.json $W
 $B/clang -O2 -I$CUDA/include -c $W/shim.c -o $W/shim.o
 $B/clang -O2 -I$CUDA/include -I$MATH/include -I$CUDNN/include -c $ROOT/fortis_rt.c -o $W/fortis_rt.o && $CUDA/bin/nvcc -O2 -arch=sm_70 -Xcompiler -fPIC -I$CUDA/include -I$MATH/include -c $ROOT/fortis_fft.cu -o $W/fortis_fft.o
-if [ "$LV" = "batched" ]; then
+if [ "$LV" = "batched" ] && [ "$EXPAND" = yes ]; then
+  # fission at HLFIR with the call temporaries expanded across the batch
+  python3 $ROOT/fortis_fission_hlfir.py $W/host.hlfir $W/loop.json > $W/host_fissioned.fir
+  $B/flang -fc1 -emit-llvm -O3 $W/host_fissioned.fir -o $W/host.ll
+  $B/clang -O2 -c $W/host.ll -o $W/host.o; HOSTOBJ=$W/host.o
+elif [ "$LV" = "batched" ]; then
   # loop fission at FIR: pre-loop, one batched call, post-loop; Lift statements move into the model
   python3 $ROOT/fortis_fission.py $W/host.fir $W/loop.json mlp_forward > $W/host_fissioned.fir
   $B/flang -fc1 -emit-llvm -O3 $W/host_fissioned.fir -o $W/host.ll

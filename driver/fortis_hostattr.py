@@ -15,6 +15,8 @@ parts = [f"shape = [{', '.join(str(x) for x in H['in_shape'])}]",
 if verdict == 'batched':
     parts.append("loop = {" + ", ".join([f"lo = {i64(L['lo'])}", f"step = {i64(L['step'])}", f"count = {i64(L['batch'])}", f"minc = {i64(L['minc'])}",
                  f"in = {s(L['in'])}", f"out = {s(L['out'])}", f"post_download = {'true' if L['post_download'] else 'false'}"]) + "}")
+    if L.get('mode') == 'expanded':
+        parts.append("expand = {" + ", ".join([f"in = {s(L['in'])}", f"out = {s(L['out'])}", f"count = {i64(L['batch'])}", f"nin = {i64(L['in_shape'][0])}", f"nout = {i64(L['out_shape'][0])}"]) + "}")
     if L.get('lift'):
         parts.append("lift = {globals = [" + ", ".join(s(g['sym']) for g in L['lift']['globals']) + "], in = " + s(L['lift']['in_sym']) + "}")
 if verdict == 'boundary':
