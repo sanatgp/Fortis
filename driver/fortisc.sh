@@ -15,22 +15,33 @@ $B/flang -fc1 -emit-fir $HOST -o $W/host.fir
 $B/flang -fc1 -emit-hlfir $HOST -o $W/host.hlfir
 python3 $ROOT/fortis_hostinfo.py $W/host.fir mlp_forward > $W/hostinfo.json
 PYTHONPATH=$ROOT python3 $ROOT/fortis_loopdist.py $W/host.hlfir mlp_forward > $W/loop.json
-LV=$(J $W/loop.json "d['verdict']"); DIS=""
+LV=$(J $W/loop.json "d['verdict']"); DIS=-
 if [ -n "$FORTIS_NO_DIST" ]; then LV=disabled; DIS=disabled; fi
 echo "fortisc: loop verdict $LV ($(J $W/loop.json "d['reason'][:100]"))"
 if [ "$LV" = "batched" ]; then export FORTIS_BATCH=$(J $W/loop.json "d['batch']"); else export FORTIS_BATCH=$(J $W/hostinfo.json "d['batch']"); fi
 echo "fortisc: call site batch=$FORTIS_BATCH in_loop=$(J $W/hostinfo.json "d['in_loop']")"
 
-# --- model export at the host's batch; a lifted host expression is merged in front of it
+# --- whole-array call: the boundary analysis (2-D lifts, layout casts) decides whether the model can take the host's own arrays
+BND=no; BNDJ=""
+if [ "$LV" != "batched" ] && [ -z "$FORTIS_NO_DIST" ] && [ -z "$FORTIS_NO_BOUNDARY" ]; then
+  python3 $ROOT/fortis_lift2d.py $W/host.hlfir mlp_forward > $W/lift2d.json
+  if [ "$(J $W/lift2d.json "d['ok']")" = "True" ]; then BND=yes; BNDJ=$W/lift2d.json; fi
+  echo "fortisc: boundary $BND ($(J $W/lift2d.json "d.get('reject') or ('drop %d host statements, pre=%s post=%s' % (len(d['drop']), (d['pre'] or {}).get('globals'), (d['post'] or {}).get('globals')))"))"
+fi
+
+# --- model export at the host's batch; lifted host expressions are merged around it
 if [[ "$EXPORT" == *.mlir ]]; then cp $EXPORT $W/model_linalg.mlir; else source ~/venvs/tmlir/bin/activate && python $EXPORT > $W/model_linalg.mlir && deactivate; fi
 if [ "$LV" = "batched" ] && [ "$(J $W/loop.json "d['lift'] is not None")" = "True" ]; then
   python3 -c "import json;json.dump(json.load(open('$W/loop.json'))['lift'], open('$W/lift.json','w'))"
   python3 $ROOT/fortis_hostlift.py --prologue $W/lift.json $W/model_linalg.mlir > $W/model_lifted.mlir
   $B/mlir-opt $W/model_lifted.mlir -inline -symbol-dce -o $W/model_linalg.mlir
+elif [ "$BND" = yes ]; then
+  python3 $ROOT/fortis_emit2d.py $W/lift2d.json $W/model_linalg.mlir > $W/model_lifted.mlir
+  $B/mlir-opt $W/model_lifted.mlir -inline -symbol-dce -o $W/model_linalg.mlir
 fi
 
 # --- the contract: host facts become one attribute on the entry function
-python3 $ROOT/fortis_hostattr.py $W/model_linalg.mlir $W/hostinfo.json $W/loop.json $DIS > $W/model_annot.mlir
+python3 $ROOT/fortis_hostattr.py $W/model_linalg.mlir $W/hostinfo.json $W/loop.json $DIS $BNDJ > $W/model_annot.mlir
 python3 $ROOT/fortis_outline.py $W/model_annot.mlir $W
 
 $B/mlir-opt $W/model_args.mlir -linalg-generalize-named-ops -o $W/m1.mlir
@@ -55,6 +66,13 @@ if [ "$LV" = "batched" ]; then
   python3 $ROOT/fortis_fission.py $W/host.fir $W/loop.json mlp_forward > $W/host_fissioned.fir
   $B/flang -fc1 -emit-llvm -O3 $W/host_fissioned.fir -o $W/host.ll
   for sym in $(J $W/loop.json "' '.join([g['sym'] for g in (d['lift'] or {}).get('globals', [])])"); do
+    sed -i "s/^@$sym = internal global/@$sym = global/" $W/host.ll; done
+  $B/clang -O2 -c $W/host.ll -o $W/host.o; HOSTOBJ=$W/host.o
+elif [ "$BND" = yes ]; then
+  # boundary at HLFIR: lifted nests and layout casts removed, the call takes the host's own arrays
+  python3 $ROOT/fortis_boundary.py $W/host.hlfir $W/lift2d.json > $W/host_boundary.fir
+  $B/flang -fc1 -emit-llvm -O3 $W/host_boundary.fir -o $W/host.ll
+  for sym in $(J $W/lift2d.json "' '.join((d['pre'] or {}).get('globals', []) + (d['post'] or {}).get('globals', []))"); do
     sed -i "s/^@$sym = internal global/@$sym = global/" $W/host.ll; done
   $B/clang -O2 -c $W/host.ll -o $W/host.o; HOSTOBJ=$W/host.o
 else HOSTOBJ=$HOST; fi

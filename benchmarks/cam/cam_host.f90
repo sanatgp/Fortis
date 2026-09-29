@@ -18,7 +18,7 @@ program cam_host
   real(r8) :: input(pcols,inputlength), output(pcols,outputlength)
   real(real32) :: input_torch(inputlength,pcols), output_torch(outputlength,pcols)
   real(r8) :: s_bctend(pcols,pver), q_bctend(pcols,pver), safter, qafter
-  real(r8) :: yref(outputlength,pcols), err
+  real(r8) :: yref(outputlength,pcols), ycheck(outputlength,pcols), err
   integer :: i, k, ncol, step, u
   integer(8) :: t0, t1, rate
   ncol = pcols
@@ -62,6 +62,13 @@ program cam_host
         output(i,k) = output(i,k) / out_scale(k)
       end do
     end do
+    if (step == nsteps) then
+      do i = 1, ncol
+        do k = 1, outputlength
+          ycheck(k,i) = output(i,k) * out_scale(k)
+        end do
+      end do
+    end if
     ! ---- E3SM: post processing, non-negative constraints
     do i = 1, ncol
       do k = outputlength-7, outputlength
@@ -90,7 +97,7 @@ program cam_host
   end do
   call system_clock(t1)
 
-  err = maxval(abs(real(output_torch, r8) - yref)) / maxval(abs(yref))
+  err = maxval(abs(ycheck - yref)) / maxval(abs(yref))
   print *, 'per-step ms:', real(t1 - t0) / real(rate) * 1.0e3 / nsteps
   print *, 'checksum:', sum(output), '  max rel err (model out):', err, '  s_bctend(1,1):', s_bctend(1,1)
 end program cam_host
