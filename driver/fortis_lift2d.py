@@ -226,6 +226,13 @@ for i in range(lo, hi + 1):
                 if len(u) == 1 and re.match(r'\s*hlfir\.assign %cst\w* to ' + re.escape(md.group(1)) + r' :', L[u[0]]):
                     dead += [[i, i], [u[0], u[0]]]; break
         reject('statement between the lifted nests touches ' + name + ' (line %d)' % i)
+# the call temporaries must be dead outside the region (Theorem 2, last hypothesis)
+for name in (lin['to'], lout['from']):
+    ssa = decl_ssa(name)
+    if not ssa: continue
+    for i, l in enumerate(L):
+        if lo <= i <= hi or 'hlfir.declare' in l or 'fir.address_of' in l: continue
+        if re.search(re.escape(ssa) + r'#', l): reject('call temporary ' + name + ' is referenced outside the region (line %d)' % i)
 res['drop'] = sorted(drop + dead)
 res['new_args'] = [lin['from'], lout['to']]
 res['ok'] = True
