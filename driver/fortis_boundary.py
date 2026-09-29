@@ -16,6 +16,11 @@ for op, new in zip(ops, d['new_args']):
     j = j[0]; m = re.match(r'(\s*)' + re.escape(op) + r' = fir\.convert (%\w+)#\d : \((.*?)\) -> (.*)$', L[j])
     ssa, ty = decl[new]
     L[j] = m.group(1) + op + ' = fir.convert ' + ssa + '#0 : (' + ty + ') -> ' + m.group(4)
+# the vectors the region reads are now read by the model, so they must survive host optimization
+syms = ((d.get('pre') or {}).get('globals', []) + (d.get('post') or {}).get('globals', []))
+for i, l in enumerate(L):
+    for sym in syms:
+        if re.match(r'\s*fir\.global internal @' + re.escape(sym) + r'\b', l): L[i] = l.replace('fir.global internal @', 'fir.global @', 1)
 kill = set()
 for a, b in d['drop']: kill.update(range(a, b + 1))
 print('\n'.join(l for i, l in enumerate(L) if i not in kill))
