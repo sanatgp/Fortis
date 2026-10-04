@@ -1,0 +1,114 @@
+==== width 512
+/scratch/taghipouranvari.s/FTORCH/climsim_run/export_wide.py:35: DeprecationWarning: You are using the legacy TorchScript-based ONNX export. Starting in PyTorch 2.9, the new torch.export-based ONNX exporter has become the default. Learn more about the new export logic: https://docs.pytorch.org/docs/stable/onnx_export.html. For exporting control flow: https://pytorch.org/tutorials/beginner/onnx/export_control_flow_model_to_onnx_tutorial.html
+  torch.onnx.export(m, torch.zeros(Bt, 124), f"climsim_w{Wd}_b{Bt}.onnx", input_names=["x"], output_names=["y"], opset_version=17, dynamo=False)
+params 1442944
+built climsim_w512_b1.plan 5869956
+built climsim_w512_b384.plan 5790316
+shim: verdict=boundary batch=384 repeat=100 graph=0 in=tensor<124x384xf64> out=tensor<128x384xf64>
+sweep_w512,cam_trt_w512,1,0.894079626
+sweep_w512,cam_trt_w512,2,0.900854766
+sweep_w512,cam_trt_w512,3,0.898158729
+sweep_w512,cam_trt_w512,4,0.901337683
+sweep_w512,cam_trt_w512,5,0.891089916
+sweep_w512,cam_trt_expert_w512,1,0.452609450
+sweep_w512,cam_trt_expert_w512,2,0.450766414
+sweep_w512,cam_trt_expert_w512,3,0.449537784
+sweep_w512,cam_trt_expert_w512,4,0.453992158
+sweep_w512,cam_trt_expert_w512,5,0.455441058
+sweep_w512,cam_fortis_bnd_w512,1,.49059483
+sweep_w512,cam_fortis_bnd_w512,2,.4897842
+sweep_w512,cam_fortis_bnd_w512,3,.4848699
+sweep_w512,cam_fortis_bnd_w512,4,.4879517
+sweep_w512,cam_fortis_bnd_w512,5,.49300104
+sweep_w512,climsim_trt_percol,1,22.7253888
+sweep_w512,climsim_trt_percol,2,23.27328
+sweep_w512,climsim_trt_percol,3,23.258803200000003
+sweep_w512,climsim_trt_percol,4,23.011891199999997
+sweep_w512,climsim_trt_percol,5,23.1750528
+shim: verdict=batched batch=384 repeat=384 graph=0 in=tensor<384x124xf32> out=tensor<384x128xf32>
+sweep_w512,climsim_fortis_lb_w512,1,.3552454
+sweep_w512,climsim_fortis_lb_w512,2,.33728898
+sweep_w512,climsim_fortis_lb_w512,3,.32331088
+sweep_w512,climsim_fortis_lb_w512,4,.32413065
+sweep_w512,climsim_fortis_lb_w512,5,.32634613
+==== width 1024
+/scratch/taghipouranvari.s/FTORCH/climsim_run/export_wide.py:35: DeprecationWarning: You are using the legacy TorchScript-based ONNX export. Starting in PyTorch 2.9, the new torch.export-based ONNX exporter has become the default. Learn more about the new export logic: https://docs.pytorch.org/docs/stable/onnx_export.html. For exporting control flow: https://pytorch.org/tutorials/beginner/onnx/export_control_flow_model_to_onnx_tutorial.html
+  torch.onnx.export(m, torch.zeros(Bt, 124), f"climsim_w{Wd}_b{Bt}.onnx", input_names=["x"], output_names=["y"], opset_version=17, dynamo=False)
+params 5507200
+built climsim_w1024_b1.plan 22115772
+built climsim_w1024_b384.plan 22118516
+shim: verdict=boundary batch=384 repeat=100 graph=0 in=tensor<124x384xf64> out=tensor<128x384xf64>
+sweep_w1024,cam_trt_w1024,1,1.18543243
+sweep_w1024,cam_trt_w1024,2,1.18105543
+sweep_w1024,cam_trt_w1024,3,1.17577446
+sweep_w1024,cam_trt_w1024,4,1.19385326
+sweep_w1024,cam_trt_w1024,5,1.19520891
+sweep_w1024,cam_trt_expert_w1024,1,0.741716921
+sweep_w1024,cam_trt_expert_w1024,2,0.729808629
+sweep_w1024,cam_trt_expert_w1024,3,0.729163051
+sweep_w1024,cam_trt_expert_w1024,4,0.726374328
+sweep_w1024,cam_trt_expert_w1024,5,0.746780872
+sweep_w1024,cam_fortis_bnd_w1024,1,.7882188
+sweep_w1024,cam_fortis_bnd_w1024,2,.79202693
+sweep_w1024,cam_fortis_bnd_w1024,3,.7750758
+sweep_w1024,cam_fortis_bnd_w1024,4,.7686789
+sweep_w1024,cam_fortis_bnd_w1024,5,.7292231
+sweep_w1024,climsim_trt_percol,1,28.0859136
+sweep_w1024,climsim_trt_percol,2,27.956121600000003
+sweep_w1024,climsim_trt_percol,3,27.924019200000004
+sweep_w1024,climsim_trt_percol,4,27.955968000000002
+sweep_w1024,climsim_trt_percol,5,27.762163200000003
+shim: verdict=batched batch=384 repeat=384 graph=0 in=tensor<384x124xf32> out=tensor<384x128xf32>
+sweep_w1024,climsim_fortis_lb_w1024,1,.60098004
+sweep_w1024,climsim_fortis_lb_w1024,2,.58000665
+sweep_w1024,climsim_fortis_lb_w1024,3,.57908403
+sweep_w1024,climsim_fortis_lb_w1024,4,.5874779
+sweep_w1024,climsim_fortis_lb_w1024,5,.58219444
+==== width 2048
+/scratch/taghipouranvari.s/FTORCH/climsim_run/export_wide.py:35: DeprecationWarning: You are using the legacy TorchScript-based ONNX export. Starting in PyTorch 2.9, the new torch.export-based ONNX exporter has become the default. Learn more about the new export logic: https://docs.pytorch.org/docs/stable/onnx_export.html. For exporting control flow: https://pytorch.org/tutorials/beginner/onnx/export_control_flow_model_to_onnx_tutorial.html
+  torch.onnx.export(m, torch.zeros(Bt, 124), f"climsim_w{Wd}_b{Bt}.onnx", input_names=["x"], output_names=["y"], opset_version=17, dynamo=False)
+params 21500032
+built climsim_w2048_b1.plan 86067900
+built climsim_w2048_b384.plan 86034284
+shim: verdict=boundary batch=384 repeat=100 graph=0 in=tensor<124x384xf64> out=tensor<128x384xf64>
+sweep_w2048,cam_trt_w2048,1,2.23218536
+sweep_w2048,cam_trt_w2048,2,2.07159400
+sweep_w2048,cam_trt_w2048,3,2.01529408
+sweep_w2048,cam_trt_w2048,4,2.01291537
+sweep_w2048,cam_trt_w2048,5,1.99482620
+sweep_w2048,cam_trt_expert_w2048,1,1.56111813
+sweep_w2048,cam_trt_expert_w2048,2,1.56114578
+sweep_w2048,cam_trt_expert_w2048,3,1.55842578
+sweep_w2048,cam_trt_expert_w2048,4,1.55971444
+sweep_w2048,cam_trt_expert_w2048,5,1.56884515
+sweep_w2048,cam_fortis_bnd_w2048,1,1.848332
+sweep_w2048,cam_fortis_bnd_w2048,2,1.7029062
+sweep_w2048,cam_fortis_bnd_w2048,3,1.6642351
+sweep_w2048,cam_fortis_bnd_w2048,4,1.6623961
+sweep_w2048,cam_fortis_bnd_w2048,5,1.6524531
+sweep_w2048,climsim_trt_percol,1,56.174553599999996
+sweep_w2048,climsim_trt_percol,2,56.2898304
+sweep_w2048,climsim_trt_percol,3,56.3633664
+sweep_w2048,climsim_trt_percol,4,56.31824640000001
+sweep_w2048,climsim_trt_percol,5,56.344972799999994
+shim: verdict=batched batch=384 repeat=384 graph=0 in=tensor<384x124xf32> out=tensor<384x128xf32>
+sweep_w2048,climsim_fortis_lb_w2048,1,1.5445737
+sweep_w2048,climsim_fortis_lb_w2048,2,1.5479426
+sweep_w2048,climsim_fortis_lb_w2048,3,1.5434848
+sweep_w2048,climsim_fortis_lb_w2048,4,1.5512265
+sweep_w2048,climsim_fortis_lb_w2048,5,1.546784
+sweep_w1024,cam_fortis_bnd_w1024         0.771
+sweep_w1024,cam_trt_expert_w1024         0.735
+sweep_w1024,cam_trt_w1024                1.186
+sweep_w1024,climsim_fortis_lb_w1024      0.586
+sweep_w1024,climsim_trt_percol           27.937
+sweep_w2048,cam_fortis_bnd_w2048         1.706
+sweep_w2048,cam_trt_expert_w2048         1.562
+sweep_w2048,cam_trt_w2048                2.065
+sweep_w2048,climsim_fortis_lb_w2048      1.547
+sweep_w2048,climsim_trt_percol           56.298
+sweep_w512,cam_fortis_bnd_w512           0.489
+sweep_w512,cam_trt_expert_w512           0.452
+sweep_w512,cam_trt_w512                  0.897
+sweep_w512,climsim_fortis_lb_w512        0.333
+sweep_w512,climsim_trt_percol            23.089
