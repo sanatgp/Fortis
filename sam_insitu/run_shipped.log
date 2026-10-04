@@ -1,0 +1,3795 @@
+ ***************************************************
+ *****     System for Atmospheric Modeling     *****
+ *****        Version 6.3  (Jan   2005)        *****
+ ***************************************************
+ *****     (C) Marat Khairoutdinov             *****
+ *****   Department of Atmospheric Science     *****
+ *****       Colorado State University         *****
+ *****    marat@atmos.colostate.edu            *****
+ ***************************************************
+ !!!!      The model can only be used with     !!!!!
+ !!!!        permission from the author!       !!!!!
+ !!!!      No transfer to any third party      !!!!!
+ !!!!               is allowed!                !!!!!
+ ***************************************************
+
+ nsaveMSE,navgMSE,nsaveMSEstart,nsaveMSEend,nsaveMSE3D=
+          -1           0  1000000000  2000000000           1
+ size of features          61
+ size of outputs         148
+ Finished reading NN regression file.
+ size of features          62
+ size of outputs          17
+ Finished reading NN diffusion file.
+ size of features          61
+ size of outputs         148
+ Finished reading NN regression file.
+ size of features          62
+ size of outputs          17
+ Finished reading NN diffusion file.
+ size of features          61
+ size of outputs         148
+ Finished reading NN regression file.
+ size of features          62
+ size of outputs          17
+ Finished reading NN diffusion file.
+
+ surface pressure:    1000.00000    
+ Initial Sounding:
+ k height rho rhoi s h h* qt u v adz
+28695.7  0.017  0.019 504.11 504.11 514.05   0.00  22.05  -0.03  19.68    
+27046.1  0.022  0.026 480.10 480.10 483.09   0.00  22.06  -0.02  19.66    
+25399.2  0.030  0.035 456.08 456.09 456.91   0.00  22.14  -0.01  19.51    
+23775.7  0.040  0.046 437.30 437.31 437.72   0.00  22.28  -0.01  18.53    
+22292.3  0.052  0.059 418.03 418.04 418.19   0.00  22.37  -0.00  15.72    
+21140.8  0.065  0.071 404.08 404.09 404.17   0.00  22.37  -0.00  11.97    
+20284.8  0.076  0.082 393.53 393.53 393.58   0.00  22.29  -0.00  9.254    
+19589.3  0.088  0.093 383.82 383.83 383.85   0.00  21.97  -0.00  7.840    
+18970.4  0.099  0.104 375.86 375.86 375.89   0.00  20.72   0.00  7.167    
+18387.6  0.109  0.115 371.27 371.28 371.30   0.00  20.10   0.00  6.850    
+17822.0  0.121  0.127 365.16 365.17 365.19   0.00  20.11  -0.00  6.699    
+17264.5  0.134  0.140 360.06 360.07 360.08   0.00  20.31  -0.00  6.627    
+16710.9  0.147  0.154 355.29 355.30 355.31   0.00  20.60  -0.00  6.593    
+16159.1  0.161  0.169 351.06 351.06 351.08   0.00  20.86  -0.00  6.576    
+15608.3  0.177  0.185 346.99 346.99 347.01   0.00  21.05  -0.01  6.568    
+15057.9  0.193  0.202 342.99 343.00 343.02   0.00  21.14  -0.00  6.564    
+14507.7  0.211  0.220 339.20 339.21 339.23   0.00  21.11   0.00  6.563    
+13957.6  0.229  0.239 335.99 336.00 336.02   0.01  20.92  -0.00  6.561    
+13407.6  0.250  0.260 332.28 332.30 332.32   0.01  20.53  -0.01  6.561    
+12857.6  0.272  0.284 328.53 328.55 328.57   0.01  19.98  -0.01  6.561    
+12307.5  0.297  0.309 324.10 324.13 324.15   0.01  19.26  -0.01  6.561    
+11757.5  0.322  0.335 320.55 320.58 320.61   0.01  18.37  -0.02  6.561    
+11207.5  0.348  0.361 318.00 318.04 318.08   0.02  17.37  -0.02  6.561    
+10657.5  0.375  0.388 316.03 316.10 316.14   0.03  16.32  -0.01  6.561    
+10107.5  0.402  0.416 314.42 314.51 314.58   0.04  15.24  -0.00  6.560    
+ 9557.6  0.430  0.445 312.92 313.06 313.16   0.06  14.16  -0.00  6.560    
+ 9007.6  0.460  0.476 311.42 311.64 311.77   0.09  13.09   0.00  6.561    
+ 8457.6  0.492  0.508 309.91 310.21 310.40   0.12  12.05   0.00  6.561    
+ 7907.6  0.525  0.542 308.37 308.77 309.05   0.16  11.05   0.00  6.560    
+ 7357.7  0.560  0.578 306.84 307.36 307.78   0.21  10.06   0.00  6.560    
+ 6807.8  0.597  0.615 305.26 305.92 306.53   0.26   9.08   0.00  6.559    
+ 6258.0  0.635  0.655 303.63 304.47 305.31   0.34   8.12   0.00  6.557    
+ 5708.5  0.676  0.697 301.82 302.93 303.99   0.44   7.18   0.01  6.552    
+ 5159.5  0.718  0.740 300.13 301.61 302.94   0.59   6.27   0.00  6.543    
+ 4611.5  0.762  0.785 298.38 300.32 301.95   0.77   5.39   0.00  6.524    
+ 4065.7  0.809  0.833 296.55 299.12 301.02   1.03   4.54   0.00  6.485    
+ 3524.3  0.857  0.883 294.61 297.94 300.09   1.33   3.72   0.00  6.407    
+ 2991.5  0.908  0.934 292.60 296.94 299.22   1.73   2.94  -0.00  6.256    
+ 2475.3  0.959  0.986 290.38 296.27 298.09   2.36   2.17  -0.00  5.986    
+ 1988.0  1.010  1.036 288.11 296.01 296.88   3.16   1.40  -0.00  5.547    
+ 1545.3  1.059  1.082 285.98 295.92 295.94   4.07   0.65   0.00  4.928    
+ 1161.8  1.101  1.121 284.43 296.03 296.06   4.96   0.01   0.01  4.180    
+  844.5  1.136  1.152 283.50 296.60 296.63   5.58  -0.51   0.01  3.402    
+  591.3  1.164  1.177 282.97 297.28 297.30   5.97  -0.81   0.00  2.685    
+  394.3  1.186  1.195 282.67 297.97 297.98   6.23  -0.95   0.00  2.078    
+  243.0  1.202  1.209 282.52 298.61 298.70   6.44  -1.04   0.00  1.590    
+  127.7  1.214  1.220 282.48 299.02 299.69   6.62  -0.99   0.01  1.211    
+   40.0  1.224  1.230 282.53 299.65 300.65   6.85  -0.84   0.01  1.000    
+
+ z  dz pres presi Tabs  s  tp  qt Qc Qi  REL
+28695.70 1649.60   10.67   12.11  223.73  504.11  819.13  0.0000  0.0000  0.0000    0.00
+27046.10 1648.25   13.79   15.72  215.83  480.10  734.34  0.0000  0.0000  0.0000    0.01
+25399.20 1635.20   17.99   20.56  207.91  456.08  655.63  0.0024  0.0000  0.0000    1.36
+23775.70 1553.45   23.55   26.65  204.99  437.30  598.59  0.0026  0.0000  0.0000    2.87
+22292.30 1317.45   30.27   33.40  200.21  418.03  544.16  0.0029  0.0000  0.0000    8.56
+21140.80 1003.75   36.92   39.77  197.52  404.08  507.20  0.0029  0.0000  0.0000   16.15
+20284.80  775.75   42.86   45.56  195.32  393.53  480.60  0.0030  0.0000  0.0000   26.59
+19589.30  657.20   48.47   51.21  192.41  383.82  457.11  0.0030  0.0000  0.0000   42.78
+18970.40  600.85   54.13   57.04  190.50  375.86  438.48  0.0030  0.0000  0.0000   48.11
+18387.60  574.20   60.08   63.19  191.61  371.27  428.08  0.0031  0.0000  0.0000   53.54
+17822.00  561.55   66.47   69.87  191.03  365.16  414.62  0.0031  0.0000  0.0000   59.43
+17264.50  555.55   73.44   77.16  191.37  360.06  403.70  0.0031  0.0000  0.0000   65.89
+16710.90  552.70   81.06   85.14  192.01  355.29  393.77  0.0031  0.0000  0.0000   73.13
+16159.10  551.30   89.40   93.86  193.17  351.06  385.22  0.0031  0.0000  0.0000   82.48
+15608.30  550.60   98.52  103.40  194.48  346.99  377.21  0.0032  0.0000  0.0000   75.56
+15057.90  550.30  108.49  113.82  195.87  342.99  369.57  0.0034  0.0000  0.0000   71.62
+14507.70  550.15  119.37  125.19  197.45  339.20  362.51  0.0042  0.0000  0.0000   74.87
+13957.60  550.05  131.23  137.56  199.61  335.99  356.69  0.0056  0.0000  0.0000   79.16
+13407.60  550.00  144.14  151.03  201.27  332.28  350.15  0.0076  0.0000  0.0000   90.21
+12857.60  550.05  158.19  165.69  202.90  328.53  343.71  0.0093  0.0000  0.0000   94.78
+12307.50  550.05  173.51  181.70  203.85  324.10  336.32  0.0099  0.0000  0.0000   96.25
+11757.50  550.00  190.20  199.09  205.67  320.55  330.54  0.0129  0.0000  0.0006  100.00
+11207.50  550.00  208.27  217.87  208.50  318.00  326.50  0.0190  0.0000  0.0020  100.00
+10657.50  550.00  227.76  238.09  211.91  316.03  323.46  0.0290  0.0000  0.0041  100.00
+10107.50  549.95  248.69  259.77  215.68  314.42  321.04  0.0434  0.0000  0.0055  100.00
+ 9557.61  549.95  271.13  282.99  219.55  312.92  318.83  0.0638  0.0000  0.0063  100.00
+ 9007.61  550.00  295.15  307.83  223.42  311.42  316.68  0.0894  0.0000  0.0036  100.00
+ 8457.62  549.99  320.83  334.38  227.27  309.91  314.54  0.1215  0.0000  0.0000   96.64
+ 7907.64  549.96  348.25  362.71  231.10  308.37  312.43  0.1616  0.0000  0.0000   89.03
+ 7357.70  549.92  377.51  392.91  234.95  306.84  310.39  0.2084  0.0000  0.0000   80.51
+ 6807.81  549.83  408.69  425.09  238.74  305.26  308.33  0.2626  0.0000  0.0000   72.43
+ 6258.04  549.66  441.88  459.32  242.48  303.63  306.25  0.3355  0.0000  0.0000   67.21
+ 5708.50  549.28  477.19  495.74  246.04  301.82  303.99  0.4441  0.0000  0.0000   66.55
+ 5159.48  548.50  514.71  534.37  249.72  300.13  301.93  0.5906  0.0000  0.0000   66.03
+ 4611.50  546.90  554.49  575.28  253.32  298.38  299.84  0.7739  0.0000  0.0000   65.53
+ 4065.68  543.62  596.54  618.42  256.83  296.55  297.70  1.0258  0.0000  0.0000   65.14
+ 3524.26  537.07  640.79  663.59  260.17  294.61  295.47  1.3309  0.0000  0.0000   65.69
+ 2991.54  524.47  686.91  710.29  263.37  292.60  293.22  1.7336  0.0000  0.0000   68.55
+ 2475.32  501.79  734.20  757.50  266.19  290.38  290.77  2.3563  0.0000  0.0000   78.14
+ 1987.97  465.01  781.32  803.59  268.68  288.11  288.32  3.1623  0.0000  0.0000   90.99
+ 1545.31  413.09  826.31  846.51  271.13  285.98  286.33  4.0735  0.0870  0.0112  100.00
+ 1161.79  350.43  867.02  884.37  273.88  284.43  285.29  4.9639  0.3220  0.0014  100.00
+  844.45  285.23  901.92  916.16  276.11  283.50  284.38  5.5817  0.3448  0.0000  100.00
+  591.33  225.09  930.53  941.87  277.80  282.97  283.57  5.9678  0.2427  0.0000  100.00
+  394.27  174.17  953.28  962.13  279.08  282.67  282.93  6.2288  0.1068  0.0000  100.00
+  242.99  133.30  971.01  977.85  280.14  282.52  282.51  6.4369  0.0000  0.0000   99.44
+  127.66  101.50  984.70  989.94  281.24  282.48  282.48  6.6155  0.0000  0.0000   96.12
+   40.00   83.83  995.19 1000.00  282.14  282.53  282.53  6.8451  0.0000  0.0000   94.47
+ gam3=   2.00000000    
+ gamr1,gamr2,gamr3:   4.69417381       1.82735527       17.8378677    
+ gams1,gams2,gams3:   2.54925704       1.45693326       8.28508472    
+ gamg1,gamg2,gamg3:   3.32335091       1.60835946       11.6317282    
+ Initializeing forcing data...
+ Observed sounding interval (days):   0.00000000       1000.00000    
+ /scratch/taghipouranvari.s/FTORCH/sam_nn/NNs/qobsTTFFFFFTF30FFTFTF30TTFTFTFFF80FFTFTTF2699FFFF_X01_no_qp_no_adv_surf_F_Tin_qin_disteq_O_Trad_rest_Tadv_qadv_qout_qsed_RESCALED_7epochs_no_drop_REAL_NN_layers5in61out148_BN_F_te70.nc                           
+ size of features          61
+ size of outputs         148
+ Finished reading NN regression file.
+ /scratch/taghipouranvari.s/FTORCH/sam_nn/NNs/qobsFFTFTFTFF0FFTFTF15FFTFFFFTF815FFFFTTF00TFFT_X01_no_qp_no_adv_surf_Ntr13856040_F_Tin_qin_uin_vin_minusSH_usurf_SST_O_tsurf_qsurf_tkz_NN_layers5in62out17_BN_F_rm_ex_te81.nc                                     
+ size of features          62
+ size of outputs          17
+ Finished reading NN diffusion file.
+
+ Case: NNRUN                                   
+ Caseid: 72x180x48                               
+ New Run.
+ Day:   0.00000000    
+ Latitude:   0.00000000    
+ Longitude:   0.00000000    
+ Model type: CEM
+ Finish at timestep:         300
+ Finish on day:   8.33333358E-02
+
+ Statistics file ouput frequency:          300  steps
+ Statistics file sampling: every           10  steps
+ printouts frequency:          50  steps
+ Adams-Bashforth scheme order:           3
+
+ Global Grid:          72         180          48
+ Local Grid:          72          45          48
+ Grid spacing (m) dx, dy, dz:   96000.0000       96000.0000       83.8300018    
+ Domain dimensions (m):   6912000.00       17280000.0       28695.6992    
+
+ Timestep (sec):   24.0000000    
+
+ do convective parameterization F
+ do column model F
+ do spange damping at the domain top:  T
+ maintain grad. of scalars at the top: T
+ clouds are allowed: T
+ precipitation is allowed: T
+ SGS scheme is on: T
+ Smagorinsky SGS closure is on: T
+ larger-scale subsidence is on: F
+ larger-scale tendency is on: F
+ coriolis force is allowed: T
+    Coriolis parameter (1/s):   0.00000000    
+    Vertical Coriolis parameter (1/s):   1.45444108E-04
+ longwave radiation: T
+ shortwave radiation: T
+ do seasonal solar cycle: F
+ do perpetual sun: T
+ surface flux parameterization is on: T
+ Surface type: OCEAN
+  sensible heat flux prescribed: F
+  latent heat flux prescribed: F
+  surface stress prescribed: F
+ dodynamicocean = F
+ doxy =  F
+ douwpbl F
+ douwcu F
+ uwpbl_ndiv           1
+ uwcu_ndiv           1
+ doevolveSSTforcing= F
+ dolandseamask= F
+ dointeractiveland= F
+ doxysurf_rough= F
+ doxysoil_wet= F
+ dosurfacefix= F
+ Number of statistics profiles:           0
+ Statistics profiles to save:
+
+SUBNSTEP =        1   NCYCLE=   0   MAX CFL=  0.008   MAXNDIFF=  0.   MAXTKZ=    0.00
+  _______________________________________________________
+  _______ initializing aerosol optical properties _______
+  _______________________________________________________
+  aer_optics_initialize : nrh_opac =   8
+  aer_optics_initialize : nbnd =  19
+  _______ hygroscopic growth in visible band _______
+  SO4
+     rh    ext (m^2 g-1)      ssa      asm
+  0.000            5.581    1.000    0.650
+  0.801           13.614    1.000    0.742
+  0.836           16.185    1.000    0.750
+  0.858           17.971    1.000    0.755
+  0.873           19.389    1.000    0.759
+  0.885           20.585    1.000    0.762
+  0.896           21.630    1.000    0.764
+  0.904           23.093    1.000    0.766
+  0.912           24.959    1.000    0.769
+  0.919           26.745    1.000    0.771
+  0.925           28.462    1.000    0.772
+  0.930           30.121    1.000    0.774
+  0.935           31.730    1.000    0.775
+  0.940           33.293    1.000    0.777
+  0.944           34.817    1.000    0.778
+  0.948           36.305    1.000    0.779
+  0.952           38.717    1.000    0.781
+  0.956           41.820    1.000    0.782
+  0.959           44.986    1.000    0.783
+  0.963           48.213    1.000    0.784
+  0.966           51.498    1.000    0.785
+  0.969           54.841    1.000    0.786
+  0.971           58.241    1.000    0.787
+  0.974           61.695    1.000    0.788
+  0.977           65.207    1.000    0.789
+  0.979           68.771    1.000    0.789
+  0.982           75.009    1.000    0.790
+  0.984           82.961    1.000    0.791
+  0.986           91.458    1.000    0.791
+  0.988          100.506    1.000    0.791
+  0.990          110.113    1.000    0.792
+  0.992          120.296    1.000    0.792
+  0.994          131.074    1.000    0.793
+  0.996          142.463    1.000    0.793
+  0.998          154.473    1.000    0.794
+  1.000          166.810    1.000    0.794
+  SSLT
+     rh    ext (m^2 g-1)      ssa      asm
+  0.000            0.395    1.000    0.752
+  0.801            1.495    1.000    0.825
+  0.836            1.689    1.000    0.828
+  0.858            1.818    1.000    0.829
+  0.873            1.918    1.000    0.831
+  0.885            2.000    1.000    0.831
+  0.896            2.072    1.000    0.832
+  0.904            2.173    1.000    0.833
+  0.912            2.303    1.000    0.834
+  0.919            2.425    1.000    0.835
+  0.925            2.540    1.000    0.836
+  0.930            2.650    1.000    0.836
+  0.935            2.755    1.000    0.837
+  0.940            2.856    1.000    0.838
+  0.944            2.953    1.000    0.838
+  0.948            3.047    1.000    0.839
+  0.952            3.215    1.000    0.839
+  0.956            3.436    1.000    0.840
+  0.959            3.660    1.000    0.841
+  0.963            3.885    1.000    0.841
+  0.966            4.113    1.000    0.842
+  0.969            4.343    1.000    0.842
+  0.971            4.575    1.000    0.843
+  0.974            4.808    1.000    0.843
+  0.977            5.044    1.000    0.844
+  0.979            5.281    1.000    0.844
+  0.982            5.740    1.000    0.845
+  0.984            6.339    1.000    0.846
+  0.986            6.977    1.000    0.847
+  0.988            7.656    1.000    0.848
+  0.990            8.376    1.000    0.849
+  0.992            9.138    1.000    0.849
+  0.994            9.943    1.000    0.850
+  0.996           10.793    1.000    0.851
+  0.998           11.688    1.000    0.852
+  1.000           12.607    1.000    0.852
+  OCPHI
+     rh    ext (m^2 g-1)      ssa      asm
+  0.000            3.421    0.965    0.621
+  0.801            8.298    0.986    0.710
+  0.836            9.396    0.987    0.717
+  0.858           10.130    0.988    0.722
+  0.873           10.698    0.989    0.725
+  0.885           11.168    0.989    0.727
+  0.896           11.573    0.990    0.729
+  0.904           12.145    0.990    0.732
+  0.912           12.870    0.991    0.734
+  0.919           13.551    0.991    0.737
+  0.925           14.195    0.991    0.739
+  0.930           14.808    0.992    0.741
+  0.935           15.394    0.992    0.742
+  0.940           15.956    0.992    0.744
+  0.944           16.498    0.993    0.745
+  0.948           17.022    0.993    0.747
+  0.952           17.884    0.993    0.749
+  0.956           18.985    0.994    0.751
+  0.959           20.091    0.994    0.752
+  0.963           21.200    0.994    0.754
+  0.966           22.312    0.994    0.756
+  0.969           23.427    0.995    0.758
+  0.971           24.546    0.995    0.759
+  0.974           25.667    0.995    0.761
+  0.977           26.793    0.995    0.762
+  0.979           27.922    0.996    0.764
+  0.982           29.780    0.996    0.765
+  0.984           32.068    0.996    0.767
+  0.986           34.448    0.996    0.769
+  0.988           36.918    0.997    0.771
+  0.990           39.477    0.997    0.773
+  0.992           42.126    0.997    0.774
+  0.994           44.865    0.997    0.776
+  0.996           47.696    0.998    0.777
+  0.998           50.617    0.998    0.779
+  1.000           53.574    0.998    0.781
+ CEM.trace: number of levels=          31
+ gas traces vertical profiles (g/g):
+   z    o3   n2o   ch4   cfc11   cfc12
+   40.00      0.4922E-07  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+   127.7      0.4924E-07  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+   243.0      0.4928E-07  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+   394.3      0.4933E-07  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+   591.3      0.4939E-07  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+   844.5      0.4946E-07  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+   1162.      0.4956E-07  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+   1545.      0.4968E-07  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+   1988.      0.4981E-07  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+   2475.      0.4996E-07  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+   2992.      0.5012E-07  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+   3524.      0.5028E-07  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+   4066.      0.5054E-07  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+   4612.      0.5143E-07  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+   5159.      0.5234E-07  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+   5708.      0.5324E-07  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+   6258.      0.5564E-07  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+   6808.      0.5974E-07  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+   7358.      0.6384E-07  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+   7908.      0.6794E-07  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+   8458.      0.8165E-07  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+   9008.      0.9729E-07  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+   9558.      0.1129E-06  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+  0.1011E+05  0.1353E-06  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+  0.1066E+05  0.1854E-06  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+  0.1121E+05  0.2355E-06  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+  0.1176E+05  0.2856E-06  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+  0.1231E+05  0.3826E-06  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+  0.1286E+05  0.5167E-06  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+  0.1341E+05  0.6508E-06  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+  0.1396E+05  0.7848E-06  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+  0.1451E+05  0.1070E-05  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+  0.1506E+05  0.1369E-05  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+  0.1561E+05  0.1667E-05  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+  0.1616E+05  0.2037E-05  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+  0.1671E+05  0.2585E-05  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+  0.1726E+05  0.3135E-05  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+  0.1782E+05  0.3688E-05  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+  0.1839E+05  0.4434E-05  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+  0.1897E+05  0.5291E-05  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+  0.1959E+05  0.6201E-05  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+  0.2028E+05  0.7290E-05  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+  0.2114E+05  0.8747E-05  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+  0.2229E+05  0.1062E-04  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+  0.2378E+05  0.1271E-04  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+  0.2540E+05  0.1380E-04  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+  0.2705E+05  0.1356E-04  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+  0.2870E+05  0.1205E-04  0.4860E-06  0.9389E-06  0.1186E-08  0.2087E-08
+ done...
+ CO2 VMR =    3.54999996E-04
+ CO2 MMR =    5.39252942E-04
+ Eccentricity    1.67040695E-02
+ radiation: perpetual sun, solin=   336.644165    
+NSTEP =                    1    NCYCLE=   1    MAX CFL=  0.008
+SUBNSTEP =        2   NCYCLE=   1   MAX CFL=  0.033   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                    2    NCYCLE=   1    MAX CFL=  0.033
+SUBNSTEP =        3   NCYCLE=   1   MAX CFL=  0.033   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                    3    NCYCLE=   1    MAX CFL=  0.033
+SUBNSTEP =        4   NCYCLE=   1   MAX CFL=  0.033   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                    4    NCYCLE=   1    MAX CFL=  0.033
+SUBNSTEP =        5   NCYCLE=   1   MAX CFL=  0.033   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                    5    NCYCLE=   1    MAX CFL=  0.033
+SUBNSTEP =        6   NCYCLE=   1   MAX CFL=  0.033   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                    6    NCYCLE=   1    MAX CFL=  0.033
+SUBNSTEP =        7   NCYCLE=   1   MAX CFL=  0.033   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                    7    NCYCLE=   1    MAX CFL=  0.033
+SUBNSTEP =        8   NCYCLE=   1   MAX CFL=  0.033   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                    8    NCYCLE=   1    MAX CFL=  0.033
+SUBNSTEP =        9   NCYCLE=   1   MAX CFL=  0.033   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                    9    NCYCLE=   1    MAX CFL=  0.033
+SUBNSTEP =       10   NCYCLE=   1   MAX CFL=  0.033   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   10    NCYCLE=   1    MAX CFL=  0.033
+SUBNSTEP =       11   NCYCLE=   1   MAX CFL=  0.033   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   11    NCYCLE=   1    MAX CFL=  0.033
+SUBNSTEP =       12   NCYCLE=   1   MAX CFL=  0.033   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   12    NCYCLE=   1    MAX CFL=  0.033
+SUBNSTEP =       13   NCYCLE=   1   MAX CFL=  0.033   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   13    NCYCLE=   1    MAX CFL=  0.033
+SUBNSTEP =       14   NCYCLE=   1   MAX CFL=  0.033   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   14    NCYCLE=   1    MAX CFL=  0.033
+SUBNSTEP =       15   NCYCLE=   1   MAX CFL=  0.033   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   15    NCYCLE=   1    MAX CFL=  0.033
+SUBNSTEP =       16   NCYCLE=   1   MAX CFL=  0.033   MAXNDIFF=  0.   MAXTKZ=    0.00
+ radiation: perpetual sun, solin=   336.644165    
+NSTEP =                   16    NCYCLE=   1    MAX CFL=  0.033
+SUBNSTEP =       17   NCYCLE=   1   MAX CFL=  0.033   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   17    NCYCLE=   1    MAX CFL=  0.033
+SUBNSTEP =       18   NCYCLE=   1   MAX CFL=  0.033   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   18    NCYCLE=   1    MAX CFL=  0.033
+SUBNSTEP =       19   NCYCLE=   1   MAX CFL=  0.033   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   19    NCYCLE=   1    MAX CFL=  0.033
+SUBNSTEP =       20   NCYCLE=   1   MAX CFL=  0.033   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   20    NCYCLE=   1    MAX CFL=  0.033
+SUBNSTEP =       21   NCYCLE=   1   MAX CFL=  0.033   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   21    NCYCLE=   1    MAX CFL=  0.033
+SUBNSTEP =       22   NCYCLE=   1   MAX CFL=  0.033   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   22    NCYCLE=   1    MAX CFL=  0.033
+SUBNSTEP =       23   NCYCLE=   1   MAX CFL=  0.033   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   23    NCYCLE=   1    MAX CFL=  0.033
+SUBNSTEP =       24   NCYCLE=   1   MAX CFL=  0.033   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   24    NCYCLE=   1    MAX CFL=  0.033
+SUBNSTEP =       25   NCYCLE=   1   MAX CFL=  0.033   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   25    NCYCLE=   1    MAX CFL=  0.033
+SUBNSTEP =       26   NCYCLE=   1   MAX CFL=  0.033   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   26    NCYCLE=   1    MAX CFL=  0.033
+SUBNSTEP =       27   NCYCLE=   1   MAX CFL=  0.033   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   27    NCYCLE=   1    MAX CFL=  0.033
+SUBNSTEP =       28   NCYCLE=   1   MAX CFL=  0.033   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   28    NCYCLE=   1    MAX CFL=  0.033
+SUBNSTEP =       29   NCYCLE=   1   MAX CFL=  0.033   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   29    NCYCLE=   1    MAX CFL=  0.033
+SUBNSTEP =       30   NCYCLE=   1   MAX CFL=  0.033   MAXNDIFF=  0.   MAXTKZ=    0.00
+ Collecting statistics...
+ TL
+ TABS
+ U
+ V
+ QT
+ TK_XY
+ TK_Z
+ TKH_XY
+ TKH_Z
+ name TABSOBS is missing in "lst" file.
+ name QVOBS is missing in "lst" file.
+ name UOBS is missing in "lst" file.
+ name VOBS is missing in "lst" file.
+ name WOBS is missing in "lst" file.
+ name TTEND is missing in "lst" file.
+ name QTEND is missing in "lst" file.
+ name WWVCONV is missing in "lst" file.
+ name W_WAVE is missing in "lst" file.
+ name H_WAVE is missing in "lst" file.
+ name Q_WAVE is missing in "lst" file.
+ name T_WAVE is missing in "lst" file.
+ name H_WAVEBG is missing in "lst" file.
+ name Q_WAVEBG is missing in "lst" file.
+ name T_WAVEBG is missing in "lst" file.
+ name P_WAVE is missing in "lst" file.
+ name T_TARGET is missing in "lst" file.
+ name TTENDWV is missing in "lst" file.
+ name QTENDWV is missing in "lst" file.
+ name DSE is missing in "lst" file.
+ name MSE is missing in "lst" file.
+ name SSE is missing in "lst" file.
+ name THETA is missing in "lst" file.
+ name THETAL is missing in "lst" file.
+ name THETAV is missing in "lst" file.
+ name THETAE is missing in "lst" file.
+ name PRES is missing in "lst" file.
+ name RHO is missing in "lst" file.
+ name QV is missing in "lst" file.
+ name QC is missing in "lst" file.
+ name QI is missing in "lst" file.
+ name QR is missing in "lst" file.
+ name QS is missing in "lst" file.
+ name QG is missing in "lst" file.
+ name QN is missing in "lst" file.
+ name QP is missing in "lst" file.
+ name QCOND is missing in "lst" file.
+ name QSAT is missing in "lst" file.
+ name RELH is missing in "lst" file.
+ name UW is missing in "lst" file.
+ name VW is missing in "lst" file.
+ name UWSB is missing in "lst" file.
+ name VWSB is missing in "lst" file.
+ name TLFLUX is missing in "lst" file.
+ name QTFLUX is missing in "lst" file.
+ name TLFLUXS is missing in "lst" file.
+ name QTFLUXS is missing in "lst" file.
+ name QPFLUXS is missing in "lst" file.
+ name QPFLUX is missing in "lst" file.
+ name PRECIP is missing in "lst" file.
+ name TVFLUX is missing in "lst" file.
+ name QCFLUX is missing in "lst" file.
+ name QIFLUX is missing in "lst" file.
+ name U2 is missing in "lst" file.
+ name V2 is missing in "lst" file.
+ name W2 is missing in "lst" file.
+ name W3 is missing in "lst" file.
+ name WSKEW is missing in "lst" file.
+ name AUP is missing in "lst" file.
+ name TL2 is missing in "lst" file.
+ name TQ is missing in "lst" file.
+ name QT2 is missing in "lst" file.
+ name QC2 is missing in "lst" file.
+ name QI2 is missing in "lst" file.
+ name QS2 is missing in "lst" file.
+ name TKE is missing in "lst" file.
+ name ADVTR is missing in "lst" file.
+ name PRESSTR is missing in "lst" file.
+ name BUOYA is missing in "lst" file.
+ name SHEAR is missing in "lst" file.
+ name DISSIP is missing in "lst" file.
+ name DIFTR is missing in "lst" file.
+ name WUADV is missing in "lst" file.
+ name WUANIZ is missing in "lst" file.
+ name WUBUOY is missing in "lst" file.
+ name WUSHEAR is missing in "lst" file.
+ name WUPRES is missing in "lst" file.
+ name WUDIFF is missing in "lst" file.
+ name WVADV is missing in "lst" file.
+ name WVANIZ is missing in "lst" file.
+ name WVBUOY is missing in "lst" file.
+ name WVSHEAR is missing in "lst" file.
+ name WVPRES is missing in "lst" file.
+ name WVDIFF is missing in "lst" file.
+ name W2BUOY is missing in "lst" file.
+ name W2ADV is missing in "lst" file.
+ name W2REDIS is missing in "lst" file.
+ name W2PRES is missing in "lst" file.
+ name W2DIFF is missing in "lst" file.
+ name T2ADVTR is missing in "lst" file.
+ name T2GRAD is missing in "lst" file.
+ name T2DISSIP is missing in "lst" file.
+ name T2DIFTR is missing in "lst" file.
+ name T2PREC is missing in "lst" file.
+ name Q2ADVTR is missing in "lst" file.
+ name Q2GRAD is missing in "lst" file.
+ name Q2DISSIP is missing in "lst" file.
+ name Q2DIFTR is missing in "lst" file.
+ name Q2PREC is missing in "lst" file.
+ name TWADV is missing in "lst" file.
+ name TWDIFF is missing in "lst" file.
+ name TWGRAD is missing in "lst" file.
+ name TWBUOY is missing in "lst" file.
+ name TWPRES is missing in "lst" file.
+ name TWPREC is missing in "lst" file.
+ name QWADV is missing in "lst" file.
+ name QWDIFF is missing in "lst" file.
+ name QWGRAD is missing in "lst" file.
+ name QWBUOY is missing in "lst" file.
+ name QWPRES is missing in "lst" file.
+ name QWPREC is missing in "lst" file.
+ name SWADV is missing in "lst" file.
+ name SWDIFF is missing in "lst" file.
+ name SWGRAD is missing in "lst" file.
+ name SWBUOY is missing in "lst" file.
+ name SWPRES is missing in "lst" file.
+ name S2ADVTR is missing in "lst" file.
+ name S2GRAD is missing in "lst" file.
+ name S2DISSIP is missing in "lst" file.
+ name S2DIFTR is missing in "lst" file.
+ name SW is missing in "lst" file.
+ name SWSB is missing in "lst" file.
+ name S is missing in "lst" file.
+ name S2 is missing in "lst" file.
+ TKES
+ name ADVTRS is missing in "lst" file.
+ name BUOYAS is missing in "lst" file.
+ name SHEARS is missing in "lst" file.
+ name DISSIPS is missing in "lst" file.
+ name CLD is missing in "lst" file.
+ name HYDRO is missing in "lst" file.
+ name WCLD is missing in "lst" file.
+ name UCLD is missing in "lst" file.
+ name VCLD is missing in "lst" file.
+ name DSECLD is missing in "lst" file.
+ name MSECLD is missing in "lst" file.
+ name TLCLD is missing in "lst" file.
+ name TVCLD is missing in "lst" file.
+ name TVCLDA is missing in "lst" file.
+ name TACLD is missing in "lst" file.
+ name QTCLD is missing in "lst" file.
+ name QCCLD is missing in "lst" file.
+ name QICLD is missing in "lst" file.
+ name QPCLD is missing in "lst" file.
+ name WCLDA is missing in "lst" file.
+ name TLWCLD is missing in "lst" file.
+ name TVWCLD is missing in "lst" file.
+ name QTWCLD is missing in "lst" file.
+ name QCWCLD is missing in "lst" file.
+ name QIWCLD is missing in "lst" file.
+ name MCUP is missing in "lst" file.
+ name MCDNS is missing in "lst" file.
+ name MCDNU is missing in "lst" file.
+ name MC is missing in "lst" file.
+ name SCLD is missing in "lst" file.
+ name SWCLD is missing in "lst" file.
+ name CORE is missing in "lst" file.
+ name CORECL is missing in "lst" file.
+ name WCOR is missing in "lst" file.
+ name UCOR is missing in "lst" file.
+ name VCOR is missing in "lst" file.
+ name DSECOR is missing in "lst" file.
+ name MSECOR is missing in "lst" file.
+ name TLCOR is missing in "lst" file.
+ name TVCOR is missing in "lst" file.
+ name TVCORA is missing in "lst" file.
+ name TACOR is missing in "lst" file.
+ name QTCOR is missing in "lst" file.
+ name QCCOR is missing in "lst" file.
+ name QICOR is missing in "lst" file.
+ name QPCOR is missing in "lst" file.
+ name WCORA is missing in "lst" file.
+ name TLWCOR is missing in "lst" file.
+ name TVWCOR is missing in "lst" file.
+ name QTWCOR is missing in "lst" file.
+ name QCWCOR is missing in "lst" file.
+ name QIWCOR is missing in "lst" file.
+ name SCOR is missing in "lst" file.
+ name SWCOR is missing in "lst" file.
+ name COREDN is missing in "lst" file.
+ name COREDNCL is missing in "lst" file.
+ name UCORDN is missing in "lst" file.
+ name VCORDN is missing in "lst" file.
+ name WCORDN is missing in "lst" file.
+ name DSECORDN is missing in "lst" file.
+ name MSECORDN is missing in "lst" file.
+ name TLCORDN is missing in "lst" file.
+ name TVCORDN is missing in "lst" file.
+ name TACORDN is missing in "lst" file.
+ name QTCORDN is missing in "lst" file.
+ name QCCORDN is missing in "lst" file.
+ name QICORDN is missing in "lst" file.
+ name QPCORDN is missing in "lst" file.
+ name WCORDNA is missing in "lst" file.
+ name TLWCORDN is missing in "lst" file.
+ name TVWCORDN is missing in "lst" file.
+ name QTWCORDN is missing in "lst" file.
+ name QCWCORDN is missing in "lst" file.
+ name QIWCORDN is missing in "lst" file.
+ name MCRUP is missing in "lst" file.
+ name MCRDNS is missing in "lst" file.
+ name MCRDNU is missing in "lst" file.
+ name MCR is missing in "lst" file.
+ name SCORDN is missing in "lst" file.
+ name SWCORDN is missing in "lst" file.
+ name HLADV is missing in "lst" file.
+ name HLDIFF is missing in "lst" file.
+ name HLLAT is missing in "lst" file.
+ name HLRAD is missing in "lst" file.
+ name QTADV is missing in "lst" file.
+ name QTDIFF is missing in "lst" file.
+ name QTSINK is missing in "lst" file.
+ name QTSRC is missing in "lst" file.
+ name QPADV is missing in "lst" file.
+ name QPDIFF is missing in "lst" file.
+ name QPFALL is missing in "lst" file.
+ name QPSRC is missing in "lst" file.
+ name QPEVP is missing in "lst" file.
+ name RADLWUP is missing in "lst" file.
+ name RADLWDN is missing in "lst" file.
+ name RADSWUP is missing in "lst" file.
+ name RADSWDN is missing in "lst" file.
+ name RADQRLW is missing in "lst" file.
+ name RADQRSW is missing in "lst" file.
+ name RADQR is missing in "lst" file.
+ name RADQRC is missing in "lst" file.
+ name RADQRS is missing in "lst" file.
+ name Q1C is missing in "lst" file.
+ name Q2 is missing in "lst" file.
+ name TVTEND is missing in "lst" file.
+ name QVTEND is missing in "lst" file.
+ name TNUDGE is missing in "lst" file.
+ name QNUDGE is missing in "lst" file.
+ name RADQRCLW is missing in "lst" file.
+ name RADQRCSW is missing in "lst" file.
+ UMF
+ SLFLX
+ QTFLX
+ TKE_UW
+ TT_UWPBL
+ QT_UWPBL
+ TTEND_UW
+ QVTEN_UW
+ QLTEN_UW
+ QITEN_UW
+ CFRC_UW
+ TK_Z_UW
+ TKH_Z_UW
+NSTEP =                   30    NCYCLE=   1    MAX CFL=  0.033
+SUBNSTEP =       31   NCYCLE=   1   MAX CFL=  0.033   MAXNDIFF=  0.   MAXTKZ=    0.00
+ radiation: perpetual sun, solin=   336.644165    
+NSTEP =                   31    NCYCLE=   1    MAX CFL=  0.033
+SUBNSTEP =       32   NCYCLE=   1   MAX CFL=  0.033   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   32    NCYCLE=   1    MAX CFL=  0.033
+SUBNSTEP =       33   NCYCLE=   1   MAX CFL=  0.033   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   33    NCYCLE=   1    MAX CFL=  0.033
+SUBNSTEP =       34   NCYCLE=   1   MAX CFL=  0.033   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   34    NCYCLE=   1    MAX CFL=  0.033
+SUBNSTEP =       35   NCYCLE=   1   MAX CFL=  0.033   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   35    NCYCLE=   1    MAX CFL=  0.033
+SUBNSTEP =       36   NCYCLE=   1   MAX CFL=  0.033   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   36    NCYCLE=   1    MAX CFL=  0.033
+SUBNSTEP =       37   NCYCLE=   1   MAX CFL=  0.033   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   37    NCYCLE=   1    MAX CFL=  0.033
+SUBNSTEP =       38   NCYCLE=   1   MAX CFL=  0.033   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   38    NCYCLE=   1    MAX CFL=  0.033
+SUBNSTEP =       39   NCYCLE=   1   MAX CFL=  0.033   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   39    NCYCLE=   1    MAX CFL=  0.033
+SUBNSTEP =       40   NCYCLE=   1   MAX CFL=  0.033   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   40    NCYCLE=   1    MAX CFL=  0.033
+SUBNSTEP =       41   NCYCLE=   1   MAX CFL=  0.033   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   41    NCYCLE=   1    MAX CFL=  0.033
+SUBNSTEP =       42   NCYCLE=   1   MAX CFL=  0.033   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   42    NCYCLE=   1    MAX CFL=  0.033
+SUBNSTEP =       43   NCYCLE=   1   MAX CFL=  0.033   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   43    NCYCLE=   1    MAX CFL=  0.033
+SUBNSTEP =       44   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   44    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       45   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   45    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       46   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+ radiation: perpetual sun, solin=   336.644165    
+NSTEP =                   46    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       47   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   47    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       48   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   48    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       49   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   49    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       50   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   50    NCYCLE=   1    MAX CFL=  0.032
+ DAY =    1.38888890E-02
+ NSTEP=          50
+ div:   2.35305038E-08  -3.89124466E-08
+ SST=   0.00000000       surface pressure=   1000.00000    
+ u:  -1.07243550       22.4061527    
+ v: -0.143030614      0.128580034    
+ w:  -9.77810565E-03   9.87965334E-03
+ p:  -12.0279255       9.47655869    
+ t:   282.241058       504.254822    
+ tabs:   190.460709       282.407043    
+ q:   0.00000000       6.81462465E-03
+ tke:   0.00000000       1.28501678    
+ tk_xy:   0.00000000       57.7828979    
+ tk_z:   0.00000000       57.7828979    
+ tkh_xy:   0.00000000       173.348694    
+ tkh_z:   0.00000000       173.348694    
+ qn:   0.00000000       3.66981665E-04
+ qp:   0.00000000       0.00000000    
+ qrad(K/day):  -848.005066       855.671692    
+ shf:  -12.5909414       25.5052681    
+ lhf:  -10.2816725       58.2504730    
+ uw:   1.07461680E-03   1.29574130E-03
+ vw:  -8.19144043E-05   5.50546829E-05
+ sst:   273.149994       300.148285    
+ total water budget:
+ before (mm):   16.486993634259260     
+ after (mm) :   16.485790412808640     
+ evap (mm/day):  0.49981011284722227     
+ prec (mm/day):   0.0000000000000000     
+ ls (mm/day):   0.0000000000000000     
+ disbalance (mm/day)  -4.8314073350809394     
+ disbalance (mm)  -1.3420575930780387E-003
+SUBNSTEP =       51   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   51    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       52   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   52    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       53   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   53    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       54   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   54    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       55   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   55    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       56   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   56    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       57   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   57    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       58   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   58    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       59   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   59    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       60   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+ Collecting statistics...
+ TL
+ TABS
+ U
+ V
+ QT
+ TK_XY
+ TK_Z
+ TKH_XY
+ TKH_Z
+ name TABSOBS is missing in "lst" file.
+ name QVOBS is missing in "lst" file.
+ name UOBS is missing in "lst" file.
+ name VOBS is missing in "lst" file.
+ name WOBS is missing in "lst" file.
+ name TTEND is missing in "lst" file.
+ name QTEND is missing in "lst" file.
+ name WWVCONV is missing in "lst" file.
+ name W_WAVE is missing in "lst" file.
+ name H_WAVE is missing in "lst" file.
+ name Q_WAVE is missing in "lst" file.
+ name T_WAVE is missing in "lst" file.
+ name H_WAVEBG is missing in "lst" file.
+ name Q_WAVEBG is missing in "lst" file.
+ name T_WAVEBG is missing in "lst" file.
+ name P_WAVE is missing in "lst" file.
+ name T_TARGET is missing in "lst" file.
+ name TTENDWV is missing in "lst" file.
+ name QTENDWV is missing in "lst" file.
+ name DSE is missing in "lst" file.
+ name MSE is missing in "lst" file.
+ name SSE is missing in "lst" file.
+ name THETA is missing in "lst" file.
+ name THETAL is missing in "lst" file.
+ name THETAV is missing in "lst" file.
+ name THETAE is missing in "lst" file.
+ name PRES is missing in "lst" file.
+ name RHO is missing in "lst" file.
+ name QV is missing in "lst" file.
+ name QC is missing in "lst" file.
+ name QI is missing in "lst" file.
+ name QR is missing in "lst" file.
+ name QS is missing in "lst" file.
+ name QG is missing in "lst" file.
+ name QN is missing in "lst" file.
+ name QP is missing in "lst" file.
+ name QCOND is missing in "lst" file.
+ name QSAT is missing in "lst" file.
+ name RELH is missing in "lst" file.
+ name UW is missing in "lst" file.
+ name VW is missing in "lst" file.
+ name UWSB is missing in "lst" file.
+ name VWSB is missing in "lst" file.
+ name TLFLUX is missing in "lst" file.
+ name QTFLUX is missing in "lst" file.
+ name TLFLUXS is missing in "lst" file.
+ name QTFLUXS is missing in "lst" file.
+ name QPFLUXS is missing in "lst" file.
+ name QPFLUX is missing in "lst" file.
+ name PRECIP is missing in "lst" file.
+ name TVFLUX is missing in "lst" file.
+ name QCFLUX is missing in "lst" file.
+ name QIFLUX is missing in "lst" file.
+ name U2 is missing in "lst" file.
+ name V2 is missing in "lst" file.
+ name W2 is missing in "lst" file.
+ name W3 is missing in "lst" file.
+ name WSKEW is missing in "lst" file.
+ name AUP is missing in "lst" file.
+ name TL2 is missing in "lst" file.
+ name TQ is missing in "lst" file.
+ name QT2 is missing in "lst" file.
+ name QC2 is missing in "lst" file.
+ name QI2 is missing in "lst" file.
+ name QS2 is missing in "lst" file.
+ name TKE is missing in "lst" file.
+ name ADVTR is missing in "lst" file.
+ name PRESSTR is missing in "lst" file.
+ name BUOYA is missing in "lst" file.
+ name SHEAR is missing in "lst" file.
+ name DISSIP is missing in "lst" file.
+ name DIFTR is missing in "lst" file.
+ name WUADV is missing in "lst" file.
+ name WUANIZ is missing in "lst" file.
+ name WUBUOY is missing in "lst" file.
+ name WUSHEAR is missing in "lst" file.
+ name WUPRES is missing in "lst" file.
+ name WUDIFF is missing in "lst" file.
+ name WVADV is missing in "lst" file.
+ name WVANIZ is missing in "lst" file.
+ name WVBUOY is missing in "lst" file.
+ name WVSHEAR is missing in "lst" file.
+ name WVPRES is missing in "lst" file.
+ name WVDIFF is missing in "lst" file.
+ name W2BUOY is missing in "lst" file.
+ name W2ADV is missing in "lst" file.
+ name W2REDIS is missing in "lst" file.
+ name W2PRES is missing in "lst" file.
+ name W2DIFF is missing in "lst" file.
+ name T2ADVTR is missing in "lst" file.
+ name T2GRAD is missing in "lst" file.
+ name T2DISSIP is missing in "lst" file.
+ name T2DIFTR is missing in "lst" file.
+ name T2PREC is missing in "lst" file.
+ name Q2ADVTR is missing in "lst" file.
+ name Q2GRAD is missing in "lst" file.
+ name Q2DISSIP is missing in "lst" file.
+ name Q2DIFTR is missing in "lst" file.
+ name Q2PREC is missing in "lst" file.
+ name TWADV is missing in "lst" file.
+ name TWDIFF is missing in "lst" file.
+ name TWGRAD is missing in "lst" file.
+ name TWBUOY is missing in "lst" file.
+ name TWPRES is missing in "lst" file.
+ name TWPREC is missing in "lst" file.
+ name QWADV is missing in "lst" file.
+ name QWDIFF is missing in "lst" file.
+ name QWGRAD is missing in "lst" file.
+ name QWBUOY is missing in "lst" file.
+ name QWPRES is missing in "lst" file.
+ name QWPREC is missing in "lst" file.
+ name SWADV is missing in "lst" file.
+ name SWDIFF is missing in "lst" file.
+ name SWGRAD is missing in "lst" file.
+ name SWBUOY is missing in "lst" file.
+ name SWPRES is missing in "lst" file.
+ name S2ADVTR is missing in "lst" file.
+ name S2GRAD is missing in "lst" file.
+ name S2DISSIP is missing in "lst" file.
+ name S2DIFTR is missing in "lst" file.
+ name SW is missing in "lst" file.
+ name SWSB is missing in "lst" file.
+ name S is missing in "lst" file.
+ name S2 is missing in "lst" file.
+ TKES
+ name ADVTRS is missing in "lst" file.
+ name BUOYAS is missing in "lst" file.
+ name SHEARS is missing in "lst" file.
+ name DISSIPS is missing in "lst" file.
+ name CLD is missing in "lst" file.
+ name HYDRO is missing in "lst" file.
+ name WCLD is missing in "lst" file.
+ name UCLD is missing in "lst" file.
+ name VCLD is missing in "lst" file.
+ name DSECLD is missing in "lst" file.
+ name MSECLD is missing in "lst" file.
+ name TLCLD is missing in "lst" file.
+ name TVCLD is missing in "lst" file.
+ name TVCLDA is missing in "lst" file.
+ name TACLD is missing in "lst" file.
+ name QTCLD is missing in "lst" file.
+ name QCCLD is missing in "lst" file.
+ name QICLD is missing in "lst" file.
+ name QPCLD is missing in "lst" file.
+ name WCLDA is missing in "lst" file.
+ name TLWCLD is missing in "lst" file.
+ name TVWCLD is missing in "lst" file.
+ name QTWCLD is missing in "lst" file.
+ name QCWCLD is missing in "lst" file.
+ name QIWCLD is missing in "lst" file.
+ name MCUP is missing in "lst" file.
+ name MCDNS is missing in "lst" file.
+ name MCDNU is missing in "lst" file.
+ name MC is missing in "lst" file.
+ name SCLD is missing in "lst" file.
+ name SWCLD is missing in "lst" file.
+ name CORE is missing in "lst" file.
+ name CORECL is missing in "lst" file.
+ name WCOR is missing in "lst" file.
+ name UCOR is missing in "lst" file.
+ name VCOR is missing in "lst" file.
+ name DSECOR is missing in "lst" file.
+ name MSECOR is missing in "lst" file.
+ name TLCOR is missing in "lst" file.
+ name TVCOR is missing in "lst" file.
+ name TVCORA is missing in "lst" file.
+ name TACOR is missing in "lst" file.
+ name QTCOR is missing in "lst" file.
+ name QCCOR is missing in "lst" file.
+ name QICOR is missing in "lst" file.
+ name QPCOR is missing in "lst" file.
+ name WCORA is missing in "lst" file.
+ name TLWCOR is missing in "lst" file.
+ name TVWCOR is missing in "lst" file.
+ name QTWCOR is missing in "lst" file.
+ name QCWCOR is missing in "lst" file.
+ name QIWCOR is missing in "lst" file.
+ name SCOR is missing in "lst" file.
+ name SWCOR is missing in "lst" file.
+ name COREDN is missing in "lst" file.
+ name COREDNCL is missing in "lst" file.
+ name UCORDN is missing in "lst" file.
+ name VCORDN is missing in "lst" file.
+ name WCORDN is missing in "lst" file.
+ name DSECORDN is missing in "lst" file.
+ name MSECORDN is missing in "lst" file.
+ name TLCORDN is missing in "lst" file.
+ name TVCORDN is missing in "lst" file.
+ name TACORDN is missing in "lst" file.
+ name QTCORDN is missing in "lst" file.
+ name QCCORDN is missing in "lst" file.
+ name QICORDN is missing in "lst" file.
+ name QPCORDN is missing in "lst" file.
+ name WCORDNA is missing in "lst" file.
+ name TLWCORDN is missing in "lst" file.
+ name TVWCORDN is missing in "lst" file.
+ name QTWCORDN is missing in "lst" file.
+ name QCWCORDN is missing in "lst" file.
+ name QIWCORDN is missing in "lst" file.
+ name MCRUP is missing in "lst" file.
+ name MCRDNS is missing in "lst" file.
+ name MCRDNU is missing in "lst" file.
+ name MCR is missing in "lst" file.
+ name SCORDN is missing in "lst" file.
+ name SWCORDN is missing in "lst" file.
+ name HLADV is missing in "lst" file.
+ name HLDIFF is missing in "lst" file.
+ name HLLAT is missing in "lst" file.
+ name HLRAD is missing in "lst" file.
+ name QTADV is missing in "lst" file.
+ name QTDIFF is missing in "lst" file.
+ name QTSINK is missing in "lst" file.
+ name QTSRC is missing in "lst" file.
+ name QPADV is missing in "lst" file.
+ name QPDIFF is missing in "lst" file.
+ name QPFALL is missing in "lst" file.
+ name QPSRC is missing in "lst" file.
+ name QPEVP is missing in "lst" file.
+ name RADLWUP is missing in "lst" file.
+ name RADLWDN is missing in "lst" file.
+ name RADSWUP is missing in "lst" file.
+ name RADSWDN is missing in "lst" file.
+ name RADQRLW is missing in "lst" file.
+ name RADQRSW is missing in "lst" file.
+ name RADQR is missing in "lst" file.
+ name RADQRC is missing in "lst" file.
+ name RADQRS is missing in "lst" file.
+ name Q1C is missing in "lst" file.
+ name Q2 is missing in "lst" file.
+ name TVTEND is missing in "lst" file.
+ name QVTEND is missing in "lst" file.
+ name TNUDGE is missing in "lst" file.
+ name QNUDGE is missing in "lst" file.
+ name RADQRCLW is missing in "lst" file.
+ name RADQRCSW is missing in "lst" file.
+ UMF
+ SLFLX
+ QTFLX
+ TKE_UW
+ TT_UWPBL
+ QT_UWPBL
+ TTEND_UW
+ QVTEN_UW
+ QLTEN_UW
+ QITEN_UW
+ CFRC_UW
+ TK_Z_UW
+ TKH_Z_UW
+NSTEP =                   60    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       61   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+ radiation: perpetual sun, solin=   336.644165    
+NSTEP =                   61    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       62   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   62    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       63   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   63    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       64   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   64    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       65   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   65    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       66   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   66    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       67   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   67    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       68   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   68    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       69   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   69    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       70   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   70    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       71   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   71    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       72   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   72    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       73   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   73    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       74   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   74    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       75   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   75    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       76   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+ radiation: perpetual sun, solin=   336.644165    
+NSTEP =                   76    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       77   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   77    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       78   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   78    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       79   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   79    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       80   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   80    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       81   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   81    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       82   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   82    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       83   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   83    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       84   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   84    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       85   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   85    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       86   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   86    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       87   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   87    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       88   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   88    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       89   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   89    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       90   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+ Collecting statistics...
+ TL
+ TABS
+ U
+ V
+ QT
+ TK_XY
+ TK_Z
+ TKH_XY
+ TKH_Z
+ name TABSOBS is missing in "lst" file.
+ name QVOBS is missing in "lst" file.
+ name UOBS is missing in "lst" file.
+ name VOBS is missing in "lst" file.
+ name WOBS is missing in "lst" file.
+ name TTEND is missing in "lst" file.
+ name QTEND is missing in "lst" file.
+ name WWVCONV is missing in "lst" file.
+ name W_WAVE is missing in "lst" file.
+ name H_WAVE is missing in "lst" file.
+ name Q_WAVE is missing in "lst" file.
+ name T_WAVE is missing in "lst" file.
+ name H_WAVEBG is missing in "lst" file.
+ name Q_WAVEBG is missing in "lst" file.
+ name T_WAVEBG is missing in "lst" file.
+ name P_WAVE is missing in "lst" file.
+ name T_TARGET is missing in "lst" file.
+ name TTENDWV is missing in "lst" file.
+ name QTENDWV is missing in "lst" file.
+ name DSE is missing in "lst" file.
+ name MSE is missing in "lst" file.
+ name SSE is missing in "lst" file.
+ name THETA is missing in "lst" file.
+ name THETAL is missing in "lst" file.
+ name THETAV is missing in "lst" file.
+ name THETAE is missing in "lst" file.
+ name PRES is missing in "lst" file.
+ name RHO is missing in "lst" file.
+ name QV is missing in "lst" file.
+ name QC is missing in "lst" file.
+ name QI is missing in "lst" file.
+ name QR is missing in "lst" file.
+ name QS is missing in "lst" file.
+ name QG is missing in "lst" file.
+ name QN is missing in "lst" file.
+ name QP is missing in "lst" file.
+ name QCOND is missing in "lst" file.
+ name QSAT is missing in "lst" file.
+ name RELH is missing in "lst" file.
+ name UW is missing in "lst" file.
+ name VW is missing in "lst" file.
+ name UWSB is missing in "lst" file.
+ name VWSB is missing in "lst" file.
+ name TLFLUX is missing in "lst" file.
+ name QTFLUX is missing in "lst" file.
+ name TLFLUXS is missing in "lst" file.
+ name QTFLUXS is missing in "lst" file.
+ name QPFLUXS is missing in "lst" file.
+ name QPFLUX is missing in "lst" file.
+ name PRECIP is missing in "lst" file.
+ name TVFLUX is missing in "lst" file.
+ name QCFLUX is missing in "lst" file.
+ name QIFLUX is missing in "lst" file.
+ name U2 is missing in "lst" file.
+ name V2 is missing in "lst" file.
+ name W2 is missing in "lst" file.
+ name W3 is missing in "lst" file.
+ name WSKEW is missing in "lst" file.
+ name AUP is missing in "lst" file.
+ name TL2 is missing in "lst" file.
+ name TQ is missing in "lst" file.
+ name QT2 is missing in "lst" file.
+ name QC2 is missing in "lst" file.
+ name QI2 is missing in "lst" file.
+ name QS2 is missing in "lst" file.
+ name TKE is missing in "lst" file.
+ name ADVTR is missing in "lst" file.
+ name PRESSTR is missing in "lst" file.
+ name BUOYA is missing in "lst" file.
+ name SHEAR is missing in "lst" file.
+ name DISSIP is missing in "lst" file.
+ name DIFTR is missing in "lst" file.
+ name WUADV is missing in "lst" file.
+ name WUANIZ is missing in "lst" file.
+ name WUBUOY is missing in "lst" file.
+ name WUSHEAR is missing in "lst" file.
+ name WUPRES is missing in "lst" file.
+ name WUDIFF is missing in "lst" file.
+ name WVADV is missing in "lst" file.
+ name WVANIZ is missing in "lst" file.
+ name WVBUOY is missing in "lst" file.
+ name WVSHEAR is missing in "lst" file.
+ name WVPRES is missing in "lst" file.
+ name WVDIFF is missing in "lst" file.
+ name W2BUOY is missing in "lst" file.
+ name W2ADV is missing in "lst" file.
+ name W2REDIS is missing in "lst" file.
+ name W2PRES is missing in "lst" file.
+ name W2DIFF is missing in "lst" file.
+ name T2ADVTR is missing in "lst" file.
+ name T2GRAD is missing in "lst" file.
+ name T2DISSIP is missing in "lst" file.
+ name T2DIFTR is missing in "lst" file.
+ name T2PREC is missing in "lst" file.
+ name Q2ADVTR is missing in "lst" file.
+ name Q2GRAD is missing in "lst" file.
+ name Q2DISSIP is missing in "lst" file.
+ name Q2DIFTR is missing in "lst" file.
+ name Q2PREC is missing in "lst" file.
+ name TWADV is missing in "lst" file.
+ name TWDIFF is missing in "lst" file.
+ name TWGRAD is missing in "lst" file.
+ name TWBUOY is missing in "lst" file.
+ name TWPRES is missing in "lst" file.
+ name TWPREC is missing in "lst" file.
+ name QWADV is missing in "lst" file.
+ name QWDIFF is missing in "lst" file.
+ name QWGRAD is missing in "lst" file.
+ name QWBUOY is missing in "lst" file.
+ name QWPRES is missing in "lst" file.
+ name QWPREC is missing in "lst" file.
+ name SWADV is missing in "lst" file.
+ name SWDIFF is missing in "lst" file.
+ name SWGRAD is missing in "lst" file.
+ name SWBUOY is missing in "lst" file.
+ name SWPRES is missing in "lst" file.
+ name S2ADVTR is missing in "lst" file.
+ name S2GRAD is missing in "lst" file.
+ name S2DISSIP is missing in "lst" file.
+ name S2DIFTR is missing in "lst" file.
+ name SW is missing in "lst" file.
+ name SWSB is missing in "lst" file.
+ name S is missing in "lst" file.
+ name S2 is missing in "lst" file.
+ TKES
+ name ADVTRS is missing in "lst" file.
+ name BUOYAS is missing in "lst" file.
+ name SHEARS is missing in "lst" file.
+ name DISSIPS is missing in "lst" file.
+ name CLD is missing in "lst" file.
+ name HYDRO is missing in "lst" file.
+ name WCLD is missing in "lst" file.
+ name UCLD is missing in "lst" file.
+ name VCLD is missing in "lst" file.
+ name DSECLD is missing in "lst" file.
+ name MSECLD is missing in "lst" file.
+ name TLCLD is missing in "lst" file.
+ name TVCLD is missing in "lst" file.
+ name TVCLDA is missing in "lst" file.
+ name TACLD is missing in "lst" file.
+ name QTCLD is missing in "lst" file.
+ name QCCLD is missing in "lst" file.
+ name QICLD is missing in "lst" file.
+ name QPCLD is missing in "lst" file.
+ name WCLDA is missing in "lst" file.
+ name TLWCLD is missing in "lst" file.
+ name TVWCLD is missing in "lst" file.
+ name QTWCLD is missing in "lst" file.
+ name QCWCLD is missing in "lst" file.
+ name QIWCLD is missing in "lst" file.
+ name MCUP is missing in "lst" file.
+ name MCDNS is missing in "lst" file.
+ name MCDNU is missing in "lst" file.
+ name MC is missing in "lst" file.
+ name SCLD is missing in "lst" file.
+ name SWCLD is missing in "lst" file.
+ name CORE is missing in "lst" file.
+ name CORECL is missing in "lst" file.
+ name WCOR is missing in "lst" file.
+ name UCOR is missing in "lst" file.
+ name VCOR is missing in "lst" file.
+ name DSECOR is missing in "lst" file.
+ name MSECOR is missing in "lst" file.
+ name TLCOR is missing in "lst" file.
+ name TVCOR is missing in "lst" file.
+ name TVCORA is missing in "lst" file.
+ name TACOR is missing in "lst" file.
+ name QTCOR is missing in "lst" file.
+ name QCCOR is missing in "lst" file.
+ name QICOR is missing in "lst" file.
+ name QPCOR is missing in "lst" file.
+ name WCORA is missing in "lst" file.
+ name TLWCOR is missing in "lst" file.
+ name TVWCOR is missing in "lst" file.
+ name QTWCOR is missing in "lst" file.
+ name QCWCOR is missing in "lst" file.
+ name QIWCOR is missing in "lst" file.
+ name SCOR is missing in "lst" file.
+ name SWCOR is missing in "lst" file.
+ name COREDN is missing in "lst" file.
+ name COREDNCL is missing in "lst" file.
+ name UCORDN is missing in "lst" file.
+ name VCORDN is missing in "lst" file.
+ name WCORDN is missing in "lst" file.
+ name DSECORDN is missing in "lst" file.
+ name MSECORDN is missing in "lst" file.
+ name TLCORDN is missing in "lst" file.
+ name TVCORDN is missing in "lst" file.
+ name TACORDN is missing in "lst" file.
+ name QTCORDN is missing in "lst" file.
+ name QCCORDN is missing in "lst" file.
+ name QICORDN is missing in "lst" file.
+ name QPCORDN is missing in "lst" file.
+ name WCORDNA is missing in "lst" file.
+ name TLWCORDN is missing in "lst" file.
+ name TVWCORDN is missing in "lst" file.
+ name QTWCORDN is missing in "lst" file.
+ name QCWCORDN is missing in "lst" file.
+ name QIWCORDN is missing in "lst" file.
+ name MCRUP is missing in "lst" file.
+ name MCRDNS is missing in "lst" file.
+ name MCRDNU is missing in "lst" file.
+ name MCR is missing in "lst" file.
+ name SCORDN is missing in "lst" file.
+ name SWCORDN is missing in "lst" file.
+ name HLADV is missing in "lst" file.
+ name HLDIFF is missing in "lst" file.
+ name HLLAT is missing in "lst" file.
+ name HLRAD is missing in "lst" file.
+ name QTADV is missing in "lst" file.
+ name QTDIFF is missing in "lst" file.
+ name QTSINK is missing in "lst" file.
+ name QTSRC is missing in "lst" file.
+ name QPADV is missing in "lst" file.
+ name QPDIFF is missing in "lst" file.
+ name QPFALL is missing in "lst" file.
+ name QPSRC is missing in "lst" file.
+ name QPEVP is missing in "lst" file.
+ name RADLWUP is missing in "lst" file.
+ name RADLWDN is missing in "lst" file.
+ name RADSWUP is missing in "lst" file.
+ name RADSWDN is missing in "lst" file.
+ name RADQRLW is missing in "lst" file.
+ name RADQRSW is missing in "lst" file.
+ name RADQR is missing in "lst" file.
+ name RADQRC is missing in "lst" file.
+ name RADQRS is missing in "lst" file.
+ name Q1C is missing in "lst" file.
+ name Q2 is missing in "lst" file.
+ name TVTEND is missing in "lst" file.
+ name QVTEND is missing in "lst" file.
+ name TNUDGE is missing in "lst" file.
+ name QNUDGE is missing in "lst" file.
+ name RADQRCLW is missing in "lst" file.
+ name RADQRCSW is missing in "lst" file.
+ UMF
+ SLFLX
+ QTFLX
+ TKE_UW
+ TT_UWPBL
+ QT_UWPBL
+ TTEND_UW
+ QVTEN_UW
+ QLTEN_UW
+ QITEN_UW
+ CFRC_UW
+ TK_Z_UW
+ TKH_Z_UW
+NSTEP =                   90    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       91   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+ radiation: perpetual sun, solin=   336.644165    
+NSTEP =                   91    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       92   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   92    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       93   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   93    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       94   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   94    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       95   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   95    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       96   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   96    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       97   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   97    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       98   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   98    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =       99   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                   99    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      100   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  100    NCYCLE=   1    MAX CFL=  0.032
+ DAY =    2.77777780E-02
+ NSTEP=         100
+ div:   1.83889028E-08  -1.73940720E-08
+ SST=   0.00000000       surface pressure=   1000.00000    
+ u:  -1.09409356       22.4305820    
+ v: -0.222718194      0.156921625    
+ w:  -8.61953385E-03   8.54634121E-03
+ p:  -20.5436306       16.5803738    
+ t:   282.101624       504.306305    
+ tabs:   190.418289       282.542114    
+ q:   0.00000000       6.79164426E-03
+ tke:   0.00000000       1.37032938    
+ tk_xy:   0.00000000       57.9610558    
+ tk_z:   0.00000000       57.9610558    
+ tkh_xy:   0.00000000       173.883163    
+ tkh_z:   0.00000000       173.883163    
+ qn:   0.00000000       3.78031400E-04
+ qp:   0.00000000       0.00000000    
+ qrad(K/day):  -597.201050       531.872009    
+ shf:  -12.3802071       25.5940189    
+ lhf:  -9.97632408       59.1206894    
+ uw:   9.87031963E-04   1.39754335E-03
+ vw:  -1.39964133E-04   1.12082264E-04
+ sst:   273.149994       300.148285    
+ total water budget:
+ before (mm):   16.429844232253085     
+ after (mm) :   16.428768807870370     
+ evap (mm/day):  0.50198025173611116     
+ prec (mm/day):   0.0000000000000000     
+ ls (mm/day):   0.0000000000000000     
+ disbalance (mm/day)  -4.3735080295107309     
+ disbalance (mm)  -1.2148633415307586E-003
+SUBNSTEP =      101   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  101    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      102   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  102    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      103   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  103    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      104   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  104    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      105   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  105    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      106   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+ radiation: perpetual sun, solin=   336.644165    
+NSTEP =                  106    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      107   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  107    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      108   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  108    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      109   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  109    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      110   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  110    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      111   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  111    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      112   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  112    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      113   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  113    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      114   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  114    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      115   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  115    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      116   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  116    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      117   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  117    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      118   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  118    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      119   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  119    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      120   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+ Collecting statistics...
+ TL
+ TABS
+ U
+ V
+ QT
+ TK_XY
+ TK_Z
+ TKH_XY
+ TKH_Z
+ name TABSOBS is missing in "lst" file.
+ name QVOBS is missing in "lst" file.
+ name UOBS is missing in "lst" file.
+ name VOBS is missing in "lst" file.
+ name WOBS is missing in "lst" file.
+ name TTEND is missing in "lst" file.
+ name QTEND is missing in "lst" file.
+ name WWVCONV is missing in "lst" file.
+ name W_WAVE is missing in "lst" file.
+ name H_WAVE is missing in "lst" file.
+ name Q_WAVE is missing in "lst" file.
+ name T_WAVE is missing in "lst" file.
+ name H_WAVEBG is missing in "lst" file.
+ name Q_WAVEBG is missing in "lst" file.
+ name T_WAVEBG is missing in "lst" file.
+ name P_WAVE is missing in "lst" file.
+ name T_TARGET is missing in "lst" file.
+ name TTENDWV is missing in "lst" file.
+ name QTENDWV is missing in "lst" file.
+ name DSE is missing in "lst" file.
+ name MSE is missing in "lst" file.
+ name SSE is missing in "lst" file.
+ name THETA is missing in "lst" file.
+ name THETAL is missing in "lst" file.
+ name THETAV is missing in "lst" file.
+ name THETAE is missing in "lst" file.
+ name PRES is missing in "lst" file.
+ name RHO is missing in "lst" file.
+ name QV is missing in "lst" file.
+ name QC is missing in "lst" file.
+ name QI is missing in "lst" file.
+ name QR is missing in "lst" file.
+ name QS is missing in "lst" file.
+ name QG is missing in "lst" file.
+ name QN is missing in "lst" file.
+ name QP is missing in "lst" file.
+ name QCOND is missing in "lst" file.
+ name QSAT is missing in "lst" file.
+ name RELH is missing in "lst" file.
+ name UW is missing in "lst" file.
+ name VW is missing in "lst" file.
+ name UWSB is missing in "lst" file.
+ name VWSB is missing in "lst" file.
+ name TLFLUX is missing in "lst" file.
+ name QTFLUX is missing in "lst" file.
+ name TLFLUXS is missing in "lst" file.
+ name QTFLUXS is missing in "lst" file.
+ name QPFLUXS is missing in "lst" file.
+ name QPFLUX is missing in "lst" file.
+ name PRECIP is missing in "lst" file.
+ name TVFLUX is missing in "lst" file.
+ name QCFLUX is missing in "lst" file.
+ name QIFLUX is missing in "lst" file.
+ name U2 is missing in "lst" file.
+ name V2 is missing in "lst" file.
+ name W2 is missing in "lst" file.
+ name W3 is missing in "lst" file.
+ name WSKEW is missing in "lst" file.
+ name AUP is missing in "lst" file.
+ name TL2 is missing in "lst" file.
+ name TQ is missing in "lst" file.
+ name QT2 is missing in "lst" file.
+ name QC2 is missing in "lst" file.
+ name QI2 is missing in "lst" file.
+ name QS2 is missing in "lst" file.
+ name TKE is missing in "lst" file.
+ name ADVTR is missing in "lst" file.
+ name PRESSTR is missing in "lst" file.
+ name BUOYA is missing in "lst" file.
+ name SHEAR is missing in "lst" file.
+ name DISSIP is missing in "lst" file.
+ name DIFTR is missing in "lst" file.
+ name WUADV is missing in "lst" file.
+ name WUANIZ is missing in "lst" file.
+ name WUBUOY is missing in "lst" file.
+ name WUSHEAR is missing in "lst" file.
+ name WUPRES is missing in "lst" file.
+ name WUDIFF is missing in "lst" file.
+ name WVADV is missing in "lst" file.
+ name WVANIZ is missing in "lst" file.
+ name WVBUOY is missing in "lst" file.
+ name WVSHEAR is missing in "lst" file.
+ name WVPRES is missing in "lst" file.
+ name WVDIFF is missing in "lst" file.
+ name W2BUOY is missing in "lst" file.
+ name W2ADV is missing in "lst" file.
+ name W2REDIS is missing in "lst" file.
+ name W2PRES is missing in "lst" file.
+ name W2DIFF is missing in "lst" file.
+ name T2ADVTR is missing in "lst" file.
+ name T2GRAD is missing in "lst" file.
+ name T2DISSIP is missing in "lst" file.
+ name T2DIFTR is missing in "lst" file.
+ name T2PREC is missing in "lst" file.
+ name Q2ADVTR is missing in "lst" file.
+ name Q2GRAD is missing in "lst" file.
+ name Q2DISSIP is missing in "lst" file.
+ name Q2DIFTR is missing in "lst" file.
+ name Q2PREC is missing in "lst" file.
+ name TWADV is missing in "lst" file.
+ name TWDIFF is missing in "lst" file.
+ name TWGRAD is missing in "lst" file.
+ name TWBUOY is missing in "lst" file.
+ name TWPRES is missing in "lst" file.
+ name TWPREC is missing in "lst" file.
+ name QWADV is missing in "lst" file.
+ name QWDIFF is missing in "lst" file.
+ name QWGRAD is missing in "lst" file.
+ name QWBUOY is missing in "lst" file.
+ name QWPRES is missing in "lst" file.
+ name QWPREC is missing in "lst" file.
+ name SWADV is missing in "lst" file.
+ name SWDIFF is missing in "lst" file.
+ name SWGRAD is missing in "lst" file.
+ name SWBUOY is missing in "lst" file.
+ name SWPRES is missing in "lst" file.
+ name S2ADVTR is missing in "lst" file.
+ name S2GRAD is missing in "lst" file.
+ name S2DISSIP is missing in "lst" file.
+ name S2DIFTR is missing in "lst" file.
+ name SW is missing in "lst" file.
+ name SWSB is missing in "lst" file.
+ name S is missing in "lst" file.
+ name S2 is missing in "lst" file.
+ TKES
+ name ADVTRS is missing in "lst" file.
+ name BUOYAS is missing in "lst" file.
+ name SHEARS is missing in "lst" file.
+ name DISSIPS is missing in "lst" file.
+ name CLD is missing in "lst" file.
+ name HYDRO is missing in "lst" file.
+ name WCLD is missing in "lst" file.
+ name UCLD is missing in "lst" file.
+ name VCLD is missing in "lst" file.
+ name DSECLD is missing in "lst" file.
+ name MSECLD is missing in "lst" file.
+ name TLCLD is missing in "lst" file.
+ name TVCLD is missing in "lst" file.
+ name TVCLDA is missing in "lst" file.
+ name TACLD is missing in "lst" file.
+ name QTCLD is missing in "lst" file.
+ name QCCLD is missing in "lst" file.
+ name QICLD is missing in "lst" file.
+ name QPCLD is missing in "lst" file.
+ name WCLDA is missing in "lst" file.
+ name TLWCLD is missing in "lst" file.
+ name TVWCLD is missing in "lst" file.
+ name QTWCLD is missing in "lst" file.
+ name QCWCLD is missing in "lst" file.
+ name QIWCLD is missing in "lst" file.
+ name MCUP is missing in "lst" file.
+ name MCDNS is missing in "lst" file.
+ name MCDNU is missing in "lst" file.
+ name MC is missing in "lst" file.
+ name SCLD is missing in "lst" file.
+ name SWCLD is missing in "lst" file.
+ name CORE is missing in "lst" file.
+ name CORECL is missing in "lst" file.
+ name WCOR is missing in "lst" file.
+ name UCOR is missing in "lst" file.
+ name VCOR is missing in "lst" file.
+ name DSECOR is missing in "lst" file.
+ name MSECOR is missing in "lst" file.
+ name TLCOR is missing in "lst" file.
+ name TVCOR is missing in "lst" file.
+ name TVCORA is missing in "lst" file.
+ name TACOR is missing in "lst" file.
+ name QTCOR is missing in "lst" file.
+ name QCCOR is missing in "lst" file.
+ name QICOR is missing in "lst" file.
+ name QPCOR is missing in "lst" file.
+ name WCORA is missing in "lst" file.
+ name TLWCOR is missing in "lst" file.
+ name TVWCOR is missing in "lst" file.
+ name QTWCOR is missing in "lst" file.
+ name QCWCOR is missing in "lst" file.
+ name QIWCOR is missing in "lst" file.
+ name SCOR is missing in "lst" file.
+ name SWCOR is missing in "lst" file.
+ name COREDN is missing in "lst" file.
+ name COREDNCL is missing in "lst" file.
+ name UCORDN is missing in "lst" file.
+ name VCORDN is missing in "lst" file.
+ name WCORDN is missing in "lst" file.
+ name DSECORDN is missing in "lst" file.
+ name MSECORDN is missing in "lst" file.
+ name TLCORDN is missing in "lst" file.
+ name TVCORDN is missing in "lst" file.
+ name TACORDN is missing in "lst" file.
+ name QTCORDN is missing in "lst" file.
+ name QCCORDN is missing in "lst" file.
+ name QICORDN is missing in "lst" file.
+ name QPCORDN is missing in "lst" file.
+ name WCORDNA is missing in "lst" file.
+ name TLWCORDN is missing in "lst" file.
+ name TVWCORDN is missing in "lst" file.
+ name QTWCORDN is missing in "lst" file.
+ name QCWCORDN is missing in "lst" file.
+ name QIWCORDN is missing in "lst" file.
+ name MCRUP is missing in "lst" file.
+ name MCRDNS is missing in "lst" file.
+ name MCRDNU is missing in "lst" file.
+ name MCR is missing in "lst" file.
+ name SCORDN is missing in "lst" file.
+ name SWCORDN is missing in "lst" file.
+ name HLADV is missing in "lst" file.
+ name HLDIFF is missing in "lst" file.
+ name HLLAT is missing in "lst" file.
+ name HLRAD is missing in "lst" file.
+ name QTADV is missing in "lst" file.
+ name QTDIFF is missing in "lst" file.
+ name QTSINK is missing in "lst" file.
+ name QTSRC is missing in "lst" file.
+ name QPADV is missing in "lst" file.
+ name QPDIFF is missing in "lst" file.
+ name QPFALL is missing in "lst" file.
+ name QPSRC is missing in "lst" file.
+ name QPEVP is missing in "lst" file.
+ name RADLWUP is missing in "lst" file.
+ name RADLWDN is missing in "lst" file.
+ name RADSWUP is missing in "lst" file.
+ name RADSWDN is missing in "lst" file.
+ name RADQRLW is missing in "lst" file.
+ name RADQRSW is missing in "lst" file.
+ name RADQR is missing in "lst" file.
+ name RADQRC is missing in "lst" file.
+ name RADQRS is missing in "lst" file.
+ name Q1C is missing in "lst" file.
+ name Q2 is missing in "lst" file.
+ name TVTEND is missing in "lst" file.
+ name QVTEND is missing in "lst" file.
+ name TNUDGE is missing in "lst" file.
+ name QNUDGE is missing in "lst" file.
+ name RADQRCLW is missing in "lst" file.
+ name RADQRCSW is missing in "lst" file.
+ UMF
+ SLFLX
+ QTFLX
+ TKE_UW
+ TT_UWPBL
+ QT_UWPBL
+ TTEND_UW
+ QVTEN_UW
+ QLTEN_UW
+ QITEN_UW
+ CFRC_UW
+ TK_Z_UW
+ TKH_Z_UW
+NSTEP =                  120    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      121   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+ radiation: perpetual sun, solin=   336.644165    
+NSTEP =                  121    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      122   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  122    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      123   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  123    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      124   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  124    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      125   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  125    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      126   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  126    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      127   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  127    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      128   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  128    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      129   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  129    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      130   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  130    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      131   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  131    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      132   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  132    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      133   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  133    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      134   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  134    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      135   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  135    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      136   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+ radiation: perpetual sun, solin=   336.644165    
+NSTEP =                  136    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      137   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  137    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      138   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  138    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      139   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  139    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      140   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  140    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      141   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  141    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      142   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  142    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      143   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  143    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      144   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  144    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      145   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  145    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      146   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  146    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      147   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  147    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      148   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  148    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      149   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  149    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      150   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+ Collecting statistics...
+ TL
+ TABS
+ U
+ V
+ QT
+ TK_XY
+ TK_Z
+ TKH_XY
+ TKH_Z
+ name TABSOBS is missing in "lst" file.
+ name QVOBS is missing in "lst" file.
+ name UOBS is missing in "lst" file.
+ name VOBS is missing in "lst" file.
+ name WOBS is missing in "lst" file.
+ name TTEND is missing in "lst" file.
+ name QTEND is missing in "lst" file.
+ name WWVCONV is missing in "lst" file.
+ name W_WAVE is missing in "lst" file.
+ name H_WAVE is missing in "lst" file.
+ name Q_WAVE is missing in "lst" file.
+ name T_WAVE is missing in "lst" file.
+ name H_WAVEBG is missing in "lst" file.
+ name Q_WAVEBG is missing in "lst" file.
+ name T_WAVEBG is missing in "lst" file.
+ name P_WAVE is missing in "lst" file.
+ name T_TARGET is missing in "lst" file.
+ name TTENDWV is missing in "lst" file.
+ name QTENDWV is missing in "lst" file.
+ name DSE is missing in "lst" file.
+ name MSE is missing in "lst" file.
+ name SSE is missing in "lst" file.
+ name THETA is missing in "lst" file.
+ name THETAL is missing in "lst" file.
+ name THETAV is missing in "lst" file.
+ name THETAE is missing in "lst" file.
+ name PRES is missing in "lst" file.
+ name RHO is missing in "lst" file.
+ name QV is missing in "lst" file.
+ name QC is missing in "lst" file.
+ name QI is missing in "lst" file.
+ name QR is missing in "lst" file.
+ name QS is missing in "lst" file.
+ name QG is missing in "lst" file.
+ name QN is missing in "lst" file.
+ name QP is missing in "lst" file.
+ name QCOND is missing in "lst" file.
+ name QSAT is missing in "lst" file.
+ name RELH is missing in "lst" file.
+ name UW is missing in "lst" file.
+ name VW is missing in "lst" file.
+ name UWSB is missing in "lst" file.
+ name VWSB is missing in "lst" file.
+ name TLFLUX is missing in "lst" file.
+ name QTFLUX is missing in "lst" file.
+ name TLFLUXS is missing in "lst" file.
+ name QTFLUXS is missing in "lst" file.
+ name QPFLUXS is missing in "lst" file.
+ name QPFLUX is missing in "lst" file.
+ name PRECIP is missing in "lst" file.
+ name TVFLUX is missing in "lst" file.
+ name QCFLUX is missing in "lst" file.
+ name QIFLUX is missing in "lst" file.
+ name U2 is missing in "lst" file.
+ name V2 is missing in "lst" file.
+ name W2 is missing in "lst" file.
+ name W3 is missing in "lst" file.
+ name WSKEW is missing in "lst" file.
+ name AUP is missing in "lst" file.
+ name TL2 is missing in "lst" file.
+ name TQ is missing in "lst" file.
+ name QT2 is missing in "lst" file.
+ name QC2 is missing in "lst" file.
+ name QI2 is missing in "lst" file.
+ name QS2 is missing in "lst" file.
+ name TKE is missing in "lst" file.
+ name ADVTR is missing in "lst" file.
+ name PRESSTR is missing in "lst" file.
+ name BUOYA is missing in "lst" file.
+ name SHEAR is missing in "lst" file.
+ name DISSIP is missing in "lst" file.
+ name DIFTR is missing in "lst" file.
+ name WUADV is missing in "lst" file.
+ name WUANIZ is missing in "lst" file.
+ name WUBUOY is missing in "lst" file.
+ name WUSHEAR is missing in "lst" file.
+ name WUPRES is missing in "lst" file.
+ name WUDIFF is missing in "lst" file.
+ name WVADV is missing in "lst" file.
+ name WVANIZ is missing in "lst" file.
+ name WVBUOY is missing in "lst" file.
+ name WVSHEAR is missing in "lst" file.
+ name WVPRES is missing in "lst" file.
+ name WVDIFF is missing in "lst" file.
+ name W2BUOY is missing in "lst" file.
+ name W2ADV is missing in "lst" file.
+ name W2REDIS is missing in "lst" file.
+ name W2PRES is missing in "lst" file.
+ name W2DIFF is missing in "lst" file.
+ name T2ADVTR is missing in "lst" file.
+ name T2GRAD is missing in "lst" file.
+ name T2DISSIP is missing in "lst" file.
+ name T2DIFTR is missing in "lst" file.
+ name T2PREC is missing in "lst" file.
+ name Q2ADVTR is missing in "lst" file.
+ name Q2GRAD is missing in "lst" file.
+ name Q2DISSIP is missing in "lst" file.
+ name Q2DIFTR is missing in "lst" file.
+ name Q2PREC is missing in "lst" file.
+ name TWADV is missing in "lst" file.
+ name TWDIFF is missing in "lst" file.
+ name TWGRAD is missing in "lst" file.
+ name TWBUOY is missing in "lst" file.
+ name TWPRES is missing in "lst" file.
+ name TWPREC is missing in "lst" file.
+ name QWADV is missing in "lst" file.
+ name QWDIFF is missing in "lst" file.
+ name QWGRAD is missing in "lst" file.
+ name QWBUOY is missing in "lst" file.
+ name QWPRES is missing in "lst" file.
+ name QWPREC is missing in "lst" file.
+ name SWADV is missing in "lst" file.
+ name SWDIFF is missing in "lst" file.
+ name SWGRAD is missing in "lst" file.
+ name SWBUOY is missing in "lst" file.
+ name SWPRES is missing in "lst" file.
+ name S2ADVTR is missing in "lst" file.
+ name S2GRAD is missing in "lst" file.
+ name S2DISSIP is missing in "lst" file.
+ name S2DIFTR is missing in "lst" file.
+ name SW is missing in "lst" file.
+ name SWSB is missing in "lst" file.
+ name S is missing in "lst" file.
+ name S2 is missing in "lst" file.
+ TKES
+ name ADVTRS is missing in "lst" file.
+ name BUOYAS is missing in "lst" file.
+ name SHEARS is missing in "lst" file.
+ name DISSIPS is missing in "lst" file.
+ name CLD is missing in "lst" file.
+ name HYDRO is missing in "lst" file.
+ name WCLD is missing in "lst" file.
+ name UCLD is missing in "lst" file.
+ name VCLD is missing in "lst" file.
+ name DSECLD is missing in "lst" file.
+ name MSECLD is missing in "lst" file.
+ name TLCLD is missing in "lst" file.
+ name TVCLD is missing in "lst" file.
+ name TVCLDA is missing in "lst" file.
+ name TACLD is missing in "lst" file.
+ name QTCLD is missing in "lst" file.
+ name QCCLD is missing in "lst" file.
+ name QICLD is missing in "lst" file.
+ name QPCLD is missing in "lst" file.
+ name WCLDA is missing in "lst" file.
+ name TLWCLD is missing in "lst" file.
+ name TVWCLD is missing in "lst" file.
+ name QTWCLD is missing in "lst" file.
+ name QCWCLD is missing in "lst" file.
+ name QIWCLD is missing in "lst" file.
+ name MCUP is missing in "lst" file.
+ name MCDNS is missing in "lst" file.
+ name MCDNU is missing in "lst" file.
+ name MC is missing in "lst" file.
+ name SCLD is missing in "lst" file.
+ name SWCLD is missing in "lst" file.
+ name CORE is missing in "lst" file.
+ name CORECL is missing in "lst" file.
+ name WCOR is missing in "lst" file.
+ name UCOR is missing in "lst" file.
+ name VCOR is missing in "lst" file.
+ name DSECOR is missing in "lst" file.
+ name MSECOR is missing in "lst" file.
+ name TLCOR is missing in "lst" file.
+ name TVCOR is missing in "lst" file.
+ name TVCORA is missing in "lst" file.
+ name TACOR is missing in "lst" file.
+ name QTCOR is missing in "lst" file.
+ name QCCOR is missing in "lst" file.
+ name QICOR is missing in "lst" file.
+ name QPCOR is missing in "lst" file.
+ name WCORA is missing in "lst" file.
+ name TLWCOR is missing in "lst" file.
+ name TVWCOR is missing in "lst" file.
+ name QTWCOR is missing in "lst" file.
+ name QCWCOR is missing in "lst" file.
+ name QIWCOR is missing in "lst" file.
+ name SCOR is missing in "lst" file.
+ name SWCOR is missing in "lst" file.
+ name COREDN is missing in "lst" file.
+ name COREDNCL is missing in "lst" file.
+ name UCORDN is missing in "lst" file.
+ name VCORDN is missing in "lst" file.
+ name WCORDN is missing in "lst" file.
+ name DSECORDN is missing in "lst" file.
+ name MSECORDN is missing in "lst" file.
+ name TLCORDN is missing in "lst" file.
+ name TVCORDN is missing in "lst" file.
+ name TACORDN is missing in "lst" file.
+ name QTCORDN is missing in "lst" file.
+ name QCCORDN is missing in "lst" file.
+ name QICORDN is missing in "lst" file.
+ name QPCORDN is missing in "lst" file.
+ name WCORDNA is missing in "lst" file.
+ name TLWCORDN is missing in "lst" file.
+ name TVWCORDN is missing in "lst" file.
+ name QTWCORDN is missing in "lst" file.
+ name QCWCORDN is missing in "lst" file.
+ name QIWCORDN is missing in "lst" file.
+ name MCRUP is missing in "lst" file.
+ name MCRDNS is missing in "lst" file.
+ name MCRDNU is missing in "lst" file.
+ name MCR is missing in "lst" file.
+ name SCORDN is missing in "lst" file.
+ name SWCORDN is missing in "lst" file.
+ name HLADV is missing in "lst" file.
+ name HLDIFF is missing in "lst" file.
+ name HLLAT is missing in "lst" file.
+ name HLRAD is missing in "lst" file.
+ name QTADV is missing in "lst" file.
+ name QTDIFF is missing in "lst" file.
+ name QTSINK is missing in "lst" file.
+ name QTSRC is missing in "lst" file.
+ name QPADV is missing in "lst" file.
+ name QPDIFF is missing in "lst" file.
+ name QPFALL is missing in "lst" file.
+ name QPSRC is missing in "lst" file.
+ name QPEVP is missing in "lst" file.
+ name RADLWUP is missing in "lst" file.
+ name RADLWDN is missing in "lst" file.
+ name RADSWUP is missing in "lst" file.
+ name RADSWDN is missing in "lst" file.
+ name RADQRLW is missing in "lst" file.
+ name RADQRSW is missing in "lst" file.
+ name RADQR is missing in "lst" file.
+ name RADQRC is missing in "lst" file.
+ name RADQRS is missing in "lst" file.
+ name Q1C is missing in "lst" file.
+ name Q2 is missing in "lst" file.
+ name TVTEND is missing in "lst" file.
+ name QVTEND is missing in "lst" file.
+ name TNUDGE is missing in "lst" file.
+ name QNUDGE is missing in "lst" file.
+ name RADQRCLW is missing in "lst" file.
+ name RADQRCSW is missing in "lst" file.
+ UMF
+ SLFLX
+ QTFLX
+ TKE_UW
+ TT_UWPBL
+ QT_UWPBL
+ TTEND_UW
+ QVTEN_UW
+ QLTEN_UW
+ QITEN_UW
+ CFRC_UW
+ TK_Z_UW
+ TKH_Z_UW
+NSTEP =                  150    NCYCLE=   1    MAX CFL=  0.032
+ DAY =    4.16666679E-02
+ NSTEP=         150
+ div:   3.39664439E-08  -3.22399956E-08
+ SST=   0.00000000       surface pressure=   1000.00000    
+ u:  -1.11820507       22.4482098    
+ v: -0.304417700      0.207217738    
+ w:  -9.72676557E-03   8.70355126E-03
+ p:  -28.5407448       22.8636284    
+ t:   281.988556       504.342926    
+ tabs:   190.415421       282.679199    
+ q:   0.00000000       6.77443109E-03
+ tke:   0.00000000       1.45171225    
+ tk_xy:   0.00000000       58.6686287    
+ tk_z:   0.00000000       58.6686287    
+ tkh_xy:   0.00000000       176.005890    
+ tkh_z:   0.00000000       176.005890    
+ qn:   0.00000000       3.88178392E-04
+ qp:   0.00000000       0.00000000    
+ qrad(K/day):  -694.437683       655.335266    
+ shf:  -12.2072716       25.6389465    
+ lhf:  -9.75019836       59.7301483    
+ uw:   9.06442932E-04   1.49412570E-03
+ vw:  -2.09618607E-04   1.73162232E-04
+ sst:   273.149994       300.148285    
+ total water budget:
+ before (mm):   16.379395736882717     
+ after (mm) :   16.378460165895063     
+ evap (mm/day):  0.50360785590277779     
+ prec (mm/day):   0.0000000000000000     
+ ls (mm/day):   0.0000000000000000     
+ disbalance (mm/day)  -3.8716634114507542     
+ disbalance (mm)  -1.0754620587363206E-003
+SUBNSTEP =      151   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+ radiation: perpetual sun, solin=   336.644165    
+NSTEP =                  151    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      152   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  152    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      153   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  153    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      154   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  154    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      155   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  155    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      156   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  156    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      157   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  157    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      158   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  158    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      159   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  159    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      160   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  160    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      161   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  161    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      162   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  162    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      163   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  163    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      164   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  164    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      165   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  165    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      166   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+ radiation: perpetual sun, solin=   336.644165    
+NSTEP =                  166    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      167   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  167    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      168   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  168    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      169   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  169    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      170   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  170    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      171   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  171    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      172   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  172    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      173   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  173    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      174   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  174    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      175   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  175    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      176   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  176    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      177   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  177    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      178   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  178    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      179   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  179    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      180   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+ Collecting statistics...
+ TL
+ TABS
+ U
+ V
+ QT
+ TK_XY
+ TK_Z
+ TKH_XY
+ TKH_Z
+ name TABSOBS is missing in "lst" file.
+ name QVOBS is missing in "lst" file.
+ name UOBS is missing in "lst" file.
+ name VOBS is missing in "lst" file.
+ name WOBS is missing in "lst" file.
+ name TTEND is missing in "lst" file.
+ name QTEND is missing in "lst" file.
+ name WWVCONV is missing in "lst" file.
+ name W_WAVE is missing in "lst" file.
+ name H_WAVE is missing in "lst" file.
+ name Q_WAVE is missing in "lst" file.
+ name T_WAVE is missing in "lst" file.
+ name H_WAVEBG is missing in "lst" file.
+ name Q_WAVEBG is missing in "lst" file.
+ name T_WAVEBG is missing in "lst" file.
+ name P_WAVE is missing in "lst" file.
+ name T_TARGET is missing in "lst" file.
+ name TTENDWV is missing in "lst" file.
+ name QTENDWV is missing in "lst" file.
+ name DSE is missing in "lst" file.
+ name MSE is missing in "lst" file.
+ name SSE is missing in "lst" file.
+ name THETA is missing in "lst" file.
+ name THETAL is missing in "lst" file.
+ name THETAV is missing in "lst" file.
+ name THETAE is missing in "lst" file.
+ name PRES is missing in "lst" file.
+ name RHO is missing in "lst" file.
+ name QV is missing in "lst" file.
+ name QC is missing in "lst" file.
+ name QI is missing in "lst" file.
+ name QR is missing in "lst" file.
+ name QS is missing in "lst" file.
+ name QG is missing in "lst" file.
+ name QN is missing in "lst" file.
+ name QP is missing in "lst" file.
+ name QCOND is missing in "lst" file.
+ name QSAT is missing in "lst" file.
+ name RELH is missing in "lst" file.
+ name UW is missing in "lst" file.
+ name VW is missing in "lst" file.
+ name UWSB is missing in "lst" file.
+ name VWSB is missing in "lst" file.
+ name TLFLUX is missing in "lst" file.
+ name QTFLUX is missing in "lst" file.
+ name TLFLUXS is missing in "lst" file.
+ name QTFLUXS is missing in "lst" file.
+ name QPFLUXS is missing in "lst" file.
+ name QPFLUX is missing in "lst" file.
+ name PRECIP is missing in "lst" file.
+ name TVFLUX is missing in "lst" file.
+ name QCFLUX is missing in "lst" file.
+ name QIFLUX is missing in "lst" file.
+ name U2 is missing in "lst" file.
+ name V2 is missing in "lst" file.
+ name W2 is missing in "lst" file.
+ name W3 is missing in "lst" file.
+ name WSKEW is missing in "lst" file.
+ name AUP is missing in "lst" file.
+ name TL2 is missing in "lst" file.
+ name TQ is missing in "lst" file.
+ name QT2 is missing in "lst" file.
+ name QC2 is missing in "lst" file.
+ name QI2 is missing in "lst" file.
+ name QS2 is missing in "lst" file.
+ name TKE is missing in "lst" file.
+ name ADVTR is missing in "lst" file.
+ name PRESSTR is missing in "lst" file.
+ name BUOYA is missing in "lst" file.
+ name SHEAR is missing in "lst" file.
+ name DISSIP is missing in "lst" file.
+ name DIFTR is missing in "lst" file.
+ name WUADV is missing in "lst" file.
+ name WUANIZ is missing in "lst" file.
+ name WUBUOY is missing in "lst" file.
+ name WUSHEAR is missing in "lst" file.
+ name WUPRES is missing in "lst" file.
+ name WUDIFF is missing in "lst" file.
+ name WVADV is missing in "lst" file.
+ name WVANIZ is missing in "lst" file.
+ name WVBUOY is missing in "lst" file.
+ name WVSHEAR is missing in "lst" file.
+ name WVPRES is missing in "lst" file.
+ name WVDIFF is missing in "lst" file.
+ name W2BUOY is missing in "lst" file.
+ name W2ADV is missing in "lst" file.
+ name W2REDIS is missing in "lst" file.
+ name W2PRES is missing in "lst" file.
+ name W2DIFF is missing in "lst" file.
+ name T2ADVTR is missing in "lst" file.
+ name T2GRAD is missing in "lst" file.
+ name T2DISSIP is missing in "lst" file.
+ name T2DIFTR is missing in "lst" file.
+ name T2PREC is missing in "lst" file.
+ name Q2ADVTR is missing in "lst" file.
+ name Q2GRAD is missing in "lst" file.
+ name Q2DISSIP is missing in "lst" file.
+ name Q2DIFTR is missing in "lst" file.
+ name Q2PREC is missing in "lst" file.
+ name TWADV is missing in "lst" file.
+ name TWDIFF is missing in "lst" file.
+ name TWGRAD is missing in "lst" file.
+ name TWBUOY is missing in "lst" file.
+ name TWPRES is missing in "lst" file.
+ name TWPREC is missing in "lst" file.
+ name QWADV is missing in "lst" file.
+ name QWDIFF is missing in "lst" file.
+ name QWGRAD is missing in "lst" file.
+ name QWBUOY is missing in "lst" file.
+ name QWPRES is missing in "lst" file.
+ name QWPREC is missing in "lst" file.
+ name SWADV is missing in "lst" file.
+ name SWDIFF is missing in "lst" file.
+ name SWGRAD is missing in "lst" file.
+ name SWBUOY is missing in "lst" file.
+ name SWPRES is missing in "lst" file.
+ name S2ADVTR is missing in "lst" file.
+ name S2GRAD is missing in "lst" file.
+ name S2DISSIP is missing in "lst" file.
+ name S2DIFTR is missing in "lst" file.
+ name SW is missing in "lst" file.
+ name SWSB is missing in "lst" file.
+ name S is missing in "lst" file.
+ name S2 is missing in "lst" file.
+ TKES
+ name ADVTRS is missing in "lst" file.
+ name BUOYAS is missing in "lst" file.
+ name SHEARS is missing in "lst" file.
+ name DISSIPS is missing in "lst" file.
+ name CLD is missing in "lst" file.
+ name HYDRO is missing in "lst" file.
+ name WCLD is missing in "lst" file.
+ name UCLD is missing in "lst" file.
+ name VCLD is missing in "lst" file.
+ name DSECLD is missing in "lst" file.
+ name MSECLD is missing in "lst" file.
+ name TLCLD is missing in "lst" file.
+ name TVCLD is missing in "lst" file.
+ name TVCLDA is missing in "lst" file.
+ name TACLD is missing in "lst" file.
+ name QTCLD is missing in "lst" file.
+ name QCCLD is missing in "lst" file.
+ name QICLD is missing in "lst" file.
+ name QPCLD is missing in "lst" file.
+ name WCLDA is missing in "lst" file.
+ name TLWCLD is missing in "lst" file.
+ name TVWCLD is missing in "lst" file.
+ name QTWCLD is missing in "lst" file.
+ name QCWCLD is missing in "lst" file.
+ name QIWCLD is missing in "lst" file.
+ name MCUP is missing in "lst" file.
+ name MCDNS is missing in "lst" file.
+ name MCDNU is missing in "lst" file.
+ name MC is missing in "lst" file.
+ name SCLD is missing in "lst" file.
+ name SWCLD is missing in "lst" file.
+ name CORE is missing in "lst" file.
+ name CORECL is missing in "lst" file.
+ name WCOR is missing in "lst" file.
+ name UCOR is missing in "lst" file.
+ name VCOR is missing in "lst" file.
+ name DSECOR is missing in "lst" file.
+ name MSECOR is missing in "lst" file.
+ name TLCOR is missing in "lst" file.
+ name TVCOR is missing in "lst" file.
+ name TVCORA is missing in "lst" file.
+ name TACOR is missing in "lst" file.
+ name QTCOR is missing in "lst" file.
+ name QCCOR is missing in "lst" file.
+ name QICOR is missing in "lst" file.
+ name QPCOR is missing in "lst" file.
+ name WCORA is missing in "lst" file.
+ name TLWCOR is missing in "lst" file.
+ name TVWCOR is missing in "lst" file.
+ name QTWCOR is missing in "lst" file.
+ name QCWCOR is missing in "lst" file.
+ name QIWCOR is missing in "lst" file.
+ name SCOR is missing in "lst" file.
+ name SWCOR is missing in "lst" file.
+ name COREDN is missing in "lst" file.
+ name COREDNCL is missing in "lst" file.
+ name UCORDN is missing in "lst" file.
+ name VCORDN is missing in "lst" file.
+ name WCORDN is missing in "lst" file.
+ name DSECORDN is missing in "lst" file.
+ name MSECORDN is missing in "lst" file.
+ name TLCORDN is missing in "lst" file.
+ name TVCORDN is missing in "lst" file.
+ name TACORDN is missing in "lst" file.
+ name QTCORDN is missing in "lst" file.
+ name QCCORDN is missing in "lst" file.
+ name QICORDN is missing in "lst" file.
+ name QPCORDN is missing in "lst" file.
+ name WCORDNA is missing in "lst" file.
+ name TLWCORDN is missing in "lst" file.
+ name TVWCORDN is missing in "lst" file.
+ name QTWCORDN is missing in "lst" file.
+ name QCWCORDN is missing in "lst" file.
+ name QIWCORDN is missing in "lst" file.
+ name MCRUP is missing in "lst" file.
+ name MCRDNS is missing in "lst" file.
+ name MCRDNU is missing in "lst" file.
+ name MCR is missing in "lst" file.
+ name SCORDN is missing in "lst" file.
+ name SWCORDN is missing in "lst" file.
+ name HLADV is missing in "lst" file.
+ name HLDIFF is missing in "lst" file.
+ name HLLAT is missing in "lst" file.
+ name HLRAD is missing in "lst" file.
+ name QTADV is missing in "lst" file.
+ name QTDIFF is missing in "lst" file.
+ name QTSINK is missing in "lst" file.
+ name QTSRC is missing in "lst" file.
+ name QPADV is missing in "lst" file.
+ name QPDIFF is missing in "lst" file.
+ name QPFALL is missing in "lst" file.
+ name QPSRC is missing in "lst" file.
+ name QPEVP is missing in "lst" file.
+ name RADLWUP is missing in "lst" file.
+ name RADLWDN is missing in "lst" file.
+ name RADSWUP is missing in "lst" file.
+ name RADSWDN is missing in "lst" file.
+ name RADQRLW is missing in "lst" file.
+ name RADQRSW is missing in "lst" file.
+ name RADQR is missing in "lst" file.
+ name RADQRC is missing in "lst" file.
+ name RADQRS is missing in "lst" file.
+ name Q1C is missing in "lst" file.
+ name Q2 is missing in "lst" file.
+ name TVTEND is missing in "lst" file.
+ name QVTEND is missing in "lst" file.
+ name TNUDGE is missing in "lst" file.
+ name QNUDGE is missing in "lst" file.
+ name RADQRCLW is missing in "lst" file.
+ name RADQRCSW is missing in "lst" file.
+ UMF
+ SLFLX
+ QTFLX
+ TKE_UW
+ TT_UWPBL
+ QT_UWPBL
+ TTEND_UW
+ QVTEN_UW
+ QLTEN_UW
+ QITEN_UW
+ CFRC_UW
+ TK_Z_UW
+ TKH_Z_UW
+NSTEP =                  180    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      181   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+ radiation: perpetual sun, solin=   336.644165    
+NSTEP =                  181    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      182   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  182    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      183   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  183    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      184   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  184    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      185   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  185    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      186   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  186    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      187   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  187    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      188   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  188    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      189   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  189    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      190   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  190    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      191   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  191    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      192   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  192    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      193   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  193    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      194   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  194    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      195   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  195    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      196   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+ radiation: perpetual sun, solin=   336.644165    
+NSTEP =                  196    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      197   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  197    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      198   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  198    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      199   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  199    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      200   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  200    NCYCLE=   1    MAX CFL=  0.032
+ DAY =    5.55555560E-02
+ NSTEP=         200
+ div:   7.32412673E-08  -4.36809842E-08
+ SST=   0.00000000       surface pressure=   1000.00000    
+ u:  -1.14787340       22.4545002    
+ v: -0.398233742      0.278086036    
+ w:  -8.53650086E-03   9.59271844E-03
+ p:  -35.8922615       30.4867802    
+ t:   281.891235       504.339752    
+ tabs:   190.413071       282.816742    
+ q:   0.00000000       6.76218839E-03
+ tke:   0.00000000       1.52240372    
+ tk_xy:   0.00000000       59.8116875    
+ tk_z:   0.00000000       59.8116875    
+ tkh_xy:   0.00000000       179.435059    
+ tkh_z:   0.00000000       179.435059    
+ qn:   0.00000000       3.97187250E-04
+ qp:   0.00000000       0.00000000    
+ qrad(K/day):  -728.113342       786.471191    
+ shf:  -12.0900116       25.6341419    
+ lhf:  -9.56719494       60.1375275    
+ uw:   8.31797486E-04   1.55908824E-03
+ vw:  -2.94701284E-04   2.42861366E-04
+ sst:   273.149994       300.148285    
+ total water budget:
+ before (mm):   16.335826581790123     
+ after (mm) :   16.335015190972221     
+ evap (mm/day):  0.50715128580729163     
+ prec (mm/day):   0.0000000000000000     
+ ls (mm/day):   0.0000000000000000     
+ disbalance (mm/day)  -3.4281582302497782     
+ disbalance (mm)  -9.5226617506938283E-004
+SUBNSTEP =      201   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  201    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      202   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  202    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      203   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  203    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      204   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  204    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      205   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  205    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      206   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  206    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      207   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  207    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      208   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  208    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      209   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  209    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      210   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+ Collecting statistics...
+ TL
+ TABS
+ U
+ V
+ QT
+ TK_XY
+ TK_Z
+ TKH_XY
+ TKH_Z
+ name TABSOBS is missing in "lst" file.
+ name QVOBS is missing in "lst" file.
+ name UOBS is missing in "lst" file.
+ name VOBS is missing in "lst" file.
+ name WOBS is missing in "lst" file.
+ name TTEND is missing in "lst" file.
+ name QTEND is missing in "lst" file.
+ name WWVCONV is missing in "lst" file.
+ name W_WAVE is missing in "lst" file.
+ name H_WAVE is missing in "lst" file.
+ name Q_WAVE is missing in "lst" file.
+ name T_WAVE is missing in "lst" file.
+ name H_WAVEBG is missing in "lst" file.
+ name Q_WAVEBG is missing in "lst" file.
+ name T_WAVEBG is missing in "lst" file.
+ name P_WAVE is missing in "lst" file.
+ name T_TARGET is missing in "lst" file.
+ name TTENDWV is missing in "lst" file.
+ name QTENDWV is missing in "lst" file.
+ name DSE is missing in "lst" file.
+ name MSE is missing in "lst" file.
+ name SSE is missing in "lst" file.
+ name THETA is missing in "lst" file.
+ name THETAL is missing in "lst" file.
+ name THETAV is missing in "lst" file.
+ name THETAE is missing in "lst" file.
+ name PRES is missing in "lst" file.
+ name RHO is missing in "lst" file.
+ name QV is missing in "lst" file.
+ name QC is missing in "lst" file.
+ name QI is missing in "lst" file.
+ name QR is missing in "lst" file.
+ name QS is missing in "lst" file.
+ name QG is missing in "lst" file.
+ name QN is missing in "lst" file.
+ name QP is missing in "lst" file.
+ name QCOND is missing in "lst" file.
+ name QSAT is missing in "lst" file.
+ name RELH is missing in "lst" file.
+ name UW is missing in "lst" file.
+ name VW is missing in "lst" file.
+ name UWSB is missing in "lst" file.
+ name VWSB is missing in "lst" file.
+ name TLFLUX is missing in "lst" file.
+ name QTFLUX is missing in "lst" file.
+ name TLFLUXS is missing in "lst" file.
+ name QTFLUXS is missing in "lst" file.
+ name QPFLUXS is missing in "lst" file.
+ name QPFLUX is missing in "lst" file.
+ name PRECIP is missing in "lst" file.
+ name TVFLUX is missing in "lst" file.
+ name QCFLUX is missing in "lst" file.
+ name QIFLUX is missing in "lst" file.
+ name U2 is missing in "lst" file.
+ name V2 is missing in "lst" file.
+ name W2 is missing in "lst" file.
+ name W3 is missing in "lst" file.
+ name WSKEW is missing in "lst" file.
+ name AUP is missing in "lst" file.
+ name TL2 is missing in "lst" file.
+ name TQ is missing in "lst" file.
+ name QT2 is missing in "lst" file.
+ name QC2 is missing in "lst" file.
+ name QI2 is missing in "lst" file.
+ name QS2 is missing in "lst" file.
+ name TKE is missing in "lst" file.
+ name ADVTR is missing in "lst" file.
+ name PRESSTR is missing in "lst" file.
+ name BUOYA is missing in "lst" file.
+ name SHEAR is missing in "lst" file.
+ name DISSIP is missing in "lst" file.
+ name DIFTR is missing in "lst" file.
+ name WUADV is missing in "lst" file.
+ name WUANIZ is missing in "lst" file.
+ name WUBUOY is missing in "lst" file.
+ name WUSHEAR is missing in "lst" file.
+ name WUPRES is missing in "lst" file.
+ name WUDIFF is missing in "lst" file.
+ name WVADV is missing in "lst" file.
+ name WVANIZ is missing in "lst" file.
+ name WVBUOY is missing in "lst" file.
+ name WVSHEAR is missing in "lst" file.
+ name WVPRES is missing in "lst" file.
+ name WVDIFF is missing in "lst" file.
+ name W2BUOY is missing in "lst" file.
+ name W2ADV is missing in "lst" file.
+ name W2REDIS is missing in "lst" file.
+ name W2PRES is missing in "lst" file.
+ name W2DIFF is missing in "lst" file.
+ name T2ADVTR is missing in "lst" file.
+ name T2GRAD is missing in "lst" file.
+ name T2DISSIP is missing in "lst" file.
+ name T2DIFTR is missing in "lst" file.
+ name T2PREC is missing in "lst" file.
+ name Q2ADVTR is missing in "lst" file.
+ name Q2GRAD is missing in "lst" file.
+ name Q2DISSIP is missing in "lst" file.
+ name Q2DIFTR is missing in "lst" file.
+ name Q2PREC is missing in "lst" file.
+ name TWADV is missing in "lst" file.
+ name TWDIFF is missing in "lst" file.
+ name TWGRAD is missing in "lst" file.
+ name TWBUOY is missing in "lst" file.
+ name TWPRES is missing in "lst" file.
+ name TWPREC is missing in "lst" file.
+ name QWADV is missing in "lst" file.
+ name QWDIFF is missing in "lst" file.
+ name QWGRAD is missing in "lst" file.
+ name QWBUOY is missing in "lst" file.
+ name QWPRES is missing in "lst" file.
+ name QWPREC is missing in "lst" file.
+ name SWADV is missing in "lst" file.
+ name SWDIFF is missing in "lst" file.
+ name SWGRAD is missing in "lst" file.
+ name SWBUOY is missing in "lst" file.
+ name SWPRES is missing in "lst" file.
+ name S2ADVTR is missing in "lst" file.
+ name S2GRAD is missing in "lst" file.
+ name S2DISSIP is missing in "lst" file.
+ name S2DIFTR is missing in "lst" file.
+ name SW is missing in "lst" file.
+ name SWSB is missing in "lst" file.
+ name S is missing in "lst" file.
+ name S2 is missing in "lst" file.
+ TKES
+ name ADVTRS is missing in "lst" file.
+ name BUOYAS is missing in "lst" file.
+ name SHEARS is missing in "lst" file.
+ name DISSIPS is missing in "lst" file.
+ name CLD is missing in "lst" file.
+ name HYDRO is missing in "lst" file.
+ name WCLD is missing in "lst" file.
+ name UCLD is missing in "lst" file.
+ name VCLD is missing in "lst" file.
+ name DSECLD is missing in "lst" file.
+ name MSECLD is missing in "lst" file.
+ name TLCLD is missing in "lst" file.
+ name TVCLD is missing in "lst" file.
+ name TVCLDA is missing in "lst" file.
+ name TACLD is missing in "lst" file.
+ name QTCLD is missing in "lst" file.
+ name QCCLD is missing in "lst" file.
+ name QICLD is missing in "lst" file.
+ name QPCLD is missing in "lst" file.
+ name WCLDA is missing in "lst" file.
+ name TLWCLD is missing in "lst" file.
+ name TVWCLD is missing in "lst" file.
+ name QTWCLD is missing in "lst" file.
+ name QCWCLD is missing in "lst" file.
+ name QIWCLD is missing in "lst" file.
+ name MCUP is missing in "lst" file.
+ name MCDNS is missing in "lst" file.
+ name MCDNU is missing in "lst" file.
+ name MC is missing in "lst" file.
+ name SCLD is missing in "lst" file.
+ name SWCLD is missing in "lst" file.
+ name CORE is missing in "lst" file.
+ name CORECL is missing in "lst" file.
+ name WCOR is missing in "lst" file.
+ name UCOR is missing in "lst" file.
+ name VCOR is missing in "lst" file.
+ name DSECOR is missing in "lst" file.
+ name MSECOR is missing in "lst" file.
+ name TLCOR is missing in "lst" file.
+ name TVCOR is missing in "lst" file.
+ name TVCORA is missing in "lst" file.
+ name TACOR is missing in "lst" file.
+ name QTCOR is missing in "lst" file.
+ name QCCOR is missing in "lst" file.
+ name QICOR is missing in "lst" file.
+ name QPCOR is missing in "lst" file.
+ name WCORA is missing in "lst" file.
+ name TLWCOR is missing in "lst" file.
+ name TVWCOR is missing in "lst" file.
+ name QTWCOR is missing in "lst" file.
+ name QCWCOR is missing in "lst" file.
+ name QIWCOR is missing in "lst" file.
+ name SCOR is missing in "lst" file.
+ name SWCOR is missing in "lst" file.
+ name COREDN is missing in "lst" file.
+ name COREDNCL is missing in "lst" file.
+ name UCORDN is missing in "lst" file.
+ name VCORDN is missing in "lst" file.
+ name WCORDN is missing in "lst" file.
+ name DSECORDN is missing in "lst" file.
+ name MSECORDN is missing in "lst" file.
+ name TLCORDN is missing in "lst" file.
+ name TVCORDN is missing in "lst" file.
+ name TACORDN is missing in "lst" file.
+ name QTCORDN is missing in "lst" file.
+ name QCCORDN is missing in "lst" file.
+ name QICORDN is missing in "lst" file.
+ name QPCORDN is missing in "lst" file.
+ name WCORDNA is missing in "lst" file.
+ name TLWCORDN is missing in "lst" file.
+ name TVWCORDN is missing in "lst" file.
+ name QTWCORDN is missing in "lst" file.
+ name QCWCORDN is missing in "lst" file.
+ name QIWCORDN is missing in "lst" file.
+ name MCRUP is missing in "lst" file.
+ name MCRDNS is missing in "lst" file.
+ name MCRDNU is missing in "lst" file.
+ name MCR is missing in "lst" file.
+ name SCORDN is missing in "lst" file.
+ name SWCORDN is missing in "lst" file.
+ name HLADV is missing in "lst" file.
+ name HLDIFF is missing in "lst" file.
+ name HLLAT is missing in "lst" file.
+ name HLRAD is missing in "lst" file.
+ name QTADV is missing in "lst" file.
+ name QTDIFF is missing in "lst" file.
+ name QTSINK is missing in "lst" file.
+ name QTSRC is missing in "lst" file.
+ name QPADV is missing in "lst" file.
+ name QPDIFF is missing in "lst" file.
+ name QPFALL is missing in "lst" file.
+ name QPSRC is missing in "lst" file.
+ name QPEVP is missing in "lst" file.
+ name RADLWUP is missing in "lst" file.
+ name RADLWDN is missing in "lst" file.
+ name RADSWUP is missing in "lst" file.
+ name RADSWDN is missing in "lst" file.
+ name RADQRLW is missing in "lst" file.
+ name RADQRSW is missing in "lst" file.
+ name RADQR is missing in "lst" file.
+ name RADQRC is missing in "lst" file.
+ name RADQRS is missing in "lst" file.
+ name Q1C is missing in "lst" file.
+ name Q2 is missing in "lst" file.
+ name TVTEND is missing in "lst" file.
+ name QVTEND is missing in "lst" file.
+ name TNUDGE is missing in "lst" file.
+ name QNUDGE is missing in "lst" file.
+ name RADQRCLW is missing in "lst" file.
+ name RADQRCSW is missing in "lst" file.
+ UMF
+ SLFLX
+ QTFLX
+ TKE_UW
+ TT_UWPBL
+ QT_UWPBL
+ TTEND_UW
+ QVTEN_UW
+ QLTEN_UW
+ QITEN_UW
+ CFRC_UW
+ TK_Z_UW
+ TKH_Z_UW
+NSTEP =                  210    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      211   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+ radiation: perpetual sun, solin=   336.644165    
+NSTEP =                  211    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      212   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  212    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      213   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  213    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      214   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  214    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      215   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  215    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      216   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  216    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      217   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  217    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      218   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  218    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      219   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  219    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      220   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  220    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      221   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  221    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      222   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  222    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      223   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  223    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      224   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  224    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      225   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  225    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      226   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+ radiation: perpetual sun, solin=   336.644165    
+NSTEP =                  226    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      227   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  227    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      228   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  228    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      229   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  229    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      230   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  230    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      231   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  231    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      232   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  232    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      233   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  233    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      234   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  234    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      235   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  235    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      236   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  236    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      237   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  237    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      238   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  238    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      239   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  239    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      240   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+ Collecting statistics...
+ TL
+ TABS
+ U
+ V
+ QT
+ TK_XY
+ TK_Z
+ TKH_XY
+ TKH_Z
+ name TABSOBS is missing in "lst" file.
+ name QVOBS is missing in "lst" file.
+ name UOBS is missing in "lst" file.
+ name VOBS is missing in "lst" file.
+ name WOBS is missing in "lst" file.
+ name TTEND is missing in "lst" file.
+ name QTEND is missing in "lst" file.
+ name WWVCONV is missing in "lst" file.
+ name W_WAVE is missing in "lst" file.
+ name H_WAVE is missing in "lst" file.
+ name Q_WAVE is missing in "lst" file.
+ name T_WAVE is missing in "lst" file.
+ name H_WAVEBG is missing in "lst" file.
+ name Q_WAVEBG is missing in "lst" file.
+ name T_WAVEBG is missing in "lst" file.
+ name P_WAVE is missing in "lst" file.
+ name T_TARGET is missing in "lst" file.
+ name TTENDWV is missing in "lst" file.
+ name QTENDWV is missing in "lst" file.
+ name DSE is missing in "lst" file.
+ name MSE is missing in "lst" file.
+ name SSE is missing in "lst" file.
+ name THETA is missing in "lst" file.
+ name THETAL is missing in "lst" file.
+ name THETAV is missing in "lst" file.
+ name THETAE is missing in "lst" file.
+ name PRES is missing in "lst" file.
+ name RHO is missing in "lst" file.
+ name QV is missing in "lst" file.
+ name QC is missing in "lst" file.
+ name QI is missing in "lst" file.
+ name QR is missing in "lst" file.
+ name QS is missing in "lst" file.
+ name QG is missing in "lst" file.
+ name QN is missing in "lst" file.
+ name QP is missing in "lst" file.
+ name QCOND is missing in "lst" file.
+ name QSAT is missing in "lst" file.
+ name RELH is missing in "lst" file.
+ name UW is missing in "lst" file.
+ name VW is missing in "lst" file.
+ name UWSB is missing in "lst" file.
+ name VWSB is missing in "lst" file.
+ name TLFLUX is missing in "lst" file.
+ name QTFLUX is missing in "lst" file.
+ name TLFLUXS is missing in "lst" file.
+ name QTFLUXS is missing in "lst" file.
+ name QPFLUXS is missing in "lst" file.
+ name QPFLUX is missing in "lst" file.
+ name PRECIP is missing in "lst" file.
+ name TVFLUX is missing in "lst" file.
+ name QCFLUX is missing in "lst" file.
+ name QIFLUX is missing in "lst" file.
+ name U2 is missing in "lst" file.
+ name V2 is missing in "lst" file.
+ name W2 is missing in "lst" file.
+ name W3 is missing in "lst" file.
+ name WSKEW is missing in "lst" file.
+ name AUP is missing in "lst" file.
+ name TL2 is missing in "lst" file.
+ name TQ is missing in "lst" file.
+ name QT2 is missing in "lst" file.
+ name QC2 is missing in "lst" file.
+ name QI2 is missing in "lst" file.
+ name QS2 is missing in "lst" file.
+ name TKE is missing in "lst" file.
+ name ADVTR is missing in "lst" file.
+ name PRESSTR is missing in "lst" file.
+ name BUOYA is missing in "lst" file.
+ name SHEAR is missing in "lst" file.
+ name DISSIP is missing in "lst" file.
+ name DIFTR is missing in "lst" file.
+ name WUADV is missing in "lst" file.
+ name WUANIZ is missing in "lst" file.
+ name WUBUOY is missing in "lst" file.
+ name WUSHEAR is missing in "lst" file.
+ name WUPRES is missing in "lst" file.
+ name WUDIFF is missing in "lst" file.
+ name WVADV is missing in "lst" file.
+ name WVANIZ is missing in "lst" file.
+ name WVBUOY is missing in "lst" file.
+ name WVSHEAR is missing in "lst" file.
+ name WVPRES is missing in "lst" file.
+ name WVDIFF is missing in "lst" file.
+ name W2BUOY is missing in "lst" file.
+ name W2ADV is missing in "lst" file.
+ name W2REDIS is missing in "lst" file.
+ name W2PRES is missing in "lst" file.
+ name W2DIFF is missing in "lst" file.
+ name T2ADVTR is missing in "lst" file.
+ name T2GRAD is missing in "lst" file.
+ name T2DISSIP is missing in "lst" file.
+ name T2DIFTR is missing in "lst" file.
+ name T2PREC is missing in "lst" file.
+ name Q2ADVTR is missing in "lst" file.
+ name Q2GRAD is missing in "lst" file.
+ name Q2DISSIP is missing in "lst" file.
+ name Q2DIFTR is missing in "lst" file.
+ name Q2PREC is missing in "lst" file.
+ name TWADV is missing in "lst" file.
+ name TWDIFF is missing in "lst" file.
+ name TWGRAD is missing in "lst" file.
+ name TWBUOY is missing in "lst" file.
+ name TWPRES is missing in "lst" file.
+ name TWPREC is missing in "lst" file.
+ name QWADV is missing in "lst" file.
+ name QWDIFF is missing in "lst" file.
+ name QWGRAD is missing in "lst" file.
+ name QWBUOY is missing in "lst" file.
+ name QWPRES is missing in "lst" file.
+ name QWPREC is missing in "lst" file.
+ name SWADV is missing in "lst" file.
+ name SWDIFF is missing in "lst" file.
+ name SWGRAD is missing in "lst" file.
+ name SWBUOY is missing in "lst" file.
+ name SWPRES is missing in "lst" file.
+ name S2ADVTR is missing in "lst" file.
+ name S2GRAD is missing in "lst" file.
+ name S2DISSIP is missing in "lst" file.
+ name S2DIFTR is missing in "lst" file.
+ name SW is missing in "lst" file.
+ name SWSB is missing in "lst" file.
+ name S is missing in "lst" file.
+ name S2 is missing in "lst" file.
+ TKES
+ name ADVTRS is missing in "lst" file.
+ name BUOYAS is missing in "lst" file.
+ name SHEARS is missing in "lst" file.
+ name DISSIPS is missing in "lst" file.
+ name CLD is missing in "lst" file.
+ name HYDRO is missing in "lst" file.
+ name WCLD is missing in "lst" file.
+ name UCLD is missing in "lst" file.
+ name VCLD is missing in "lst" file.
+ name DSECLD is missing in "lst" file.
+ name MSECLD is missing in "lst" file.
+ name TLCLD is missing in "lst" file.
+ name TVCLD is missing in "lst" file.
+ name TVCLDA is missing in "lst" file.
+ name TACLD is missing in "lst" file.
+ name QTCLD is missing in "lst" file.
+ name QCCLD is missing in "lst" file.
+ name QICLD is missing in "lst" file.
+ name QPCLD is missing in "lst" file.
+ name WCLDA is missing in "lst" file.
+ name TLWCLD is missing in "lst" file.
+ name TVWCLD is missing in "lst" file.
+ name QTWCLD is missing in "lst" file.
+ name QCWCLD is missing in "lst" file.
+ name QIWCLD is missing in "lst" file.
+ name MCUP is missing in "lst" file.
+ name MCDNS is missing in "lst" file.
+ name MCDNU is missing in "lst" file.
+ name MC is missing in "lst" file.
+ name SCLD is missing in "lst" file.
+ name SWCLD is missing in "lst" file.
+ name CORE is missing in "lst" file.
+ name CORECL is missing in "lst" file.
+ name WCOR is missing in "lst" file.
+ name UCOR is missing in "lst" file.
+ name VCOR is missing in "lst" file.
+ name DSECOR is missing in "lst" file.
+ name MSECOR is missing in "lst" file.
+ name TLCOR is missing in "lst" file.
+ name TVCOR is missing in "lst" file.
+ name TVCORA is missing in "lst" file.
+ name TACOR is missing in "lst" file.
+ name QTCOR is missing in "lst" file.
+ name QCCOR is missing in "lst" file.
+ name QICOR is missing in "lst" file.
+ name QPCOR is missing in "lst" file.
+ name WCORA is missing in "lst" file.
+ name TLWCOR is missing in "lst" file.
+ name TVWCOR is missing in "lst" file.
+ name QTWCOR is missing in "lst" file.
+ name QCWCOR is missing in "lst" file.
+ name QIWCOR is missing in "lst" file.
+ name SCOR is missing in "lst" file.
+ name SWCOR is missing in "lst" file.
+ name COREDN is missing in "lst" file.
+ name COREDNCL is missing in "lst" file.
+ name UCORDN is missing in "lst" file.
+ name VCORDN is missing in "lst" file.
+ name WCORDN is missing in "lst" file.
+ name DSECORDN is missing in "lst" file.
+ name MSECORDN is missing in "lst" file.
+ name TLCORDN is missing in "lst" file.
+ name TVCORDN is missing in "lst" file.
+ name TACORDN is missing in "lst" file.
+ name QTCORDN is missing in "lst" file.
+ name QCCORDN is missing in "lst" file.
+ name QICORDN is missing in "lst" file.
+ name QPCORDN is missing in "lst" file.
+ name WCORDNA is missing in "lst" file.
+ name TLWCORDN is missing in "lst" file.
+ name TVWCORDN is missing in "lst" file.
+ name QTWCORDN is missing in "lst" file.
+ name QCWCORDN is missing in "lst" file.
+ name QIWCORDN is missing in "lst" file.
+ name MCRUP is missing in "lst" file.
+ name MCRDNS is missing in "lst" file.
+ name MCRDNU is missing in "lst" file.
+ name MCR is missing in "lst" file.
+ name SCORDN is missing in "lst" file.
+ name SWCORDN is missing in "lst" file.
+ name HLADV is missing in "lst" file.
+ name HLDIFF is missing in "lst" file.
+ name HLLAT is missing in "lst" file.
+ name HLRAD is missing in "lst" file.
+ name QTADV is missing in "lst" file.
+ name QTDIFF is missing in "lst" file.
+ name QTSINK is missing in "lst" file.
+ name QTSRC is missing in "lst" file.
+ name QPADV is missing in "lst" file.
+ name QPDIFF is missing in "lst" file.
+ name QPFALL is missing in "lst" file.
+ name QPSRC is missing in "lst" file.
+ name QPEVP is missing in "lst" file.
+ name RADLWUP is missing in "lst" file.
+ name RADLWDN is missing in "lst" file.
+ name RADSWUP is missing in "lst" file.
+ name RADSWDN is missing in "lst" file.
+ name RADQRLW is missing in "lst" file.
+ name RADQRSW is missing in "lst" file.
+ name RADQR is missing in "lst" file.
+ name RADQRC is missing in "lst" file.
+ name RADQRS is missing in "lst" file.
+ name Q1C is missing in "lst" file.
+ name Q2 is missing in "lst" file.
+ name TVTEND is missing in "lst" file.
+ name QVTEND is missing in "lst" file.
+ name TNUDGE is missing in "lst" file.
+ name QNUDGE is missing in "lst" file.
+ name RADQRCLW is missing in "lst" file.
+ name RADQRCSW is missing in "lst" file.
+ UMF
+ SLFLX
+ QTFLX
+ TKE_UW
+ TT_UWPBL
+ QT_UWPBL
+ TTEND_UW
+ QVTEN_UW
+ QLTEN_UW
+ QITEN_UW
+ CFRC_UW
+ TK_Z_UW
+ TKH_Z_UW
+NSTEP =                  240    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      241   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+ radiation: perpetual sun, solin=   336.644165    
+NSTEP =                  241    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      242   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  242    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      243   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  243    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      244   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  244    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      245   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  245    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      246   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  246    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      247   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  247    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      248   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  248    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      249   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  249    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      250   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  250    NCYCLE=   1    MAX CFL=  0.032
+ DAY =    6.94444478E-02
+ NSTEP=         250
+ div:   3.85743988E-08  -4.55486315E-08
+ SST=   0.00000000       surface pressure=   1000.00000    
+ u:  -1.18454123       22.4634666    
+ v: -0.481368095      0.335811377    
+ w:  -1.08184991E-02   1.01820119E-02
+ p:  -42.0578384       34.6122894    
+ t:   281.798004       504.347961    
+ tabs:   190.397018       282.950836    
+ q:   0.00000000       6.75332174E-03
+ tke:   0.00000000       1.58575153    
+ tk_xy:   0.00000000       61.4844322    
+ tk_z:   0.00000000       61.4844322    
+ tkh_xy:   0.00000000       184.453293    
+ tkh_z:   0.00000000       184.453293    
+ qn:   0.00000000       4.05378785E-04
+ qp:   0.00000000       0.00000000    
+ qrad(K/day):  -935.076050       878.806763    
+ shf:  -11.9768763       25.5717163    
+ lhf:  -9.44909954       60.5540848    
+ uw:   7.72128056E-04   1.60268368E-03
+ vw:  -3.84531217E-04   3.12236778E-04
+ sst:   273.149994       300.148285    
+ total water budget:
+ before (mm):   16.297911844135804     
+ after (mm) :   16.297202932098767     
+ evap (mm/day):  0.51937527126736116     
+ prec (mm/day):   0.0000000000000000     
+ ls (mm/day):   0.0000000000000000     
+ disbalance (mm/day)  -3.0714586045988312     
+ disbalance (mm)  -8.5318294572189757E-004
+SUBNSTEP =      251   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  251    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      252   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  252    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      253   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  253    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      254   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  254    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      255   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  255    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      256   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+ radiation: perpetual sun, solin=   336.644165    
+NSTEP =                  256    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      257   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  257    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      258   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  258    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      259   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  259    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      260   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  260    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      261   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  261    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      262   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  262    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      263   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  263    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      264   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  264    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      265   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  265    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      266   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  266    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      267   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  267    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      268   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  268    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      269   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  269    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      270   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+ Collecting statistics...
+ TL
+ TABS
+ U
+ V
+ QT
+ TK_XY
+ TK_Z
+ TKH_XY
+ TKH_Z
+ name TABSOBS is missing in "lst" file.
+ name QVOBS is missing in "lst" file.
+ name UOBS is missing in "lst" file.
+ name VOBS is missing in "lst" file.
+ name WOBS is missing in "lst" file.
+ name TTEND is missing in "lst" file.
+ name QTEND is missing in "lst" file.
+ name WWVCONV is missing in "lst" file.
+ name W_WAVE is missing in "lst" file.
+ name H_WAVE is missing in "lst" file.
+ name Q_WAVE is missing in "lst" file.
+ name T_WAVE is missing in "lst" file.
+ name H_WAVEBG is missing in "lst" file.
+ name Q_WAVEBG is missing in "lst" file.
+ name T_WAVEBG is missing in "lst" file.
+ name P_WAVE is missing in "lst" file.
+ name T_TARGET is missing in "lst" file.
+ name TTENDWV is missing in "lst" file.
+ name QTENDWV is missing in "lst" file.
+ name DSE is missing in "lst" file.
+ name MSE is missing in "lst" file.
+ name SSE is missing in "lst" file.
+ name THETA is missing in "lst" file.
+ name THETAL is missing in "lst" file.
+ name THETAV is missing in "lst" file.
+ name THETAE is missing in "lst" file.
+ name PRES is missing in "lst" file.
+ name RHO is missing in "lst" file.
+ name QV is missing in "lst" file.
+ name QC is missing in "lst" file.
+ name QI is missing in "lst" file.
+ name QR is missing in "lst" file.
+ name QS is missing in "lst" file.
+ name QG is missing in "lst" file.
+ name QN is missing in "lst" file.
+ name QP is missing in "lst" file.
+ name QCOND is missing in "lst" file.
+ name QSAT is missing in "lst" file.
+ name RELH is missing in "lst" file.
+ name UW is missing in "lst" file.
+ name VW is missing in "lst" file.
+ name UWSB is missing in "lst" file.
+ name VWSB is missing in "lst" file.
+ name TLFLUX is missing in "lst" file.
+ name QTFLUX is missing in "lst" file.
+ name TLFLUXS is missing in "lst" file.
+ name QTFLUXS is missing in "lst" file.
+ name QPFLUXS is missing in "lst" file.
+ name QPFLUX is missing in "lst" file.
+ name PRECIP is missing in "lst" file.
+ name TVFLUX is missing in "lst" file.
+ name QCFLUX is missing in "lst" file.
+ name QIFLUX is missing in "lst" file.
+ name U2 is missing in "lst" file.
+ name V2 is missing in "lst" file.
+ name W2 is missing in "lst" file.
+ name W3 is missing in "lst" file.
+ name WSKEW is missing in "lst" file.
+ name AUP is missing in "lst" file.
+ name TL2 is missing in "lst" file.
+ name TQ is missing in "lst" file.
+ name QT2 is missing in "lst" file.
+ name QC2 is missing in "lst" file.
+ name QI2 is missing in "lst" file.
+ name QS2 is missing in "lst" file.
+ name TKE is missing in "lst" file.
+ name ADVTR is missing in "lst" file.
+ name PRESSTR is missing in "lst" file.
+ name BUOYA is missing in "lst" file.
+ name SHEAR is missing in "lst" file.
+ name DISSIP is missing in "lst" file.
+ name DIFTR is missing in "lst" file.
+ name WUADV is missing in "lst" file.
+ name WUANIZ is missing in "lst" file.
+ name WUBUOY is missing in "lst" file.
+ name WUSHEAR is missing in "lst" file.
+ name WUPRES is missing in "lst" file.
+ name WUDIFF is missing in "lst" file.
+ name WVADV is missing in "lst" file.
+ name WVANIZ is missing in "lst" file.
+ name WVBUOY is missing in "lst" file.
+ name WVSHEAR is missing in "lst" file.
+ name WVPRES is missing in "lst" file.
+ name WVDIFF is missing in "lst" file.
+ name W2BUOY is missing in "lst" file.
+ name W2ADV is missing in "lst" file.
+ name W2REDIS is missing in "lst" file.
+ name W2PRES is missing in "lst" file.
+ name W2DIFF is missing in "lst" file.
+ name T2ADVTR is missing in "lst" file.
+ name T2GRAD is missing in "lst" file.
+ name T2DISSIP is missing in "lst" file.
+ name T2DIFTR is missing in "lst" file.
+ name T2PREC is missing in "lst" file.
+ name Q2ADVTR is missing in "lst" file.
+ name Q2GRAD is missing in "lst" file.
+ name Q2DISSIP is missing in "lst" file.
+ name Q2DIFTR is missing in "lst" file.
+ name Q2PREC is missing in "lst" file.
+ name TWADV is missing in "lst" file.
+ name TWDIFF is missing in "lst" file.
+ name TWGRAD is missing in "lst" file.
+ name TWBUOY is missing in "lst" file.
+ name TWPRES is missing in "lst" file.
+ name TWPREC is missing in "lst" file.
+ name QWADV is missing in "lst" file.
+ name QWDIFF is missing in "lst" file.
+ name QWGRAD is missing in "lst" file.
+ name QWBUOY is missing in "lst" file.
+ name QWPRES is missing in "lst" file.
+ name QWPREC is missing in "lst" file.
+ name SWADV is missing in "lst" file.
+ name SWDIFF is missing in "lst" file.
+ name SWGRAD is missing in "lst" file.
+ name SWBUOY is missing in "lst" file.
+ name SWPRES is missing in "lst" file.
+ name S2ADVTR is missing in "lst" file.
+ name S2GRAD is missing in "lst" file.
+ name S2DISSIP is missing in "lst" file.
+ name S2DIFTR is missing in "lst" file.
+ name SW is missing in "lst" file.
+ name SWSB is missing in "lst" file.
+ name S is missing in "lst" file.
+ name S2 is missing in "lst" file.
+ TKES
+ name ADVTRS is missing in "lst" file.
+ name BUOYAS is missing in "lst" file.
+ name SHEARS is missing in "lst" file.
+ name DISSIPS is missing in "lst" file.
+ name CLD is missing in "lst" file.
+ name HYDRO is missing in "lst" file.
+ name WCLD is missing in "lst" file.
+ name UCLD is missing in "lst" file.
+ name VCLD is missing in "lst" file.
+ name DSECLD is missing in "lst" file.
+ name MSECLD is missing in "lst" file.
+ name TLCLD is missing in "lst" file.
+ name TVCLD is missing in "lst" file.
+ name TVCLDA is missing in "lst" file.
+ name TACLD is missing in "lst" file.
+ name QTCLD is missing in "lst" file.
+ name QCCLD is missing in "lst" file.
+ name QICLD is missing in "lst" file.
+ name QPCLD is missing in "lst" file.
+ name WCLDA is missing in "lst" file.
+ name TLWCLD is missing in "lst" file.
+ name TVWCLD is missing in "lst" file.
+ name QTWCLD is missing in "lst" file.
+ name QCWCLD is missing in "lst" file.
+ name QIWCLD is missing in "lst" file.
+ name MCUP is missing in "lst" file.
+ name MCDNS is missing in "lst" file.
+ name MCDNU is missing in "lst" file.
+ name MC is missing in "lst" file.
+ name SCLD is missing in "lst" file.
+ name SWCLD is missing in "lst" file.
+ name CORE is missing in "lst" file.
+ name CORECL is missing in "lst" file.
+ name WCOR is missing in "lst" file.
+ name UCOR is missing in "lst" file.
+ name VCOR is missing in "lst" file.
+ name DSECOR is missing in "lst" file.
+ name MSECOR is missing in "lst" file.
+ name TLCOR is missing in "lst" file.
+ name TVCOR is missing in "lst" file.
+ name TVCORA is missing in "lst" file.
+ name TACOR is missing in "lst" file.
+ name QTCOR is missing in "lst" file.
+ name QCCOR is missing in "lst" file.
+ name QICOR is missing in "lst" file.
+ name QPCOR is missing in "lst" file.
+ name WCORA is missing in "lst" file.
+ name TLWCOR is missing in "lst" file.
+ name TVWCOR is missing in "lst" file.
+ name QTWCOR is missing in "lst" file.
+ name QCWCOR is missing in "lst" file.
+ name QIWCOR is missing in "lst" file.
+ name SCOR is missing in "lst" file.
+ name SWCOR is missing in "lst" file.
+ name COREDN is missing in "lst" file.
+ name COREDNCL is missing in "lst" file.
+ name UCORDN is missing in "lst" file.
+ name VCORDN is missing in "lst" file.
+ name WCORDN is missing in "lst" file.
+ name DSECORDN is missing in "lst" file.
+ name MSECORDN is missing in "lst" file.
+ name TLCORDN is missing in "lst" file.
+ name TVCORDN is missing in "lst" file.
+ name TACORDN is missing in "lst" file.
+ name QTCORDN is missing in "lst" file.
+ name QCCORDN is missing in "lst" file.
+ name QICORDN is missing in "lst" file.
+ name QPCORDN is missing in "lst" file.
+ name WCORDNA is missing in "lst" file.
+ name TLWCORDN is missing in "lst" file.
+ name TVWCORDN is missing in "lst" file.
+ name QTWCORDN is missing in "lst" file.
+ name QCWCORDN is missing in "lst" file.
+ name QIWCORDN is missing in "lst" file.
+ name MCRUP is missing in "lst" file.
+ name MCRDNS is missing in "lst" file.
+ name MCRDNU is missing in "lst" file.
+ name MCR is missing in "lst" file.
+ name SCORDN is missing in "lst" file.
+ name SWCORDN is missing in "lst" file.
+ name HLADV is missing in "lst" file.
+ name HLDIFF is missing in "lst" file.
+ name HLLAT is missing in "lst" file.
+ name HLRAD is missing in "lst" file.
+ name QTADV is missing in "lst" file.
+ name QTDIFF is missing in "lst" file.
+ name QTSINK is missing in "lst" file.
+ name QTSRC is missing in "lst" file.
+ name QPADV is missing in "lst" file.
+ name QPDIFF is missing in "lst" file.
+ name QPFALL is missing in "lst" file.
+ name QPSRC is missing in "lst" file.
+ name QPEVP is missing in "lst" file.
+ name RADLWUP is missing in "lst" file.
+ name RADLWDN is missing in "lst" file.
+ name RADSWUP is missing in "lst" file.
+ name RADSWDN is missing in "lst" file.
+ name RADQRLW is missing in "lst" file.
+ name RADQRSW is missing in "lst" file.
+ name RADQR is missing in "lst" file.
+ name RADQRC is missing in "lst" file.
+ name RADQRS is missing in "lst" file.
+ name Q1C is missing in "lst" file.
+ name Q2 is missing in "lst" file.
+ name TVTEND is missing in "lst" file.
+ name QVTEND is missing in "lst" file.
+ name TNUDGE is missing in "lst" file.
+ name QNUDGE is missing in "lst" file.
+ name RADQRCLW is missing in "lst" file.
+ name RADQRCSW is missing in "lst" file.
+ UMF
+ SLFLX
+ QTFLX
+ TKE_UW
+ TT_UWPBL
+ QT_UWPBL
+ TTEND_UW
+ QVTEN_UW
+ QLTEN_UW
+ QITEN_UW
+ CFRC_UW
+ TK_Z_UW
+ TKH_Z_UW
+NSTEP =                  270    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      271   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+ radiation: perpetual sun, solin=   336.644165    
+NSTEP =                  271    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      272   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  272    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      273   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  273    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      274   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  274    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      275   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  275    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      276   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  276    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      277   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  277    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      278   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  278    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      279   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  279    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      280   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  280    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      281   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  281    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      282   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  282    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      283   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  283    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      284   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  284    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      285   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  285    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      286   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+ radiation: perpetual sun, solin=   336.644165    
+NSTEP =                  286    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      287   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  287    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      288   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  288    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      289   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  289    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      290   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  290    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      291   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  291    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      292   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  292    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      293   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  293    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      294   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  294    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      295   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  295    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      296   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  296    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      297   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  297    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      298   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  298    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      299   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+NSTEP =                  299    NCYCLE=   1    MAX CFL=  0.032
+SUBNSTEP =      300   NCYCLE=   1   MAX CFL=  0.032   MAXNDIFF=  0.   MAXTKZ=    0.00
+ Collecting statistics...
+ nn_core ms per call (rank 0):   50.872198686666643       calls:         300
+ Saved radiation restart file. nstep=         300
+ TL
+ TABS
+ U
+ V
+ QT
+ TK_XY
+ TK_Z
+ TKH_XY
+ TKH_Z
+ name TABSOBS is missing in "lst" file.
+ name QVOBS is missing in "lst" file.
+ name UOBS is missing in "lst" file.
+ name VOBS is missing in "lst" file.
+ name WOBS is missing in "lst" file.
+ name TTEND is missing in "lst" file.
+ name QTEND is missing in "lst" file.
+ name WWVCONV is missing in "lst" file.
+ name W_WAVE is missing in "lst" file.
+ name H_WAVE is missing in "lst" file.
+ name Q_WAVE is missing in "lst" file.
+ name T_WAVE is missing in "lst" file.
+ name H_WAVEBG is missing in "lst" file.
+ name Q_WAVEBG is missing in "lst" file.
+ name T_WAVEBG is missing in "lst" file.
+ name P_WAVE is missing in "lst" file.
+ name T_TARGET is missing in "lst" file.
+ name TTENDWV is missing in "lst" file.
+ name QTENDWV is missing in "lst" file.
+ name DSE is missing in "lst" file.
+ name MSE is missing in "lst" file.
+ name SSE is missing in "lst" file.
+ name THETA is missing in "lst" file.
+ name THETAL is missing in "lst" file.
+ name THETAV is missing in "lst" file.
+ name THETAE is missing in "lst" file.
+ name PRES is missing in "lst" file.
+ name RHO is missing in "lst" file.
+ name QV is missing in "lst" file.
+ name QC is missing in "lst" file.
+ name QI is missing in "lst" file.
+ name QR is missing in "lst" file.
+ name QS is missing in "lst" file.
+ name QG is missing in "lst" file.
+ name QN is missing in "lst" file.
+ name QP is missing in "lst" file.
+ name QCOND is missing in "lst" file.
+ name QSAT is missing in "lst" file.
+ name RELH is missing in "lst" file.
+ name UW is missing in "lst" file.
+ name VW is missing in "lst" file.
+ name UWSB is missing in "lst" file.
+ name VWSB is missing in "lst" file.
+ name TLFLUX is missing in "lst" file.
+ name QTFLUX is missing in "lst" file.
+ name TLFLUXS is missing in "lst" file.
+ name QTFLUXS is missing in "lst" file.
+ name QPFLUXS is missing in "lst" file.
+ name QPFLUX is missing in "lst" file.
+ name PRECIP is missing in "lst" file.
+ name TVFLUX is missing in "lst" file.
+ name QCFLUX is missing in "lst" file.
+ name QIFLUX is missing in "lst" file.
+ name U2 is missing in "lst" file.
+ name V2 is missing in "lst" file.
+ name W2 is missing in "lst" file.
+ name W3 is missing in "lst" file.
+ name WSKEW is missing in "lst" file.
+ name AUP is missing in "lst" file.
+ name TL2 is missing in "lst" file.
+ name TQ is missing in "lst" file.
+ name QT2 is missing in "lst" file.
+ name QC2 is missing in "lst" file.
+ name QI2 is missing in "lst" file.
+ name QS2 is missing in "lst" file.
+ name TKE is missing in "lst" file.
+ name ADVTR is missing in "lst" file.
+ name PRESSTR is missing in "lst" file.
+ name BUOYA is missing in "lst" file.
+ name SHEAR is missing in "lst" file.
+ name DISSIP is missing in "lst" file.
+ name DIFTR is missing in "lst" file.
+ name WUADV is missing in "lst" file.
+ name WUANIZ is missing in "lst" file.
+ name WUBUOY is missing in "lst" file.
+ name WUSHEAR is missing in "lst" file.
+ name WUPRES is missing in "lst" file.
+ name WUDIFF is missing in "lst" file.
+ name WVADV is missing in "lst" file.
+ name WVANIZ is missing in "lst" file.
+ name WVBUOY is missing in "lst" file.
+ name WVSHEAR is missing in "lst" file.
+ name WVPRES is missing in "lst" file.
+ name WVDIFF is missing in "lst" file.
+ name W2BUOY is missing in "lst" file.
+ name W2ADV is missing in "lst" file.
+ name W2REDIS is missing in "lst" file.
+ name W2PRES is missing in "lst" file.
+ name W2DIFF is missing in "lst" file.
+ name T2ADVTR is missing in "lst" file.
+ name T2GRAD is missing in "lst" file.
+ name T2DISSIP is missing in "lst" file.
+ name T2DIFTR is missing in "lst" file.
+ name T2PREC is missing in "lst" file.
+ name Q2ADVTR is missing in "lst" file.
+ name Q2GRAD is missing in "lst" file.
+ name Q2DISSIP is missing in "lst" file.
+ name Q2DIFTR is missing in "lst" file.
+ name Q2PREC is missing in "lst" file.
+ name TWADV is missing in "lst" file.
+ name TWDIFF is missing in "lst" file.
+ name TWGRAD is missing in "lst" file.
+ name TWBUOY is missing in "lst" file.
+ name TWPRES is missing in "lst" file.
+ name TWPREC is missing in "lst" file.
+ name QWADV is missing in "lst" file.
+ name QWDIFF is missing in "lst" file.
+ name QWGRAD is missing in "lst" file.
+ name QWBUOY is missing in "lst" file.
+ name QWPRES is missing in "lst" file.
+ name QWPREC is missing in "lst" file.
+ name SWADV is missing in "lst" file.
+ name SWDIFF is missing in "lst" file.
+ name SWGRAD is missing in "lst" file.
+ name SWBUOY is missing in "lst" file.
+ name SWPRES is missing in "lst" file.
+ name S2ADVTR is missing in "lst" file.
+ name S2GRAD is missing in "lst" file.
+ name S2DISSIP is missing in "lst" file.
+ name S2DIFTR is missing in "lst" file.
+ name SW is missing in "lst" file.
+ name SWSB is missing in "lst" file.
+ name S is missing in "lst" file.
+ name S2 is missing in "lst" file.
+ TKES
+ name ADVTRS is missing in "lst" file.
+ name BUOYAS is missing in "lst" file.
+ name SHEARS is missing in "lst" file.
+ name DISSIPS is missing in "lst" file.
+ name CLD is missing in "lst" file.
+ name HYDRO is missing in "lst" file.
+ name WCLD is missing in "lst" file.
+ name UCLD is missing in "lst" file.
+ name VCLD is missing in "lst" file.
+ name DSECLD is missing in "lst" file.
+ name MSECLD is missing in "lst" file.
+ name TLCLD is missing in "lst" file.
+ name TVCLD is missing in "lst" file.
+ name TVCLDA is missing in "lst" file.
+ name TACLD is missing in "lst" file.
+ name QTCLD is missing in "lst" file.
+ name QCCLD is missing in "lst" file.
+ name QICLD is missing in "lst" file.
+ name QPCLD is missing in "lst" file.
+ name WCLDA is missing in "lst" file.
+ name TLWCLD is missing in "lst" file.
+ name TVWCLD is missing in "lst" file.
+ name QTWCLD is missing in "lst" file.
+ name QCWCLD is missing in "lst" file.
+ name QIWCLD is missing in "lst" file.
+ name MCUP is missing in "lst" file.
+ name MCDNS is missing in "lst" file.
+ name MCDNU is missing in "lst" file.
+ name MC is missing in "lst" file.
+ name SCLD is missing in "lst" file.
+ name SWCLD is missing in "lst" file.
+ name CORE is missing in "lst" file.
+ name CORECL is missing in "lst" file.
+ name WCOR is missing in "lst" file.
+ name UCOR is missing in "lst" file.
+ name VCOR is missing in "lst" file.
+ name DSECOR is missing in "lst" file.
+ name MSECOR is missing in "lst" file.
+ name TLCOR is missing in "lst" file.
+ name TVCOR is missing in "lst" file.
+ name TVCORA is missing in "lst" file.
+ name TACOR is missing in "lst" file.
+ name QTCOR is missing in "lst" file.
+ name QCCOR is missing in "lst" file.
+ name QICOR is missing in "lst" file.
+ name QPCOR is missing in "lst" file.
+ name WCORA is missing in "lst" file.
+ name TLWCOR is missing in "lst" file.
+ name TVWCOR is missing in "lst" file.
+ name QTWCOR is missing in "lst" file.
+ name QCWCOR is missing in "lst" file.
+ name QIWCOR is missing in "lst" file.
+ name SCOR is missing in "lst" file.
+ name SWCOR is missing in "lst" file.
+ name COREDN is missing in "lst" file.
+ name COREDNCL is missing in "lst" file.
+ name UCORDN is missing in "lst" file.
+ name VCORDN is missing in "lst" file.
+ name WCORDN is missing in "lst" file.
+ name DSECORDN is missing in "lst" file.
+ name MSECORDN is missing in "lst" file.
+ name TLCORDN is missing in "lst" file.
+ name TVCORDN is missing in "lst" file.
+ name TACORDN is missing in "lst" file.
+ name QTCORDN is missing in "lst" file.
+ name QCCORDN is missing in "lst" file.
+ name QICORDN is missing in "lst" file.
+ name QPCORDN is missing in "lst" file.
+ name WCORDNA is missing in "lst" file.
+ name TLWCORDN is missing in "lst" file.
+ name TVWCORDN is missing in "lst" file.
+ name QTWCORDN is missing in "lst" file.
+ name QCWCORDN is missing in "lst" file.
+ name QIWCORDN is missing in "lst" file.
+ name MCRUP is missing in "lst" file.
+ name MCRDNS is missing in "lst" file.
+ name MCRDNU is missing in "lst" file.
+ name MCR is missing in "lst" file.
+ name SCORDN is missing in "lst" file.
+ name SWCORDN is missing in "lst" file.
+ name HLADV is missing in "lst" file.
+ name HLDIFF is missing in "lst" file.
+ name HLLAT is missing in "lst" file.
+ name HLRAD is missing in "lst" file.
+ name QTADV is missing in "lst" file.
+ name QTDIFF is missing in "lst" file.
+ name QTSINK is missing in "lst" file.
+ name QTSRC is missing in "lst" file.
+ name QPADV is missing in "lst" file.
+ name QPDIFF is missing in "lst" file.
+ name QPFALL is missing in "lst" file.
+ name QPSRC is missing in "lst" file.
+ name QPEVP is missing in "lst" file.
+ name RADLWUP is missing in "lst" file.
+ name RADLWDN is missing in "lst" file.
+ name RADSWUP is missing in "lst" file.
+ name RADSWDN is missing in "lst" file.
+ name RADQRLW is missing in "lst" file.
+ name RADQRSW is missing in "lst" file.
+ name RADQR is missing in "lst" file.
+ name RADQRC is missing in "lst" file.
+ name RADQRS is missing in "lst" file.
+ name Q1C is missing in "lst" file.
+ name Q2 is missing in "lst" file.
+ name TVTEND is missing in "lst" file.
+ name QVTEND is missing in "lst" file.
+ name TNUDGE is missing in "lst" file.
+ name QNUDGE is missing in "lst" file.
+ name RADQRCLW is missing in "lst" file.
+ name RADQRCSW is missing in "lst" file.
+ UMF
+ SLFLX
+ QTFLX
+ TKE_UW
+ TT_UWPBL
+ QT_UWPBL
+ TTEND_UW
+ QVTEN_UW
+ QLTEN_UW
+ QITEN_UW
+ CFRC_UW
+ TK_Z_UW
+ TKH_Z_UW
+NSTEP =                  300    NCYCLE=   1    MAX CFL=  0.032
+ DAY =    8.33333358E-02
+ NSTEP=         300
+ div:   3.99987812E-08  -4.68024268E-08
+ SST=   0.00000000       surface pressure=   1000.00000    
+ u:  -1.22271550       22.4830341    
+ v: -0.548897743      0.420214653    
+ w:  -9.91964061E-03   1.01103429E-02
+ p:  -48.3691597       41.2088661    
+ t:   281.707550       504.340759    
+ tabs:   190.391525       283.082489    
+ q:   0.00000000       6.74963091E-03
+ tke:   0.00000000       1.63254702    
+ tk_xy:   0.00000000       63.0751762    
+ tk_z:   0.00000000       63.0751762    
+ tkh_xy:   0.00000000       189.225525    
+ tkh_z:   0.00000000       189.225525    
+ qn:   0.00000000       4.13918722E-04
+ qp:   0.00000000       0.00000000    
+ qrad(K/day):  -855.800293       873.457336    
+ shf:  -12.0171289       25.4871178    
+ lhf:  -9.43238449       60.9132500    
+ uw:   7.17803719E-04   1.63167110E-03
+ vw:  -4.60066774E-04   3.79202364E-04
+ sst:   273.149994       300.148285    
+ total water budget:
+ before (mm):   16.264517023533951     
+ after (mm) :   16.263888888888889     
+ evap (mm/day):  0.51274617513020826     
+ prec (mm/day):   0.0000000000000000     
+ ls (mm/day):   0.0000000000000000     
+ disbalance (mm/day)  -2.7740308973548622     
+ disbalance (mm)  -7.7056413815412839E-004
+ Writting statistics:nstatsteps=          10
+ Writting history file 72x180x48                               
+ Restart file was saved. nstep=         300
+CPU TIME =      78.2278 OVER     2.00 MODEL HOURS
+--------------------------------------------------------------------------
+Primary job  terminated normally, but 1 process returned
+a non-zero exit code. Per user-direction, the job has been aborted.
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+mpirun detected that one or more processes exited with non-zero status, thus causing
+the job to be terminated. The first process to do so was:
+
+  Process name: [[56115,1],2]
+  Exit code:    25
+--------------------------------------------------------------------------

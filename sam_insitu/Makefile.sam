@@ -1,0 +1,24 @@
+# SAM (Yuval-O'Gorman NN fork) with gfortran, OpenMPI, netCDF-Fortran. Run from OBJ via Build.sh.
+VPATH    := $(shell cat Filepath)
+SAM      := ../SAM
+FC       := mpif90
+CC       := mpicc
+NCINC    := $(shell nf-config --fflags)
+NCLIB    := $(shell nf-config --flibs)
+FFLAGS   := -O2 -g -fallow-argument-mismatch -fallow-invalid-boz -std=legacy -fno-range-check $(NCINC)
+FF90     := $(FC) -c -ffree-form -ffree-line-length-none $(FFLAGS)
+FF77     := $(FC) -c -ffixed-form -ffixed-line-length-none $(FFLAGS)
+CFLAGS   := -O2 -DLINUX
+SRCFILES := $(shell cat Srcfiles)
+OBJS     := $(addsuffix .o, $(basename $(SRCFILES)))
+all: $(SAM)
+$(SAM): $(OBJS)
+	$(FC) -o $(SAM) $(OBJS) $(NCLIB) -Wl,-rpath,/shared/EL9/explorer/netcdf/4.9.3-gcc/lib -Wl,--allow-shlib-undefined $(EXTRA_OBJS) $(EXTRA_LIBS)
+%.o: %.f90
+	$(FF90) $<
+%.o: %.f
+	$(FF77) $<
+%.o: %.c
+	$(CC) -c $(CFLAGS) $<
+include Depends
+.PHONY: all
