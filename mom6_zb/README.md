@@ -24,3 +24,16 @@ run of the shipped code:
 
 Driver fixes found on this host: column classification of array-section reads (fortis_units.py), and
 units needed by both loops kept in both copies (fortis_fission_hlfir.py).
+
+## Run-time extents (zb_host_rt.f90)
+
+The same host with the grid read at run time (zb_grid.txt), allocatable fields, and loop bounds from
+is, ie, js, je, nz, as in MOM6 itself.  The driver batches the nest with a run-time count; the ahead-of-time
+build links a stub (driver/fortis_stub.c), and fortis_begin(count) specializes the model side at the first
+call through the generated zb_fortis_rt.jit.sh, cached in fortis_cache/ as <host>_b<count>.so.
+
+  grid 60x70x15, 4736 cells/layer: 3.10 ms per step (static build 2.80), specialized once in 37.7 s,
+      checksum identical to the static FORTIS build, 5.98e-7 vs fp64
+  grid 40x50x10, 2376 cells/layer: 1.24 ms per step, specialized once in 49.1 s, 8.20e-7 vs fp64
+  second run at either grid: loaded from the cache, no specialization
+  run-time host with the model removed (Flang): 1.61 ms

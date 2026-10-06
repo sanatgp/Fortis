@@ -18,6 +18,10 @@ def analyze(path, callee):
         m = re.search(r'(%\w+):2 = hlfir\.declare .*uniq_name = "([^"]+)"\} : \(!fir\.ref<(!fir\.array<([\dx]+)x(\w+)>|(\w+))>', l)
         if m:
             decl[m.group(1)] = {'name': m.group(2), 'shape': [int(x) for x in m.group(4).split('x')] if m.group(4) else None, 'elt': m.group(5) or m.group(6)}
+            continue
+        m = re.search(r'(%\w+):2 = hlfir\.declare .*uniq_name = "([^"]+)"\} : \(!fir\.ref<!fir\.box<!fir\.heap<!fir\.array<((?:\?x)*\?)x(\w+)>>>>', l)
+        if m:
+            decl[m.group(1)] = {'name': m.group(2), 'shape': [None] * (m.group(3).count('?')), 'elt': m.group(4), 'box': True}
     def rej(r): return {'verdict': 'reject', 'reason': r}
     calls = [i for i, l in enumerate(L) if re.search(r'fir\.call @' + re.escape(callee) + r'\(', l)]
     if not calls: return rej('no call to ' + callee)
@@ -50,11 +54,13 @@ def analyze(path, callee):
         for d, txt in defl.get(name, []):
             if d < k and stacks[k][:len(stacks[d])] == stacks[d]: best = (d, txt)
         return best
-    lm = r'fir\.do_loop (%\w+) = %c(-?\d+)\S* to %c(-?\d+)\S* step %c(-?\d+)\S* : i32 \{'
+    lm = r'fir\.do_loop (%\w+) = (%\S+) to (%\S+) step (%\S+) : i32 \{'
+    def tok(t):
+        m = re.match(r'%c(-?\d+)', t); return int(m.group(1)) if m else t
     istart = stacks[n][-1] if stacks[n] else None
     if istart is None or not re.search(lm, L[istart]): return rej('call is not inside a constant-bound loop')
     iend = block_end(istart)
-    im = re.search(lm, L[istart]); ilo, ihi, istep = int(im.group(2)), int(im.group(3)), int(im.group(4))
+    im = re.search(lm, L[istart]); ilo, ihi, istep = tok(im.group(2)), tok(im.group(3)), tok(im.group(4))
     if istep != 1: return rej('inner loop step is not 1')
     ivs = re.match(r'\s*fir\.store (%\w+) to (%\w+)#0', L[istart + 1])
     if not ivs or ivs.group(1) != im.group(1): return rej('loop body does not start with the index store')
@@ -65,10 +71,11 @@ def analyze(path, callee):
         between = [L[i].strip() for i in range(jstart + 1, istart)]
         after = [L[i].strip() for i in range(iend + 1, jend)]
         jm = re.search(lm, L[jstart]); jvs = re.match(r'fir\.store (%\w+) to (%\w+)#0', between[0]) if between else None
-        ok_between = jvs and jvs.group(1) == jm.group(1) and all(t == '' or re.match(r'%c\w+ = arith\.constant', t) for t in between[1:])
+        # between the two loop headers Flang evaluates the inner bounds: loads of scalars, converts, and arithmetic
+        ok_between = jvs and jvs.group(1) == jm.group(1) and all(t == '' or re.match(r'%\w+ = (arith\.\w+|fir\.load|fir\.convert) ', t) for t in between[1:])
         ok_after = all(t == '' or re.match(r'%\w+ = (fir\.convert|arith\.\w+) ', t) or re.match(r'fir\.store %\w+ to %\w+#0 : !fir\.ref<i32>', t) for t in after)
-        if ok_between and ok_after and int(jm.group(4)) == 1:
-            outer = {'alloca': jvs.group(2), 'lo': int(jm.group(2)), 'hi': int(jm.group(3)), 'start': jstart, 'end': jend, 'arg': jm.group(1)}
+        if ok_between and ok_after and tok(jm.group(4)) == 1:
+            outer = {'alloca': jvs.group(2), 'lo': tok(jm.group(2)), 'hi': tok(jm.group(3)), 'start': jstart, 'end': jend, 'arg': jm.group(1)}
     # ---- index classification at a use line k
     def index_of(ssa, k, seen=0):
         if seen > 12: return None
@@ -97,7 +104,10 @@ def analyze(path, callee):
         dd = defat(ssa, k)
         if not dd: return None
         m = re.match(r'hlfir\.designate (%[\w#]+) \(([^)]*)\)', dd[1])
-        if not m: return None
+        if not m:
+            lb = re.match(r'fir\.load (%\w+)#0', dd[1])
+            if lb and lb.group(1) in decl and decl[lb.group(1)].get('box'): return (lb.group(1), parts_acc)
+            return None
         parts = [p.strip() for p in m.group(2).split(',')]
         return designate_base(m.group(1), dd[0], [parts] + parts_acc)
     def column_class(parts_lists, k):
@@ -278,7 +288,8 @@ def analyze(path, callee):
     for k in post:
         if tin in units[k]['writes'] or tin in units[k]['reads']: return rej('post-loop line %d touches the call input temporary' % units[k]['lo'])
     accum = sorted(decl[v]['name'] for v in first if first[v] == 'r' and any(v in u['writes'] for u in units) and not hostarr(v) and v not in (tin, tout))
-    ni = ihi - ilo + 1; count = ni * ((outer['hi'] - outer['lo'] + 1) if outer else 1)
+    static = all(isinstance(v, int) for v in (ilo, ihi) + ((outer['lo'], outer['hi']) if outer else ()))
+    ni = (ihi - ilo + 1) if static else None; count = (ni * ((outer['hi'] - outer['lo'] + 1) if outer else 1)) if static else None
     stmts = [{'lo': u['lo'], 'hi': u['hi'], 'kind': u['kind'], 'side': 'call' if k == ci else ('both' if k in both else ('pre' if k in pre else 'post')),
               'reads': sorted(decl[v]['name'] + ('' if c == 'none' else '@' + c) for v, c in u['reads'].items()),
               'writes': sorted(decl[v]['name'] + ('' if c == 'none' else '@' + c) for v, c in u['writes'].items())} for k, u in enumerate(units)]
@@ -288,7 +299,7 @@ def analyze(path, callee):
             'in': decl[tin]['name'], 'in_ssa': tin, 'in_shape': decl[tin]['shape'], 'in_elt': decl[tin]['elt'],
             'out': decl[tout]['name'], 'out_ssa': tout, 'out_shape': decl[tout]['shape'], 'out_elt': decl[tout]['elt'],
             'accumulators': accum, 'pre': sorted(pre), 'post': post, 'both': sorted(both), 'statements': stmts, 'lift': None, 'post_download': False,
-            'reason': 'call is on no loop-carried cycle; %d iterations over the %s nest; %d pre units, %d post units, %d recomputed' % (count, 'j/i' if outer else 'i', len(pre), len(post), len(both))}
+            'reason': 'call is on no loop-carried cycle; %s iterations over the %s nest; %d pre units, %d post units, %d recomputed' % (count if static else 'run-time', 'j/i' if outer else 'i', len(pre), len(post), len(both))}
 
 if __name__ == '__main__':
     print(json.dumps(analyze(sys.argv[1], sys.argv[2]), indent=1))

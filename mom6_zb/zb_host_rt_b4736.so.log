@@ -1,0 +1,13 @@
+fortisc: loop verdict batched (call is on no loop-carried cycle; run-time iterations over the j/i nest; 5 pre units, 4 post units, 1 recomput)
+fortisc: call site batch=4736 in_loop=True
+/home/taghipouranvari.s/venvs/tmlir/lib/python3.10/site-packages/torch/jit/_trace.py:1006: FutureWarning: `torch.jit.trace` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/home/taghipouranvari.s/venvs/tmlir/lib/python3.10/site-packages/torch/jit/_trace.py:1145: FutureWarning: `torch.jit.trace_method` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+outlined 6 weights; func @mlp_kernel(tensor<4736x27xf32>, tensor<4736x3xf32>, ...)
+warning: overriding the module target triple with x86_64-unknown-linux-gnu [-Woverride-module]
+1 warning generated.
+warning: overriding the module target triple with x86_64-unknown-linux-gnu [-Woverride-module]
+1 warning generated.
+shim: verdict=batched batch=4736 repeat=11 graph=0 in=tensor<4736x27xf32> out=tensor<4736x3xf32>
+fortisc: kernels=3 library calls=2 -> /scratch/taghipouranvari.s/FTORCH/zb_run/fortis_cache/zb_host_rt_b4736.so (specialized for 4736 rows)
