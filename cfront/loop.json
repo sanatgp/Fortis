@@ -1,0 +1,40 @@
+{
+ "verdict": "batched",
+ "batch": 384,
+ "lo": 1,
+ "step": 1,
+ "minc": 1,
+ "in": "x",
+ "in_shape": [
+  124,
+  384
+ ],
+ "out": "y",
+ "out_shape": [
+  128,
+  384
+ ],
+ "post_download": false,
+ "lift": null,
+ "statements": [
+  [
+   52,
+   "stay",
+   "loop-independent, runs on the host"
+  ]
+ ],
+ "reason": "call is on no loop-carried cycle; 384 iterations over columns 1..384 step 1",
+ "cir": {
+  "loop_scope": [
+   24,
+   60
+  ],
+  "inner": [
+   34,
+   52
+  ],
+  "call": 45,
+  "iv": "%3",
+  "iv_name": "i"
+ }
+}

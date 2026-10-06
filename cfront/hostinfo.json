@@ -1,0 +1,47 @@
+{
+ "calls": [
+  {
+   "line": 46,
+   "in_shape": [
+    124
+   ],
+   "out_shape": [
+    128
+   ],
+   "in_loop": true,
+   "trip": 384,
+   "loop_batch": {
+    "trip": 384,
+    "in_full": [
+     124,
+     384
+    ],
+    "out_full": [
+     128,
+     384
+    ]
+   }
+  }
+ ],
+ "in_shape": [
+  124
+ ],
+ "out_shape": [
+  128
+ ],
+ "in_loop": true,
+ "trip": 384,
+ "batch": 1,
+ "loop_batch": {
+  "trip": 384,
+  "in_full": [
+   124,
+   384
+  ],
+  "out_full": [
+   128,
+   384
+  ]
+ },
+ "loop_batch_reject": null
+}
