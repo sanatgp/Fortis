@@ -1,0 +1,192 @@
+{
+ "verdict": "batched",
+ "mode": "expanded",
+ "batch": 4736,
+ "lo": 1,
+ "step": 1,
+ "minc": 1,
+ "inner": {
+  "start": 728,
+  "end": 990,
+  "alloca": "%19",
+  "lo": 3,
+  "hi": 66,
+  "arg": "%arg3",
+  "n": 64
+ },
+ "outer": {
+  "alloca": "%35",
+  "lo": 3,
+  "hi": 76,
+  "start": 723,
+  "end": 1004,
+  "arg": "%arg2"
+ },
+ "call_line": 917,
+ "in": "_QFEx",
+ "in_ssa": "%127",
+ "in_shape": [
+  27
+ ],
+ "in_elt": "f32",
+ "out": "_QFEy",
+ "out_ssa": "%130",
+ "out_shape": [
+  3
+ ],
+ "out_elt": "f32",
+ "accumulators": [],
+ "pre": [
+  0,
+  1,
+  2,
+  3,
+  4
+ ],
+ "post": [
+  6,
+  7,
+  8,
+  9
+ ],
+ "both": [
+  3
+ ],
+ "statements": [
+  {
+   "lo": 779,
+   "hi": 779,
+   "kind": "hlfir.assign",
+   "side": "pre",
+   "reads": [
+    "_QFEk",
+    "_QFEsh_xy_h@other",
+    "_QQro.1xi4.0"
+   ],
+   "writes": [
+    "_QFEx"
+   ]
+  },
+  {
+   "lo": 830,
+   "hi": 830,
+   "kind": "hlfir.assign",
+   "side": "pre",
+   "reads": [
+    "_QFEk",
+    "_QFEsh_xx@other",
+    "_QQro.1xi4.0"
+   ],
+   "writes": [
+    "_QFEx"
+   ]
+  },
+  {
+   "lo": 881,
+   "hi": 881,
+   "kind": "hlfir.assign",
+   "side": "pre",
+   "reads": [
+    "_QFEk",
+    "_QFEvort_xy_h@other",
+    "_QQro.1xi4.0"
+   ],
+   "writes": [
+    "_QFEx"
+   ]
+  },
+  {
+   "lo": 891,
+   "hi": 891,
+   "kind": "hlfir.assign",
+   "side": "both",
+   "reads": [
+    "_QFEk",
+    "_QFEnorm_h@same"
+   ],
+   "writes": [
+    "_QFEinput_norm"
+   ]
+  },
+  {
+   "lo": 913,
+   "hi": 913,
+   "kind": "hlfir.assign",
+   "side": "pre",
+   "reads": [
+    "_QFEinput_norm",
+    "_QFEx"
+   ],
+   "writes": [
+    "_QFEx"
+   ]
+  },
+  {
+   "lo": 917,
+   "hi": 917,
+   "kind": "call",
+   "side": "call",
+   "reads": [
+    "_QFEx"
+   ],
+   "writes": [
+    "_QFEy"
+   ]
+  },
+  {
+   "lo": 955,
+   "hi": 955,
+   "kind": "hlfir.assign",
+   "side": "post",
+   "reads": [
+    "_QFEinput_norm",
+    "_QFEkappa_h@same",
+    "_QFEy"
+   ],
+   "writes": [
+    "_QFEy"
+   ]
+  },
+  {
+   "lo": 967,
+   "hi": 967,
+   "kind": "hlfir.assign",
+   "side": "post",
+   "reads": [
+    "_QFEy"
+   ],
+   "writes": [
+    "_QFEtxy_h@same"
+   ]
+  },
+  {
+   "lo": 978,
+   "hi": 978,
+   "kind": "hlfir.assign",
+   "side": "post",
+   "reads": [
+    "_QFEk",
+    "_QFEy"
+   ],
+   "writes": [
+    "_QFEtxx@same"
+   ]
+  },
+  {
+   "lo": 989,
+   "hi": 989,
+   "kind": "hlfir.assign",
+   "side": "post",
+   "reads": [
+    "_QFEk",
+    "_QFEy"
+   ],
+   "writes": [
+    "_QFEtyy@same"
+   ]
+  }
+ ],
+ "lift": null,
+ "post_download": false,
+ "reason": "call is on no loop-carried cycle; 4736 iterations over the j/i nest; 5 pre units, 4 post units, 1 recomputed"
+}

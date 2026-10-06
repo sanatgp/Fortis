@@ -11,8 +11,9 @@ L = open(sys.argv[1]).read().split('\n'); d = json.load(open(sys.argv[2]))
 if d.get('verdict') != 'batched' or d.get('mode') != 'expanded': sys.exit('not an expanded batched loop')
 inner, outer, n = d['inner'], d['outer'], d['call_line']
 nlo, nhi = (outer['start'], outer['end']) if outer else (inner['start'], inner['end'])
-pre_ranges = [(s['lo'], s['hi']) for s in d['statements'] if s['side'] in ('pre', 'both')]
-post_ranges = [(s['lo'], s['hi']) for s in d['statements'] if s['side'] in ('post', 'both')]
+# a unit needed by both loops ('both') stays in both copies; each copy drops only the other side's units
+pre_ranges = [(s['lo'], s['hi']) for s in d['statements'] if s['side'] == 'pre']
+post_ranges = [(s['lo'], s['hi']) for s in d['statements'] if s['side'] == 'post']
 def ref_ty(shape, elt): return '!fir.ref<!fir.array<%dx%s>>' % (shape[0], elt)
 tin_ty, tout_ty = ref_ty(d['in_shape'], d['in_elt']), ref_ty(d['out_shape'], d['out_elt'])
 ind = re.match(r'(\s*)', L[inner['start'] + 1]).group(1)

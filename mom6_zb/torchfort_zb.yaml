@@ -1,0 +1,4 @@
+model:
+  type: torchscript
+  parameters:
+    filename: zb_nn.pt

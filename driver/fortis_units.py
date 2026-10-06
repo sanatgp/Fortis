@@ -101,10 +101,18 @@ def analyze(path, callee):
         parts = [p.strip() for p in m.group(2).split(',')]
         return designate_base(m.group(1), dd[0], [parts] + parts_acc)
     def column_class(parts_lists, k):
+        # a section (lb:ub:st) spans every column between its bounds: if a bound depends on the loop index
+        # with a nonzero offset it touches other columns, if both bounds are the index itself it is this
+        # column, and bounds independent of the index (a k or feature range) do not name a column
         keys = []
         for parts in parts_lists:
             for p in parts:
-                if ':' in p: continue
+                if ':' in p:
+                    for q in p.split(':')[:2]:
+                        c = index_of(q.strip(), k)
+                        if c is None: return 'unknown'
+                        if c[0] in 'ij': keys.append(c)
+                    continue
                 c = index_of(p, k)
                 if c is None: return 'unknown'
                 if c[0] in 'ij': keys.append(c)
