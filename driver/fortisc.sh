@@ -28,6 +28,12 @@ if [ "$LV" != "batched" ] && [ -z "$FORTIS_NO_DIST" ]; then
   if [ "$(J $W/units.json "d['verdict']")" = "batched" ]; then cp $W/units.json $W/loop.json; LV=batched; EXPAND=yes; fi
 fi
 if [ -n "$FORTIS_NO_DIST" ]; then LV=disabled; DIS=disabled; fi
+GATHER=no; echo '{"ok": false}' > $W/gather.json
+if [ "$LV" = "batched" ] && [ "$EXPAND" = yes ] && [ -z "$FORTIS_NO_GATHER" ]; then
+  python3 $ROOT/fortis_gather.py $W/host.hlfir $W/loop.json > $W/gather.json
+  if [ "$(J $W/gather.json "d['ok']")" = "True" ]; then GATHER=yes; export FORTIS_GATHER=1; fi
+  echo "fortisc: stencil lift $GATHER ($(J $W/gather.json "d['reason'][:120]"))"
+fi
 # --- run-time extents: the loop count is a run-time value.  Ahead of time, build the distributed host with a
 # stub and a jit script; FORTIS_JIT_COUNT=n reruns this script to build the model side for n rows as a .so
 RT=$(J $W/loop.json "d.get('verdict') == 'batched' and d.get('batch') is None")
@@ -103,9 +109,15 @@ if [ -n "$FORTIS_JIT_COUNT" ]; then
   echo "fortisc: kernels=$(grep -c gpu.launch_func $W/m4.mlir) library calls=$(grep -c 'call @fortis_' $W/m4.mlir || true) -> $OUT (specialized for $FORTIS_JIT_COUNT rows)"; exit 0
 elif [ "$LV" = "batched" ] && [ "$EXPAND" = yes ]; then
   # fission at HLFIR with the call temporaries expanded across the batch
-  python3 $ROOT/fortis_fission_hlfir.py $W/host.hlfir $W/loop.json > $W/host_fissioned.fir
+  python3 $ROOT/fortis_fission_hlfir.py $W/host.hlfir $W/loop.json $W/gather.json > $W/host_fissioned.fir
   $B/flang -fc1 -emit-llvm -O3 $W/host_fissioned.fir -o $W/host.ll
-  $B/clang -O2 -c $W/host.ll -o $W/host.o; HOSTOBJ=$W/host.o
+  GOBJ=""
+  if [ "$GATHER" = yes ]; then
+    for sym in $(J $W/gather.json "' '.join(a['name'] for a in d['arrays'])"); do sed -i "s/^@$sym = internal global/@$sym = global/" $W/host.ll; done
+    python3 $ROOT/fortis_gather_emit.py $W/gather.json $W/loop.json > $W/gather.cu
+    $CUDA/bin/nvcc -O2 -arch=sm_70 -fmad=false -Xcompiler -fPIC -I$CUDA/include -c $W/gather.cu -o $W/gather.o; GOBJ=$W/gather.o
+  fi
+  $B/clang -O2 -c $W/host.ll -o $W/host.o; HOSTOBJ="$W/host.o $GOBJ"
 elif [ "$LV" = "batched" ]; then
   # loop fission at FIR: pre-loop, one batched call, post-loop; Lift statements move into the model
   python3 $ROOT/fortis_fission.py $W/host.fir $W/loop.json mlp_forward > $W/host_fissioned.fir

@@ -37,3 +37,11 @@ call through the generated zb_fortis_rt.jit.sh, cached in fortis_cache/ as <host
   grid 40x50x10, 2376 cells/layer: 1.24 ms per step, specialized once in 49.1 s, 8.20e-7 vs fp64
   second run at either grid: loaded from the cache, no specialization
   run-time host with the model removed (Flang): 1.61 ms
+
+## Stencil lift (gather.json, gather.cu)
+
+Every pre-loop unit is a section gather from a host array into x, a same-cell scalar read, or an
+elementwise expression over x; the pre-loop is deleted and one gather kernel in front of the model reads
+the host's own sh_xy_h, sh_xx, vort_xy_h, norm_h at the 3x3 stencil of each cell (four 21 KB planes per
+layer instead of a 511 KB packed buffer).  V100: 1.68 ms per step (pack on host 2.80, expert+TensorRT
+2.97, shipped 26.8), checksum identical to the packed build, 5.98e-7 vs fp64.

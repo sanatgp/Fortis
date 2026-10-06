@@ -96,7 +96,12 @@ if H.get('verdict') == 'batched':
         c += f"static void setup_xy(void) {{ cudaHostAlloc((void**)&X, {n_in}L*{IS}, cudaHostAllocDefault); cudaHostAlloc((void**)&Y, {n_out}L*{OS}, cudaHostAllocDefault); }}\n"
         c += f"void fortis_pack({IT}* f, int col) {{ if (!X) setup_xy(); memcpy(X + (size_t)col*{NIN}L, f, {NIN}L*{IS}); }}\n"
         c += f"void fortis_unpack({OT}* o, int col) {{ memcpy(o, Y + (size_t)col*{NOUT}L, {NOUT}L*{OS}); }}\n"
-        c += f"void mlp_forward_batched(void) {{ if (!din) setup(); if (!X) setup_xy(); cudaMemcpy(din, X, {n_in}L*{IS}, cudaMemcpyHostToDevice); mlp_forward_dev(); cudaMemcpy(Y, dout, {n_out}L*{OS}, cudaMemcpyDeviceToHost); }}\n"
+        import os
+        if os.environ.get('FORTIS_GATHER'):
+            c += "void* fortis_model_input(void) { if (!din) setup(); return din; }\n"
+            c += f"void mlp_forward_batched(void) {{ if (!din) setup(); if (!X) setup_xy(); mlp_forward_dev(); cudaMemcpy(Y, dout, {n_out}L*{OS}, cudaMemcpyDeviceToHost); }}\n"
+        else:
+            c += f"void mlp_forward_batched(void) {{ if (!din) setup(); if (!X) setup_xy(); cudaMemcpy(din, X, {n_in}L*{IS}, cudaMemcpyHostToDevice); mlp_forward_dev(); cudaMemcpy(Y, dout, {n_out}L*{OS}, cudaMemcpyDeviceToHost); }}\n"
     elif step == 1 and minc == 1:
         c += f"void mlp_forward_batched({IT}* in, {OT}* out) {{ mlp_upload(in); mlp_forward_dev(); mlp_download(out); }}\n"
     else:

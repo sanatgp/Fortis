@@ -70,11 +70,24 @@ def copy(keep_side):
             if keep_side == 'post':
                 out.append(ind + 'fir.call @fortis_unpack(' + d['out_ssa'] + '#1, %fx_col) : (' + tout_ty + ', i32) -> ()')
     return out
-new = L[:nlo] + pre_nest + copy('pre') + [nest_ind + 'fir.call @mlp_forward_batched() : () -> ()'] + copy('post') + L[nhi + 1:]
+G = json.load(open(sys.argv[3])) if len(sys.argv) > 3 else {'ok': False}
+if G.get('ok'):
+    # stencil lift: no pre-loop; the gather kernel reads the host's arrays at the enclosing loops' current indices
+    gl = []
+    for ai, a in enumerate(G['args']): gl.append(nest_ind + '%%fxg_a%d = fir.load %s#0 : !fir.ref<i32>' % (ai, a['alloca']))
+    aty = ['!fir.ref<!fir.array<%sx%s>>' % ('x'.join(map(str, a['shape'])), a['elt']) for a in G['arrays']]
+    gl.append(nest_ind + 'fir.call @fortis_gather(' + ', '.join(['%%fxg_a%d' % ai for ai in range(len(G['args']))] + [a['ssa'] + '#1' for a in G['arrays']]) + ') : (' + ', '.join(['i32'] * len(G['args']) + aty) + ') -> ()')
+    pre_part = gl
+else:
+    pre_part = copy('pre')
+new = L[:nlo] + pre_nest + pre_part + [nest_ind + 'fir.call @mlp_forward_batched() : () -> ()'] + copy('post') + L[nhi + 1:]
 decls = ['  func.func private @fortis_pack(' + tin_ty + ', i32) attributes {fir.bindc_name = "fortis_pack", fir.proc_attrs = #fir.proc_attrs<bind_c>}',
          '  func.func private @fortis_unpack(' + tout_ty + ', i32) attributes {fir.bindc_name = "fortis_unpack", fir.proc_attrs = #fir.proc_attrs<bind_c>}',
          '  func.func private @fortis_begin(i32) attributes {fir.bindc_name = "fortis_begin", fir.proc_attrs = #fir.proc_attrs<bind_c>}',
          '  func.func private @mlp_forward_batched() attributes {fir.bindc_name = "mlp_forward_batched", fir.proc_attrs = #fir.proc_attrs<bind_c>}']
+if G.get('ok'):
+    aty = ['!fir.ref<!fir.array<%sx%s>>' % ('x'.join(map(str, a['shape'])), a['elt']) for a in G['arrays']]
+    decls.append('  func.func private @fortis_gather(' + ', '.join(['i32'] * len(G['args']) + aty) + ') attributes {fir.bindc_name = "fortis_gather", fir.proc_attrs = #fir.proc_attrs<bind_c>}')
 k = max(i for i, l in enumerate(new) if l.startswith('  func.func private @'))
 new = new[:k + 1] + decls + new[k + 1:]
 print('\n'.join(new))
