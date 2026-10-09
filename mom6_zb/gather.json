@@ -1,6 +1,6 @@
 {
  "ok": true,
- "nin": 27,
+ "n": 27,
  "args": [
   {
    "alloca": "%47",
@@ -48,6 +48,29 @@
    ],
    "elt": "f32"
   }
+ ],
+ "scalars": [
+  {
+   "name": "S0",
+   "array": 3,
+   "idx": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     0
+    ],
+    [
+     "v",
+     0
+    ]
+   ]
+  }
+ ],
+ "exprs": [
+  "(tv / (S0 + 1.000000e-30f))"
  ],
  "slots": [
   {
@@ -510,29 +533,5 @@
    ]
   }
  ],
- "scalars": [
-  {
-   "name": "S0",
-   "decl": "_QFEinput_norm",
-   "array": 3,
-   "idx": [
-    [
-     "i",
-     0
-    ],
-    [
-     "j",
-     0
-    ],
-    [
-     "v",
-     0
-    ]
-   ]
-  }
- ],
- "exprs": [
-  "(xv / (S0 + 1.000000e-30f))"
- ],
- "reason": "pre-loop lifted: 27 slots gathered from _QFEsh_xy_h, _QFEsh_xx, _QFEvort_xy_h, _QFEnorm_h, 1 scalars, 1 elementwise expressions"
+ "reason": "pre-loop lifted: 27 slots gathered from _QFEsh_xy_h, _QFEsh_xx, _QFEvort_xy_h, _QFEnorm_h, 1 scalars, 1 expressions"
 }

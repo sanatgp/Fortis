@@ -71,23 +71,40 @@ def copy(keep_side):
                 out.append(ind + 'fir.call @fortis_unpack(' + d['out_ssa'] + '#1, %fx_col) : (' + tout_ty + ', i32) -> ()')
     return out
 G = json.load(open(sys.argv[3])) if len(sys.argv) > 3 else {'ok': False}
+SC = json.load(open(sys.argv[4])) if len(sys.argv) > 4 else {'ok': False}
+K = json.load(open(sys.argv[5])) if len(sys.argv) > 5 else {'ok': False}
+def lift_call(J, fn, pfx):
+    aty = ['!fir.ref<!fir.array<%sx%s>>' % ('x'.join(map(str, a['shape'])), a['elt']) for a in J['arrays']]
+    ls = [nest_ind + '%%%s_a%d = fir.load %s#0 : !fir.ref<i32>' % (pfx, ai, a['alloca']) for ai, a in enumerate(J['args'])]
+    ls.append(nest_ind + 'fir.call @%s(' % fn + ', '.join(['%%%s_a%d' % (pfx, ai) for ai in range(len(J['args']))] + [a['ssa'] + '#1' for a in J['arrays']]) + ') : (' + ', '.join(['i32'] * len(J['args']) + aty) + ') -> ()')
+    return ls, '  func.func private @%s(' % fn + ', '.join(['i32'] * len(J['args']) + aty) + ') attributes {fir.bindc_name = "%s", fir.proc_attrs = #fir.proc_attrs<bind_c>}' % fn
+extra_decls = []
 if G.get('ok'):
     # stencil lift: no pre-loop; the gather kernel reads the host's arrays at the enclosing loops' current indices
-    gl = []
-    for ai, a in enumerate(G['args']): gl.append(nest_ind + '%%fxg_a%d = fir.load %s#0 : !fir.ref<i32>' % (ai, a['alloca']))
-    aty = ['!fir.ref<!fir.array<%sx%s>>' % ('x'.join(map(str, a['shape'])), a['elt']) for a in G['arrays']]
-    gl.append(nest_ind + 'fir.call @fortis_gather(' + ', '.join(['%%fxg_a%d' % ai for ai in range(len(G['args']))] + [a['ssa'] + '#1' for a in G['arrays']]) + ') : (' + ', '.join(['i32'] * len(G['args']) + aty) + ') -> ()')
-    pre_part = gl
+    pre_part, dc = lift_call(G, 'fortis_gather', 'fxg'); extra_decls.append(dc)
 else:
     pre_part = copy('pre')
-new = L[:nlo] + pre_nest + pre_part + [nest_ind + 'fir.call @mlp_forward_batched() : () -> ()'] + copy('post') + L[nhi + 1:]
+if SC.get('ok'):
+    # scatter lift: no post-loop; the scatter kernel writes the visited rectangle of each host array
+    post_part, dc = lift_call(SC, 'fortis_scatter', 'fxs'); extra_decls.append(dc)
+else:
+    post_part = copy('post')
+if K.get('ok'):
+    # the gather needs no loop index under kdist: drop its index loads and call it with the arrays only
+    pre_part = [l for l in pre_part if 'fir.load' not in l]
+    pre_part = [re.sub(r'@fortis_gather\((%fxg_a\d+, )+', '@fortis_gather(', l) for l in pre_part]
+    pre_part = [re.sub(r'\) : \((i32, )+', ') : (', l) for l in pre_part]
+    k0, k1 = K['loop']['start'], K['loop']['end']; kind = re.match(r'(\s*)', L[k0]).group(1)
+    head = [kind + l.strip() for l in pre_nest + pre_part] + [kind + 'fir.call @mlp_forward_batched() : () -> ()']
+    new = L[:k0] + head + L[k0:nlo] + post_part + L[nhi + 1:]
+else:
+    new = L[:nlo] + pre_nest + pre_part + [nest_ind + 'fir.call @mlp_forward_batched() : () -> ()'] + post_part + L[nhi + 1:]
 decls = ['  func.func private @fortis_pack(' + tin_ty + ', i32) attributes {fir.bindc_name = "fortis_pack", fir.proc_attrs = #fir.proc_attrs<bind_c>}',
          '  func.func private @fortis_unpack(' + tout_ty + ', i32) attributes {fir.bindc_name = "fortis_unpack", fir.proc_attrs = #fir.proc_attrs<bind_c>}',
          '  func.func private @fortis_begin(i32) attributes {fir.bindc_name = "fortis_begin", fir.proc_attrs = #fir.proc_attrs<bind_c>}',
          '  func.func private @mlp_forward_batched() attributes {fir.bindc_name = "mlp_forward_batched", fir.proc_attrs = #fir.proc_attrs<bind_c>}']
-if G.get('ok'):
-    aty = ['!fir.ref<!fir.array<%sx%s>>' % ('x'.join(map(str, a['shape'])), a['elt']) for a in G['arrays']]
-    decls.append('  func.func private @fortis_gather(' + ', '.join(['i32'] * len(G['args']) + aty) + ') attributes {fir.bindc_name = "fortis_gather", fir.proc_attrs = #fir.proc_attrs<bind_c>}')
+if K.get('ok'): extra_decls = [re.sub(r'@fortis_gather\((i32, )+', '@fortis_gather(', dc) for dc in extra_decls]
+decls += extra_decls
 k = max(i for i, l in enumerate(new) if l.startswith('  func.func private @'))
 new = new[:k + 1] + decls + new[k + 1:]
 print('\n'.join(new))

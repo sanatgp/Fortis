@@ -1,0 +1,13 @@
+{
+ "ok": true,
+ "loop": {
+  "start": 718,
+  "end": 1111,
+  "alloca": "%47",
+  "lo": 1,
+  "hi": 15,
+  "arg": "%arg1"
+ },
+ "nk": 15,
+ "reason": "enclosing loop 1..15 distributed: gather and model once per step over 15 x 4736 rows, scatter per iteration"
+}

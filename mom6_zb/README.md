@@ -45,3 +45,14 @@ elementwise expression over x; the pre-loop is deleted and one gather kernel in 
 the host's own sh_xy_h, sh_xx, vort_xy_h, norm_h at the 3x3 stencil of each cell (four 21 KB planes per
 layer instead of a 511 KB packed buffer).  V100: 1.68 ms per step (pack on host 2.80, expert+TensorRT
 2.97, shipped 26.8), checksum identical to the packed build, 5.98e-7 vs fp64.
+
+## Scatter lift and enclosing-loop distribution (scatter.json, kdist.json)
+
+Post side: the recomputed norm read, the chained scalings of y (composed to one expression in the host's
+order, ((y*S0)*S0)*S1 with S0 = norm_h(i,j,k), S1 = kappa_h(i,j)), and the three stores Txy_h(i,j),
+Txx(i,j,k), Tyy(i,j,k) become one kernel after the model that writes the visited rectangle of each array
+back (cudaMemcpy2D).  Enclosing loop: the gather reads only arrays the k loop never writes, so the gather
+and the model run once per step over 15 x 4736 rows; the scatter stays per layer because the corner nest
+consumes Txy_h within the layer.  host_fissioned.fir is the rewritten unit.
+  V100 ms/step: pack on host 2.80 -> gather 1.68 -> gather+scatter per layer 1.76 -> +k distributed 1.19
+  host without the ANN nest 1.11; expert+TensorRT 2.97; checksum identical in every build, 5.98e-7 vs fp64

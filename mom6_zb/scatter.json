@@ -1,0 +1,150 @@
+{
+ "ok": true,
+ "n": 3,
+ "args": [
+  {
+   "alloca": "%47",
+   "name": "_QFEk"
+  }
+ ],
+ "arrays": [
+  {
+   "ssa": "%63",
+   "name": "_QFEnorm_h",
+   "shape": [
+    68,
+    78,
+    15
+   ],
+   "elt": "f32"
+  },
+  {
+   "ssa": "%50",
+   "name": "_QFEkappa_h",
+   "shape": [
+    68,
+    78
+   ],
+   "elt": "f32"
+  },
+  {
+   "ssa": "%113",
+   "name": "_QFEtxy_h",
+   "shape": [
+    68,
+    78
+   ],
+   "elt": "f32"
+  },
+  {
+   "ssa": "%107",
+   "name": "_QFEtxx",
+   "shape": [
+    68,
+    78,
+    15
+   ],
+   "elt": "f32"
+  },
+  {
+   "ssa": "%116",
+   "name": "_QFEtyy",
+   "shape": [
+    68,
+    78,
+    15
+   ],
+   "elt": "f32"
+  }
+ ],
+ "scalars": [
+  {
+   "name": "S0",
+   "array": 0,
+   "idx": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     0
+    ],
+    [
+     "v",
+     0
+    ]
+   ]
+  },
+  {
+   "name": "S1",
+   "array": 1,
+   "idx": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     0
+    ]
+   ]
+  }
+ ],
+ "exprs": [
+  "(((tv * S0) * S0) * S1)"
+ ],
+ "stores": [
+  {
+   "slot": 0,
+   "array": 2,
+   "idx": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     0
+    ]
+   ]
+  },
+  {
+   "slot": 1,
+   "array": 3,
+   "idx": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     0
+    ],
+    [
+     "v",
+     0
+    ]
+   ]
+  },
+  {
+   "slot": 2,
+   "array": 4,
+   "idx": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     0
+    ],
+    [
+     "v",
+     0
+    ]
+   ]
+  }
+ ],
+ "reason": "post-loop lifted: 1 expressions, 3 stores into _QFEtxy_h, _QFEtxx, _QFEtyy"
+}
