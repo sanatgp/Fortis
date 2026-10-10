@@ -19,7 +19,7 @@ def analyze(path, callee):
         if m:
             decl[m.group(1)] = {'name': m.group(2), 'shape': [int(x) for x in m.group(4).split('x')] if m.group(4) else None, 'elt': m.group(5) or m.group(6)}
             continue
-        m = re.search(r'(%\w+):2 = hlfir\.declare .*uniq_name = "([^"]+)"\} : \(!fir\.ref<!fir\.box<!fir\.heap<!fir\.array<((?:\?x)*\?)x(\w+)>>>>', l)
+        m = re.search(r'(%\w+):2 = hlfir\.declare .*uniq_name = "([^"]+)"\} : \(!fir\.ref<!fir\.box<!fir\.heap<!fir\.array<((?:\?x)*\?)x([\w!<>.]+)>>>>', l)
         if m:
             decl[m.group(1)] = {'name': m.group(2), 'shape': [None] * (m.group(3).count('?')), 'elt': m.group(4), 'box': True}
     def rej(r): return {'verdict': 'reject', 'reason': r}
@@ -79,12 +79,14 @@ def analyze(path, callee):
     # ---- index classification at a use line k
     def index_of(ssa, k, seen=0):
         if seen > 12: return None
+        ssa = ssa.split('#')[0]
         mm = re.match(r'%c(-?\d+)', ssa)
         if mm: return ('k', int(mm.group(1)))
         dd = defat(ssa, k)
         if not dd: return ('v', None) if ssa.startswith('%arg') else None
         d = dd[1]
         if d.startswith('fir.convert'): return index_of(re.search(r'fir\.convert (%\S+)', d).group(1), k, seen + 1)
+        if d.startswith('fir.box_dims'): return ('k', None)   # an extent of an allocatable: independent of the loop index
         if d.startswith('fir.load'):
             r = re.search(r'fir\.load (%\w+)', d).group(1)
             if r == ialloca: return ('i', 0)
@@ -96,6 +98,7 @@ def analyze(path, callee):
             a, b = index_of(am.group(2), k, seen + 1), index_of(am.group(3), k, seen + 1)
             if a and b and a[0] in 'ij' and b[0] == 'k': return (a[0], a[1] + b[1] if am.group(1) == 'addi' else a[1] - b[1])
             if a and b and a[0] == 'k' and b[0] in 'ij' and am.group(1) == 'addi': return (b[0], b[1] + a[1])
+            if a and b and a[0] == 'k' and b[0] == 'k': return ('k', None if None in (a[1], b[1]) else (a[1] + b[1] if am.group(1) == 'addi' else a[1] - b[1]))
             if (a and a[0] == 'v') or (b and b[0] == 'v'): return ('v', None)
         return None
     def designate_base(ssa, k, parts_acc):
