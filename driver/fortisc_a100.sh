@@ -101,7 +101,7 @@ $ROOT/fortis-pass/build/fortis-opt $W/m1.mlir -fortis-fold-transpose -o $W/m2a.m
 $B/mlir-opt $W/m2a.mlir -canonicalize -cse -o $W/m2.mlir
 $B/mlir-opt $W/m2.mlir -one-shot-bufferize="bufferize-function-boundaries function-boundary-type-conversion=identity-layout-map" -buffer-results-to-out-params -o $W/m3.mlir
 $ROOT/fortis-pass/build/fortis-opt $W/m3.mlir -fortis-fuse -fortis-host-decide -o $W/m4.mlir
-$B/mlir-opt $W/m4.mlir -gpu-lower-to-nvvm-pipeline="cubin-chip=sm_70 cubin-format=fatbin" -o $W/m5.mlir
+$B/mlir-opt $W/m4.mlir -gpu-lower-to-nvvm-pipeline="cubin-chip=sm_80 cubin-format=fatbin" -o $W/m5.mlir
 sed -i 's/@malloc/@fortis_alloc/g; s/@free/@fortis_free/g' $W/m5.mlir
 $B/mlir-translate $W/m5.mlir --mlir-to-llvmir -o $W/model.ll
 $B/clang -O2 $PIC -c $W/model.ll -o $W/model.o
@@ -112,7 +112,7 @@ $B/clang -O2 $PIC -c $W/weights.ll -o $W/weights.o
 # --- shim and host object from the attributes on the fused module
 python3 $ROOT/fortis_shim.py $W/m4.mlir $W/outline.json $W
 $B/clang -O2 $PIC -I$CUDA/include -c $W/shim.c -o $W/shim.o
-$B/clang -O2 $PIC -I$CUDA/include -I$MATH/include -I$CUDNN/include -c $ROOT/fortis_rt.c -o $W/fortis_rt.o && $CUDA/bin/nvcc -O2 -arch=sm_70 -Xcompiler -fPIC -I$CUDA/include -I$MATH/include -c $ROOT/fortis_fft.cu -o $W/fortis_fft.o
+$B/clang -O2 $PIC -I$CUDA/include -I$MATH/include -I$CUDNN/include -c $ROOT/fortis_rt.c -o $W/fortis_rt.o && $CUDA/bin/nvcc -O2 -arch=sm_80 -Xcompiler -fPIC -I$CUDA/include -I$MATH/include -c $ROOT/fortis_fft.cu -o $W/fortis_fft.o
 if [ -n "$FORTIS_JIT_COUNT" ]; then
   # jit mode: the host is already built; link the model side as a shared object for the stub to load
   $B/clang -shared -o $OUT $W/model.o $W/shim.o $W/weights.o $W/fortis_rt.o $W/fortis_fft.o \
@@ -126,7 +126,7 @@ elif [ "$LV" = "batched" ] && [ "$EXPAND" = yes ]; then
   GOBJ=""
   if [ "$GATHER" = yes ] || [ "$SCATTER" = yes ]; then
     python3 $ROOT/fortis_gather_emit.py $W/gather.json $W/scatter.json $W/loop.json $W/kdist.json > $W/gather.cu
-    $CUDA/bin/nvcc -O2 -arch=sm_70 -fmad=false -Xcompiler -fPIC -I$CUDA/include -c $W/gather.cu -o $W/gather.o; GOBJ=$W/gather.o
+    $CUDA/bin/nvcc -O2 -arch=sm_80 -fmad=false -Xcompiler -fPIC -I$CUDA/include -c $W/gather.cu -o $W/gather.o; GOBJ=$W/gather.o
   fi
   $B/clang -O2 -c $W/host.ll -o $W/host.o; HOSTOBJ="$W/host.o $GOBJ"
 elif [ "$LV" = "batched" ]; then
