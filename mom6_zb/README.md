@@ -56,3 +56,9 @@ and the model run once per step over 15 x 4736 rows; the scatter stays per layer
 consumes Txy_h within the layer.  host_fissioned.fir is the rewritten unit.
   V100 ms/step: pack on host 2.80 -> gather 1.68 -> gather+scatter per layer 1.76 -> +k distributed 1.19
   host without the ANN nest 1.11; expert+TensorRT 2.97; checksum identical in every build, 5.98e-7 vs fp64
+
+## A100 (zb_results_a100.csv, run_a100_zb.sh)
+
+Same hosts, engines rebuilt on the A100, FORTIS lowered to sm_80.  ms/step, mean of 5:
+  FORTIS full 1.045 | gather only 1.466 | pack on host 2.279 | expert+TensorRT 2.335 | expert+FORTIS 2.404
+  TensorRT per cell 1718 (2 runs of 3 steps) | shipped gfortran on this node's CPU 19.3 | checksum identical, 5.98e-7
