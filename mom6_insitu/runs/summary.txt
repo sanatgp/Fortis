@@ -1,0 +1,9 @@
+expert_trt_1 step_ms 1799.10 zb_ms 190.62
+expert_trt_2 step_ms 1809.80 zb_ms 189.31
+expert_trt_3 step_ms 1804.14 zb_ms 189.60
+fortis_1 step_ms 1657.86 zb_ms 49.795
+fortis_2 step_ms 1661.56 zb_ms 50.353
+fortis_3 step_ms 1663.40 zb_ms 49.934
+shipped_1 step_ms 2058.38 zb_ms 439.60
+shipped_2 step_ms 2053.59 zb_ms 437.67
+shipped_3 step_ms 2058.05 zb_ms 438.53
