@@ -1,0 +1,18 @@
+
+WARNING from PE     0: MOM_file_parser : IO_LAYOUT over-ridden.  Line: 'IO_LAYOUT = 1, 1' in file MOM_override.
+
+
+WARNING from PE     0: KVML is a deprecated parameter. Use KV_ML_INVZ2 instead.
+
+
+WARNING from PE     0: Unused line in MOM_input : PRANDTL_TURB = 0.0
+
+
+WARNING from PE     0: MPP_OPEN: File ./CPU_stats opened WRONLY already exists!
+
+
+WARNING from PE     0: diag_util_mod::opening_file: module/field_name (ocean_model/KE_dia) NOT registered
+
+                              20261013 161432.449: Memuse(MB) at Memory HiWaterMark=  6.377E+02  6.971E+02  2.282E+01  6.586E+02
+wall 633.86 s
+exit 0
