@@ -1,3 +1,4 @@
+import os
 #!/usr/bin/env python3
 # Generate shim.c from the fortis.host and fortis.graph attributes on the fused module.
 #   fortis_shim.py <m4.mlir> <outline.json> <outdir>
@@ -71,7 +72,14 @@ for i, (g, ty) in enumerate(zip(hostg, inputs[1:])):
 c += f"  cudaMalloc(&din, {n_in}L*{esz(intype)}); cudaMalloc(&dout, {n_out}L*{esz(outtype)});\n}}\n"
 c += "static cudaGraphExec_t fortis_gexec = 0; static int fortis_ncalls = 0; extern int fortis_capturing;\n"
 callargs = ", ".join([call("din", intype)] + [call(f"dg{i}", t) for i, t in enumerate(inputs[1:])] + [call(f"d{i}", t) for i, t in enumerate(consts)] + [call("dout", outtype)])
-c += "void mlp_forward_dev(void) {\n  cudaStream_t s = (cudaStream_t)mgpuStreamCreate();\n"
+TRT = os.environ.get('FORTIS_BACKEND') == 'trt'
+if TRT:
+    # second consumer of the contract: the entry is unchanged, the model runs in a TensorRT engine on din/dout
+    c += "extern void fortis_trt_forward(const void*, void*, cudaStream_t);\n"
+    c += "extern void fortis_trt_boundary(const void*, void*, cudaStream_t);\n"
+    tcall = "fortis_trt_boundary(din, dout, ts)" if BND else "fortis_trt_forward(din, dout, ts)"
+    c += "void mlp_forward_dev(void) { static cudaStream_t ts = 0; if (!ts) ts = (cudaStream_t)mgpuStreamCreate(); " + tcall + "; cudaStreamSynchronize(ts); }\n"
+c += "void mlp_forward_dev%s(void) {\n  cudaStream_t s = (cudaStream_t)mgpuStreamCreate();\n" % ('_fortis' if TRT else '')
 c += "  if (fortis_gexec) { cudaGraphLaunch(fortis_gexec, s); return; }\n"
 c += f"  int cap = (++fortis_ncalls == 2) && ({GRAPH} || getenv(\"FORTIS_GRAPH\") != 0);\n"
 c += "  if (cap) { fortis_capturing = 1; cudaStreamBeginCapture(s, cudaStreamCaptureModeThreadLocal); }\n"

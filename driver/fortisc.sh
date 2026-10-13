@@ -112,11 +112,18 @@ $B/clang -O2 $PIC -c $W/weights.ll -o $W/weights.o
 # --- shim and host object from the attributes on the fused module
 python3 $ROOT/fortis_shim.py $W/m4.mlir $W/outline.json $W
 $B/clang -O2 $PIC -I$CUDA/include -c $W/shim.c -o $W/shim.o
+TRTOBJ=""; TRTLIBS=""
+if [ "$FORTIS_BACKEND" = trt ]; then
+  TRTD=$F/venv-trt/lib/python3.12/site-packages/tensorrt_libs; TRTI=$F/trt_run/trt-oss/include
+  g++ -O2 -fPIC -I$TRTI -I$CUDA/include -c $ROOT/fortis_trt_backend.cpp -o $W/trt_backend.o || exit 1
+  TRTOBJ=$W/trt_backend.o; TRTLIBS="$TRTD/libnvinfer.so.10 -lstdc++ -Wl,-rpath,$TRTD"
+  echo "fortisc: backend TensorRT, plan $FORTIS_TRT_PLAN"
+fi
 $B/clang -O2 $PIC -I$CUDA/include -I$MATH/include -I$CUDNN/include -c $ROOT/fortis_rt.c -o $W/fortis_rt.o && $CUDA/bin/nvcc -O2 -arch=sm_70 -Xcompiler -fPIC -I$CUDA/include -I$MATH/include -c $ROOT/fortis_fft.cu -o $W/fortis_fft.o
 if [ -n "$FORTIS_JIT_COUNT" ]; then
   # jit mode: the host is already built; link the model side as a shared object for the stub to load
   $B/clang -shared -o $OUT $W/model.o $W/shim.o $W/weights.o $W/fortis_rt.o $W/fortis_fft.o \
-    -L$ROOT/build/lib -lmlir_cuda_runtime -L$CUDA/lib64 -lcudart -L$MATH/lib64 -lcublas -Wl,-rpath,$MATH/lib64 $CUDNN/lib/libcudnn.so.8 -Wl,-rpath,$CUDNN/lib -lcufft \
+    -L$ROOT/build/lib -lmlir_cuda_runtime -L$CUDA/lib64 -lcudart -L$MATH/lib64 -lcublas -Wl,-rpath,$MATH/lib64 $CUDNN/lib/libcudnn.so.8 -Wl,-rpath,$CUDNN/lib -lcufft $TRTOBJ $TRTLIBS \
     -Wl,-rpath,$ROOT/build/lib -Wl,-rpath,$CUDA/lib64
   echo "fortisc: kernels=$(grep -c gpu.launch_func $W/m4.mlir) library calls=$(grep -c 'call @fortis_' $W/m4.mlir || true) -> $OUT (specialized for $FORTIS_JIT_COUNT rows)"; exit 0
 elif [ "$LV" = "batched" ] && [ "$EXPAND" = yes ]; then
@@ -139,12 +146,17 @@ elif [ "$LV" = "batched" ]; then
 elif [ "$BND" = yes ]; then
   # boundary at HLFIR: lifted nests and layout casts removed, the call takes the host's own arrays
   python3 $ROOT/fortis_boundary.py $W/host.hlfir $W/lift2d.json > $W/host_boundary.fir
+  if [ "$FORTIS_BACKEND" = trt ]; then
+    python3 $ROOT/fortis_boundary_trt.py $W/lift2d.json > $W/boundary.cu || exit 1
+    $CUDA/bin/nvcc -O2 -arch=sm_70 -fmad=false -Xcompiler -fPIC -I$CUDA/include -c $W/boundary.cu -o $W/boundary.o || exit 1
+    TRTOBJ="$TRTOBJ $W/boundary.o"
+  fi
   $B/flang -fc1 -emit-llvm -O3 $W/host_boundary.fir -o $W/host.ll
   for sym in $(J $W/lift2d.json "' '.join((d['pre'] or {}).get('globals', []) + (d['post'] or {}).get('globals', []))"); do
     sed -i "s/^@$sym = internal global/@$sym = global/" $W/host.ll; done
   $B/clang -O2 -c $W/host.ll -o $W/host.o; HOSTOBJ=$W/host.o
 else HOSTOBJ=$HOST; fi
 $B/flang -O3 $HOSTOBJ $W/model.o $W/shim.o $W/weights.o $W/fortis_rt.o \
-  -L$ROOT/build/lib -lmlir_cuda_runtime -L$CUDA/lib64 -lcudart -L$MATH/lib64 -lcublas -Wl,-rpath,$MATH/lib64 $CUDNN/lib/libcudnn.so.8 -Wl,-rpath,$CUDNN/lib -lcufft $W/fortis_fft.o \
+  -L$ROOT/build/lib -lmlir_cuda_runtime -L$CUDA/lib64 -lcudart -L$MATH/lib64 -lcublas -Wl,-rpath,$MATH/lib64 $CUDNN/lib/libcudnn.so.8 -Wl,-rpath,$CUDNN/lib -lcufft $TRTOBJ $TRTLIBS $W/fortis_fft.o \
   -Wl,-rpath,$ROOT/build/lib -Wl,-rpath,$CUDA/lib64 -o $OUT
 echo "fortisc: kernels=$(grep -c gpu.launch_func $W/m4.mlir) library calls=$(grep -c 'call @fortis_' $W/m4.mlir || true) -> $OUT"
