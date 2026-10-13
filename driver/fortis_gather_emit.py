@@ -36,9 +36,15 @@ def plane_off(A, ai, idx):
     return ' + '.join('(long)(a%d - 1) * %dL' % (c[1], A[ai]['strides'][di]) for di, c in enumerate(idx) if c[0] == 'v') or '0'
 def common(J, A, pfx, planes=1):
     o.append('static void *%s; static int %sinit = 0;' % (', *'.join('%sd%d' % (pfx, ai) for ai in range(len(A))), pfx))
+    o.append('static const void *%s;' % ', *'.join('%sreg%d = 0' % (pfx, ai) for ai in range(len(A))))
+    # operand scope at run time: an array whose address changes between calls is a temporary; unpin it once and never pin it again
+    o.append('static void %srepin(%s) {' % (pfx, ', '.join('const void* H%d' % ai for ai in range(len(A)))))
+    for ai in range(len(A)):
+        o.append('  if (%sreg%d && %sreg%d != H%d) { cudaHostUnregister((void*)%sreg%d); %sreg%d = (const void*)1; cudaGetLastError(); }' % (pfx, ai, pfx, ai, ai, pfx, ai, pfx, ai))
+    o.append('}')
     o.append('static void %ssetup(%s) {' % (pfx, ', '.join('const %s* H%d' % (A[ai]['c'], ai) for ai in range(len(A)))))
     for ai, a in enumerate(J['arrays']):
-        o.append('  cudaMalloc(&%sd%d, %dL * sizeof(%s)); cudaHostRegister((void*)H%d, %dL * sizeof(%s), cudaHostRegisterDefault); cudaGetLastError();' % (pfx, ai, A[ai]['plane'] * planes, A[ai]['c'], ai, A[ai]['total'], A[ai]['c']))
+        o.append('  cudaMalloc(&%sd%d, %dL * sizeof(%s)); if (cudaHostRegister((void*)H%d, %dL * sizeof(%s), cudaHostRegisterDefault) == cudaSuccess) %sreg%d = H%d; cudaGetLastError();' % (pfx, ai, A[ai]['plane'] * planes, A[ai]['c'], ai, A[ai]['total'], A[ai]['c'], pfx, ai, ai))
     o.append('  %sinit = 1;\n}' % pfx)
 if G.get('ok'):
     uses = [(s['array'], s['idx']) for s in G['slots']] + [(s['array'], s['idx']) for s in G['scalars']]
@@ -56,7 +62,7 @@ if G.get('ok'):
     o.append('}')
     gargs = [] if K.get('ok') else ['int a%d' % i for i in range(len(G['args']))]
     o.append('extern "C" void fortis_gather(%s) {' % ', '.join(gargs + ['const %s* H%d' % (A[ai]['c'], ai) for ai in range(len(A))]))
-    o.append('  cudaStream_t s = (cudaStream_t)mgpuStreamCreate(); if (!ginit) gsetup(%s);' % ', '.join('H%d' % ai for ai in range(len(A))))
+    o.append('  cudaStream_t s = (cudaStream_t)mgpuStreamCreate(); if (!ginit) gsetup(%s); else grepin(%s);' % (', '.join('H%d' % ai for ai in range(len(A))), ', '.join('H%d' % ai for ai in range(len(A)))))
     for ai in range(len(A)):
         if K.get('ok'): o.append('  cudaMemcpyAsync(gd%d, H%d + (long)(%d - 1) * %dL, %dL * sizeof(%s), cudaMemcpyHostToDevice, s);' % (ai, ai, klo, A[ai]['plane'], A[ai]['plane'] * nk, A[ai]['c']))
         else: o.append('  cudaMemcpyAsync(gd%d, H%d + (%s), %dL * sizeof(%s), cudaMemcpyHostToDevice, s);' % (ai, ai, plane_off(A, ai, A[ai]['idx']), A[ai]['plane'], A[ai]['c']))
@@ -76,7 +82,7 @@ if S.get('ok'):
     for s in S['stores']: o.append('  A%d[%s] = yv[%d];' % (s['array'], elem(A, s['array'], s['idx']), s['slot']))
     o.append('}')
     o.append('extern "C" void fortis_scatter(%s) {' % ', '.join(['int a%d' % i for i in range(len(S['args']))] + ['%s* H%d' % (A[ai]['c'], ai) for ai in range(len(A))]))
-    o.append('  cudaStream_t s = (cudaStream_t)mgpuStreamCreate(); if (!sinit) ssetup(%s);' % ', '.join('H%d' % ai for ai in range(len(A))))
+    o.append('  cudaStream_t s = (cudaStream_t)mgpuStreamCreate(); if (!sinit) ssetup(%s); else srepin(%s);' % (', '.join('H%d' % ai for ai in range(len(A))), ', '.join('H%d' % ai for ai in range(len(A)))))
     for ai in range(len(A)):
         if ai not in written:
             o.append('  cudaMemcpyAsync(sd%d, H%d + (%s), %dL * sizeof(%s), cudaMemcpyHostToDevice, s);' % (ai, ai, plane_off(A, ai, A[ai]['idx']), A[ai]['plane'], A[ai]['c']))

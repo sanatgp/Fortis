@@ -16,7 +16,7 @@ def static_shape(ssa, line_no):
         d = define(line_no, ssa)
         if not d: return None
         i, op, operands, types = d
-        m = re.search(r'!fir\.(?:ref|box)<!fir\.array<((?:\d+x)*\d+)xf32>>', types.split('->')[0])
+        m = re.search(r'!fir\.(?:ref|box)<!fir\.array<((?:\d+x)*\d+)x(?:f32|f64)>>', types.split('->')[0])
         if m and op in ('fir.convert', 'fir.declare', 'hlfir.declare', 'fir.alloca', 'fir.address_of', 'fir.embox', 'fir.array_coor'):
             return [int(x) for x in m.group(1).split('x')]
         nxt = re.findall(r'%[\w]+', operands)
