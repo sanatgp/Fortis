@@ -40,11 +40,20 @@ fortis)
   FRT=""; for l in libflang_rt.runtime.a libFortranRuntime.a libFortranDecimal.a; do test -f $ROOT/build/lib/$l && FRT="$FRT $ROOT/build/lib/$l"; done
   OBJS="$(ls $I/obj_$V/*.o | tr '\n' ' ')"
   LIBS="-L$ROOT/build/lib -lmlir_cuda_runtime -L$CUDA/lib64 -lcudart -L$MATH/lib64 -lcublas $CUDNN/lib/libcudnn.so.8 -lcufft $FRT -lstdc++ -Wl,-rpath,$ROOT/build/lib -Wl,-rpath,$CUDA/lib64 -Wl,-rpath,$MATH/lib64 -Wl,-rpath,$CUDNN/lib";;
+fortis_trt)
+  unset LD_LIBRARY_PATH; W=$ROOT/fortisc_work; rm -f $W/*.o
+  (cd $U && FORTIS_BACKEND=trt FORTIS_TRT_PLAN=build $ROOT/fortisc.sh export_zb.py zb_nest.f90 unused 2>&1 | grep "fortisc:\|shim:\|rror" || true)
+  test -f $W/model.o -a -f $W/shim.o -a -f $W/host.o -a -f $W/gather.o -a -f $W/trt_backend.o || { echo "fortisc did not produce the objects, see above"; exit 1; }
+  echo "contract batch: $(grep -o 'batch = [0-9]*' $W/m4.mlir | head -1)"
+  cp $W/host.o $W/model.o $W/shim.o $W/weights.o $W/fortis_rt.o $W/fortis_fft.o $W/gather.o $W/trt_backend.o $I/obj_$V/
+  FRT=""; for l in libflang_rt.runtime.a libFortranRuntime.a libFortranDecimal.a; do test -f $ROOT/build/lib/$l && FRT="$FRT $ROOT/build/lib/$l"; done
+  OBJS="$(ls $I/obj_$V/*.o | tr '\n' ' ')"
+  LIBS="-L$ROOT/build/lib -lmlir_cuda_runtime -L$CUDA/lib64 -lcudart -L$MATH/lib64 -lcublas $CUDNN/lib/libcudnn.so.8 -lcufft $TRT/libnvinfer.so.10 $FRT -lstdc++ -Wl,-rpath,$ROOT/build/lib -Wl,-rpath,$CUDA/lib64 -Wl,-rpath,$MATH/lib64 -Wl,-rpath,$CUDNN/lib -Wl,-rpath,$TRT";;
 expert_trt)
   $CUDA/bin/nvcc -O2 -w -arch=sm_70 -I$TRTI -I$CUDA/include -c $I/zb_trt_apply.cu -o $I/obj_$V/zb_trt_apply.o
   OBJS="$I/obj_$V/zb_trt_apply.o"
   LIBS="$TRT/libnvinfer.so.10 -L$CUDA/lib64 -lcudart -lstdc++ -Wl,-rpath,$TRT -Wl,-rpath,$CUDA/lib64";;
-*) echo "usage: build_mom6.sh percell|fortis|expert_trt"; exit 1;;
+*) echo "usage: build_mom6.sh percell|fortis|fortis_trt|expert_trt"; exit 1;;
 esac
 echo "compiler: $(mpif90 --version | head -1)"
 make -s MOM6 REPRO=1 LIBS="$OBJS $LIBS $NETLIBS" 2>&1 | grep -iE "error|undefined" | head -10 || true

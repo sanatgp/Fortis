@@ -1,10 +1,12 @@
 #!/bin/bash
 # fortisc for a C host through ClangIR. Usage: fortisc_c.sh export.py host_loop.c host_main.c out
 # The model side is fortisc.sh's, unchanged; only the host analysis and the host rewrite differ.
+# FORTIS_BACKEND=trt with FORTIS_TRT_PLAN=<plan> gives the same contract to the TensorRT consumer.
 set -e
 EXPORT=$1; HOST=$2; MAIN=$3; OUT=$4
-ROOT=/scratch/taghipouranvari.s/FTORCH/torch-mlir
-CUDNN=$(ls -d /scratch/taghipouranvari.s/FTORCH/Fortran-ML-Interface/venv-fortran-ml/lib64/python3.9/site-packages/nvidia/cudnn)
+F=/scratch/taghipouranvari.s/FTORCH
+ROOT=$F/torch-mlir
+CUDNN=$(ls -d $F/Fortran-ML-Interface/venv-fortran-ml/lib64/python3.9/site-packages/nvidia/cudnn)
 MATH=/shared/EL9/explorer/nvidia-hpc-sdk/24.7/Linux_x86_64/24.7/math_libs/12.5
 CUDA=/shared/EL9/explorer/nvidia-hpc-sdk/24.7/Linux_x86_64/24.7/cuda/12.5
 B=$ROOT/build/bin; C=$ROOT/build-cir/bin
@@ -23,6 +25,7 @@ DIS=-; if [ "$LV" != "batched" ]; then DIS=disabled; fi
 
 # --- model side, as in fortisc.sh
 source ~/venvs/tmlir/bin/activate && python $EXPORT > $W/model_linalg.mlir && deactivate
+python3 $ROOT/fortis_purity.py $W/model_linalg.mlir || exit 1
 python3 $ROOT/fortis_hostattr.py $W/model_linalg.mlir $W/hostinfo.json $W/loop.json $DIS > $W/model_annot.mlir
 python3 $ROOT/fortis_outline.py $W/model_annot.mlir $W
 $B/mlir-opt $W/model_args.mlir -linalg-generalize-named-ops -o $W/m1.mlir
@@ -36,6 +39,13 @@ $B/mlir-translate $W/m5.mlir --mlir-to-llvmir -o $W/model.ll && $B/clang -O2 -c 
 $B/mlir-translate $W/weights.mlir --mlir-to-llvmir -o $W/weights.ll && $B/clang -O2 -c $W/weights.ll -o $W/weights.o
 python3 $ROOT/fortis_shim.py $W/m4.mlir $W/outline.json $W
 $B/clang -O2 -I$CUDA/include -c $W/shim.c -o $W/shim.o
+TRTOBJ=""; TRTLIBS=""
+if [ "$FORTIS_BACKEND" = trt ]; then
+  TRTD=$F/venv-trt/lib/python3.12/site-packages/tensorrt_libs; TRTI=$F/trt_run/trt-oss/include
+  g++ -O2 -fPIC -I$TRTI -I$CUDA/include -c $ROOT/fortis_trt_backend.cpp -o $W/trt_backend.o || exit 1
+  TRTOBJ=$W/trt_backend.o; TRTLIBS="$TRTD/libnvinfer.so.10 -lstdc++ -Wl,-rpath,$TRTD"
+  echo "fortisc_c: backend TensorRT, plan $FORTIS_TRT_PLAN"
+fi
 $B/clang -O2 -I$CUDA/include -I$MATH/include -I$CUDNN/include -c $ROOT/fortis_rt.c -o $W/fortis_rt.o
 $CUDA/bin/nvcc -O2 -arch=sm_70 -Xcompiler -fPIC -I$CUDA/include -I$MATH/include -c $ROOT/fortis_fft.cu -o $W/fortis_fft.o
 
@@ -48,7 +58,7 @@ else
   $B/clang -O2 -c $HOST -o $W/host.o
 fi
 $B/clang -O2 -c $MAIN -o $W/main.o
-$B/clang -O2 $W/main.o $W/host.o $W/model.o $W/shim.o $W/weights.o $W/fortis_rt.o $W/fortis_fft.o \
-  -L$ROOT/build/lib -lmlir_cuda_runtime -L$CUDA/lib64 -lcudart -L$MATH/lib64 -lcublas $CUDNN/lib/libcudnn.so.8 -lcufft -lm \
+$B/clang -O2 $W/main.o $W/host.o $W/model.o $W/shim.o $W/weights.o $W/fortis_rt.o $W/fortis_fft.o $TRTOBJ \
+  -L$ROOT/build/lib -lmlir_cuda_runtime -L$CUDA/lib64 -lcudart -L$MATH/lib64 -lcublas $CUDNN/lib/libcudnn.so.8 -lcufft -lm $TRTLIBS \
   -Wl,-rpath,$ROOT/build/lib -Wl,-rpath,$CUDA/lib64 -Wl,-rpath,$MATH/lib64 -Wl,-rpath,$CUDNN/lib -o $OUT
 echo "fortisc_c: kernels=$(grep -c gpu.launch_func $W/m4.mlir) library calls=$(grep -c 'call @fortis_' $W/m4.mlir || true) -> $OUT"

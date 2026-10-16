@@ -226,7 +226,7 @@ character(len=256) :: nn_filename
    call system_clock(c1)
    nn_ms = nn_ms + real(c1 - c0, 8) / real(rate, 8) * 1.0d3
    nn_calls = nn_calls + 1
-   if (masterproc .and. nstep .eq. nstop .and. icycle .eq. ncycle) print *, 'nn_core ms per call (rank 0):', nn_ms / nn_calls, ' calls:', nn_calls
+   if (nstep .eq. nstop .and. icycle .eq. ncycle) print *, 'nn_core ms per call rank', rank, ':', nn_ms / nn_calls, ' calls:', nn_calls
 
    end subroutine nn_convection_flux
 

@@ -20,6 +20,7 @@ int main(int argc, char** argv) {
   ctx->setTensorAddress(eng->getIOTensorName(0), dx); ctx->setTensorAddress(eng->getIOTensorName(1), dy);
   cudaStream_t s; cudaStreamCreate(&s);
   auto call = [&]() {
+    static bool pinned = false; if (!pinned) { cudaHostRegister(x.data(), nin * 4, cudaHostRegisterDefault); cudaHostRegister(y.data(), nout * 4, cudaHostRegisterDefault); pinned = true; }
     cudaMemcpyAsync(dx, x.data(), nin * 4, cudaMemcpyHostToDevice, s);
     ctx->enqueueV3(s);
     cudaMemcpyAsync(y.data(), dy, nout * 4, cudaMemcpyDeviceToHost, s);

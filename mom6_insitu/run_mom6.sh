@@ -7,13 +7,14 @@ cp $F/zb_run/zb_nn.bin . 2>/dev/null
 module load OpenMPI/4.1.6 netcdf/4.9.3-gcc HDF5/1.14.6 2>/dev/null || true
 export OMP_NUM_THREADS=1
 export ZB_TRT_PLAN=$F/zb_run/zb_b35216.plan
+export FORTIS_TRT_PLAN=${FORTIS_TRT_PLAN:-$F/zb_run/zb_b528240.plan}
 X=""
-if [ "$V" = fortis ] || [ "$V" = expert_trt ]; then
+if [ "$V" = fortis ] || [ "$V" = fortis_trt ] || [ "$V" = expert_trt ]; then
   export CUDA_MPS_PIPE_DIRECTORY=$HOME/mps/pipe CUDA_MPS_LOG_DIRECTORY=$HOME/mps/log
   mkdir -p $HOME/mps/pipe $HOME/mps/log
   pgrep -x nvidia-cuda-mps-control > /dev/null || nvidia-cuda-mps-control -d
   sleep 2
-  X="-x CUDA_MPS_PIPE_DIRECTORY -x ZB_TRT_PLAN"
+  X="-x CUDA_MPS_PIPE_DIRECTORY -x ZB_TRT_PLAN -x FORTIS_TRT_PLAN"
 fi
 /usr/bin/time -f "wall %e s" mpirun --oversubscribe -np 4 $X $EXE > run.log 2> time.log; echo "exit $?" >> time.log
 echo "== $V"; tail -2 time.log
