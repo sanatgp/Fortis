@@ -150,6 +150,11 @@ def analyze(path, callee):
     # ---- classify the other statements
     verdicts, lift, post_download = [], None, False
     call_idx = [k for k, (ln, s) in enumerate(stmts) if s.startswith('fir.call')][0]
+    post_scalar_writes = set()
+    for k, (ln, s) in enumerate(stmts):
+        if k <= call_idx: continue
+        m = re.match(r'hlfir\.assign (%[\w#]+) to (%[\w#]+)', s) or re.match(r'fir\.store (%\S+) to (%\S+)', s)
+        if m and not access(m.group(2)): post_scalar_writes.add(decl.get(m.group(2).split('#')[0], ('?',))[0])
     for k, (ln, s) in enumerate(stmts):
         if k == call_idx: continue
         before = k < call_idx
@@ -172,6 +177,10 @@ def analyze(path, callee):
             return {'verdict': 'block', 'reason': f'line {ln}: writes the call input at another iteration (loop-carried into the model)'}
         if writes_in and reads_out_other:
             return {'verdict': 'block', 'reason': f'line {ln}: writes the call input from the model output of another iteration (recurrence through the model)'}
+        if before and reads_out_other:
+            return {'verdict': 'block', 'reason': f'line {ln}: a pre-statement reads the model output of another iteration (loop-carried from the model into the pre-loop)'}
+        if before and any(r[2] is None and r[0] in post_scalar_writes for r in src_reads):
+            return {'verdict': 'block', 'reason': f'line {ln}: a pre-statement reads a scalar written after the call (loop-carried from the post-loop into the pre-loop)'}
         if before and temp_in and tgt.split('#')[0] == temp_in:
             # candidate Lift: elementwise expression assigned to the call's temporary
             from fortis_hostlift import analyze as lift_analyze

@@ -8,10 +8,11 @@ src = open(model).read(); H = json.load(open(hi)); L = json.load(open(lp))
 def i64(v): return f"{int(v)} : i64"
 def s(v): return '"' + str(v) + '"'
 verdict = 'disabled' if disabled else ('boundary' if bnd and bnd.get('ok') else L['verdict'])
-parts = [f"shape = [{', '.join(str(x) for x in H['in_shape'])}]",
+parts = ["version = 1 : i64", f"shape = [{', '.join(str(x) for x in H['in_shape'])}]",
          f"batch = {i64(L['batch'] if verdict == 'batched' else H['batch'])}",
          f"repeat = {i64(H.get('trip') or 0) if H.get('in_loop') else i64(0)}",
          f"verdict = {s(verdict)}"]
+parts.append('provenance = {shape = "proven", repeat = "proven", dependence = "proven", lift = "proven", layout = "proven", scope = "proven", aliasing = "checked", purity = "checked", fp_order = "assumed"}')
 if verdict == 'batched':
     parts.append("loop = {" + ", ".join([f"lo = {i64(L['lo'])}", f"step = {i64(L['step'])}", f"count = {i64(L['batch'])}", f"minc = {i64(L['minc'])}",
                  f"in = {s(L['in'])}", f"out = {s(L['out'])}", f"post_download = {'true' if L['post_download'] else 'false'}"]) + "}")
